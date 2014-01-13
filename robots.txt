@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://abh1nav.github.io/sitemap.xml 
+Sitemap: http://blog.abhinav.ca/sitemap.xml 

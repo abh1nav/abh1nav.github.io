@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[sqldump]]></title>
-  <link href="http://abh1nav.github.io/atom.xml" rel="self"/>
-  <link href="http://abh1nav.github.io/"/>
-  <updated>2014-01-13T01:01:45-05:00</updated>
-  <id>http://abh1nav.github.io/</id>
+  <link href="http://blog.abhinav.ca/atom.xml" rel="self"/>
+  <link href="http://blog.abhinav.ca/"/>
+  <updated>2014-01-13T15:39:36-05:00</updated>
+  <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
     
@@ -14,10 +14,274 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Akka and Backpressure]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/01/13/akka-and-backpressure/"/>
+    <updated>2014-01-13T12:46:04-05:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/01/13/akka-and-backpressure</id>
+    <content type="html"><![CDATA[<p>Two steps are needed in order to correctly apply backpressure in an Akka system:</p>
+
+<h4>Step 1: Bounded Mailboxes and Push Timeouts</h4>
+
+<p>The default mailbox for an actor is an <code>UnboundedMailbox</code> backed by Java&rsquo;s <code>ConcurrentLinkedQueue</code>. As the name indicates, this mailbox grows without bound and will end up crashing the JVM with an <code>OutOfMemoryError</code> if the consumer significantly slower than the producer. If we want to be able to signal the producer to slow down, the first step is to switch to a <code>BoundedMailbox</code> backed by Java&rsquo;s <code>LinkedBlockingQueue</code> that will block the producer if the mailbox is full. More info about different types of mailboxes can be found <a href="http://doc.akka.io/docs/akka/snapshot/scala/mailboxes.html">here</a>.</p>
+
+<p>Blocking the producer forever is not a good solution because: <code>Rule #1 of Akka =&gt; don't block inside actors</code>. The solution to this problem is provided to us by Akka in the form of a <code>push timeout</code> for an Actor&rsquo;s mailbox. A push timeout is exactly what it sounds like: when you try to push a message to an actor&rsquo;s mailbox, if the mailbox is full, the action will timeout and the message will get routed to the <code>DeadLetterActorRef</code>.</p>
+
+<p>Configuring an actor to use a bounded mailbox with a 1000 message capacity and a push timeout of 100ms requires the following addition to the <code>application.conf</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bounded-mailbox {
+</span><span class='line'>  mailbox-type = "akka.dispatch.BoundedMailbox"
+</span><span class='line'>  mailbox-capacity = 1000
+</span><span class='line'>  mailbox-push-timeout-time = 100ms
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The actor can then be initialized as follows</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">actor</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">MyActorClass</span><span class="o">].</span><span class="n">withMailbox</span><span class="o">(</span><span class="s">&quot;bounded-mailbox&quot;</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Step 2: DeadLetter Watcher</h4>
+
+<p>When an actor&rsquo;s mailbox is full and sent messages start timing out, they get routed to the <code>DeadLetterActorRef</code> via the <a href="http://doc.akka.io/docs/akka/2.2.3/scala/event-bus.html#event-stream-scala">Event Stream</a> of the actor system. Akka allows actors to subscribe to event streams and listen in on all, or a filtered subset of, the messages flying around in the actor system. Since the dead letters service also utilizes the event stream infrastructure, we can subscribe to all <code>DeadLetter</code> messages being published in the stream and signal the producer to slow down.</p>
+
+<p>The following snipped can be used to get an actor subscribed to all the <code>DeadLetter</code> messages in a system</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">system</span><span class="o">.</span><span class="n">eventStream</span><span class="o">.</span><span class="n">subscribe</span><span class="o">(</span><span class="n">listeningActor</span><span class="o">,</span> <span class="n">classOf</span><span class="o">[</span><span class="kt">DeadLetter</span><span class="o">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Tying it all together with an Example</h3>
+
+<p>In this example, a fast producer sends messages to a slow consumer. The slow consumer has a bounded mailbox of size 10 and a push timeout of 10ms.</p>
+
+<h5>SlowReceiver</h5>
+
+<p>The <code>SlowReceiver</code> blocks for 100ms after printing each message it receives. The blocking is only present to ensure that it&rsquo;s mailbox fills up.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">akka.actor._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">SlowReceiver</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">ActorLogging</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">postStop</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="s">&quot;SlowReceiver#postStop&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span><span class="k">:</span> <span class="kt">Actor.Receive</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">msg</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span>
+</span><span class='line'>      <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Received: $msg&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="nc">Thread</span><span class="o">.</span><span class="n">sleep</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>FastSender</h5>
+
+<p>The <code>FastSender</code> waits for a kickoff message and then sends 15 messages to the <code>SlowReceiver</code> and a <code>PoisonPill</code> to itself. After terminating itself, the actor&rsquo;s <code>postStop</code> hook schedules a <code>PoisonPill</code> to be sent to the <code>SlowReceiver</code> 3 seconds after the <code>FastSender</code> has been terminated.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">akka.actor._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">FastSender</span><span class="o">(</span><span class="n">slow</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">ActorLogging</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">postStop</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="s">&quot;FastSender#postStop&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">context</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">scheduleOnce</span><span class="o">(</span><span class="mf">2.</span><span class="n">seconds</span><span class="o">,</span> <span class="n">slow</span><span class="o">,</span> <span class="nc">PoisonPill</span><span class="o">)(</span><span class="n">context</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span><span class="k">:</span> <span class="kt">Actor.Receive</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">15</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">slow</span> <span class="o">!</span> <span class="n">s</span><span class="s">&quot;[$i]&quot;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="s">&quot;Done sending all&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">self</span> <span class="o">!</span> <span class="nc">PoisonPill</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Watcher</h5>
+
+<p>The <code>Watcher</code> watches for and prints <code>DeadLetter</code>s being sent to the <code>SlowReceiver</code>. It also <code>context.watch</code>es the <code>SlowReceiver</code> and terminates the actor system when the <code>SlowReceiver</code> is killed.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">akka.actor._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Watcher</span><span class="o">(</span><span class="n">target</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">ActorLogging</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">val</span> <span class="n">targetPath</span> <span class="k">=</span> <span class="n">target</span><span class="o">.</span><span class="n">path</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">preStart</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">context</span><span class="o">.</span><span class="n">watch</span><span class="o">(</span><span class="n">target</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span><span class="k">:</span> <span class="kt">Actor.Receive</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">d</span><span class="k">:</span> <span class="kt">DeadLetter</span> <span class="o">=&gt;</span>
+</span><span class='line'>      <span class="k">if</span><span class="o">(</span><span class="n">d</span><span class="o">.</span><span class="n">recipient</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">equals</span><span class="o">(</span><span class="n">targetPath</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Timed out message: ${d.message.toString}&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">case</span> <span class="nc">Terminated</span><span class="o">(</span><span class="n">`target`</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>      <span class="n">context</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">shutdown</span><span class="o">()</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>BackPressureTest App</h5>
+
+<p>The App that ties it all together.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">BackPressureTest</span> <span class="k">extends</span> <span class="nc">App</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">case</span> <span class="k">object</span> <span class="nc">Ping</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">sys</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;testSys&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">slow</span> <span class="k">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">SlowReceiver</span><span class="o">].</span><span class="n">withMailbox</span><span class="o">(</span><span class="s">&quot;bounded-mailbox&quot;</span><span class="o">),</span> <span class="s">&quot;slow&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">fast</span> <span class="k">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">FastSender</span><span class="o">],</span> <span class="n">slow</span><span class="o">),</span> <span class="s">&quot;fast&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">watcher</span> <span class="k">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">Watcher</span><span class="o">],</span> <span class="n">slow</span><span class="o">),</span> <span class="s">&quot;watcher&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">sys</span><span class="o">.</span><span class="n">eventStream</span><span class="o">.</span><span class="n">subscribe</span><span class="o">(</span><span class="n">watcher</span><span class="o">,</span> <span class="n">classOf</span><span class="o">[</span><span class="kt">DeadLetter</span><span class="o">])</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">fast</span> <span class="o">!</span> <span class="nc">Ping</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Output</h5>
+
+<p>Running the <code>BackPressureTest</code> app gives the following output:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[INFO] [01/13/2014 14:00:56.303] [akka://testSys/user/slow] Received: [1]
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.315] [akka://testSys/user/watcher] Timed out message: [12]
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.326] [akka://testSys/user/watcher] Timed out message: [13]
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.337] [akka://testSys/user/watcher] Timed out message: [14]
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.347] [akka://testSys/user/fast] Done sending all
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.347] [akka://testSys/user/watcher] Timed out message: [15]
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.350] [akka://testSys/user/fast] FastSender#postStop
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.403] [akka://testSys/user/slow] Received: [2]
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.504] [akka://testSys/user/slow] Received: [3]
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.605] [akka://testSys/user/slow] Received: [4]
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.705] [akka://testSys/user/slow] Received: [5]
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.807] [akka://testSys/user/slow] Received: [6]
+</span><span class='line'>[INFO] [01/13/2014 14:00:56.907] [akka://testSys/user/slow] Received: [7]
+</span><span class='line'>[INFO] [01/13/2014 14:00:57.008] [akka://testSys/user/slow] Received: [8]
+</span><span class='line'>[INFO] [01/13/2014 14:00:57.109] [akka://testSys/user/slow] Received: [9]
+</span><span class='line'>[INFO] [01/13/2014 14:00:57.209] [akka://testSys/user/slow] Received: [10]
+</span><span class='line'>[INFO] [01/13/2014 14:00:57.310] [akka://testSys/user/slow] Received: [11]
+</span><span class='line'>[INFO] [01/13/2014 14:00:58.367] [akka://testSys/user/slow] SlowReceiver#postStop
+</span><span class='line'>[DEBUG] [01/13/2014 14:00:58.373] [EventStream] shutting down: StandardOutLogger started
+</span><span class='line'>[DEBUG] [01/13/2014 14:00:58.373] [EventStream] shutting down: StandardOutLogger started
+</span><span class='line'>[DEBUG] [01/13/2014 14:00:58.375] [EventStream] all default loggers stopped
+</span><span class='line'>
+</span><span class='line'>Process finished with exit code 0</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Backpressure Strategy</h5>
+
+<p>While this example doesn&rsquo;t actually implement backpressure, it provides the infrastructure for applying a backpressure strategy. A possible strategy would be to send <code>FastSender</code> a <code>SlowDown</code> message from within the <code>Watcher</code> for each dead letter received. The <code>SlowDown</code> case class could be defined as</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">SlowDown</span><span class="o">(</span><span class="n">dl</span><span class="k">:</span> <span class="kt">DeadLetter</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When <code>FastSender</code> receives a <code>SlowDown</code> message, it could either throttle itself or tell its upstream systems to slow down. The <code>SlowDown</code> message also encapsulates the relevant <code>DeadLetter</code> object to allow for retry logic.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[ExecutionContext for Long Running Tasks]]></title>
-    <link href="http://abh1nav.github.io/blog/2014/01/08/executioncontext-for-long-running-tasks/"/>
+    <link href="http://blog.abhinav.ca/blog/2014/01/08/executioncontext-for-long-running-tasks/"/>
     <updated>2014-01-08T15:20:32-05:00</updated>
-    <id>http://abh1nav.github.io/blog/2014/01/08/executioncontext-for-long-running-tasks</id>
+    <id>http://blog.abhinav.ca/blog/2014/01/08/executioncontext-for-long-running-tasks</id>
     <content type="html"><![CDATA[<p>Rule #1 of Akka: don’t block inside actors. If you do have blocking / high latency calls, wrap them in a future and toss them into a different execution context specifically meant for high latency tasks.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -73,18 +337,18 @@
   
   <entry>
     <title type="html"><![CDATA[Bro, do you even #chromecast?]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/12/31/bro-do-you-even-chromecast/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/12/31/bro-do-you-even-chromecast/"/>
     <updated>2013-12-31T20:40:13-05:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/12/31/bro-do-you-even-chromecast</id>
-    <content type="html"><![CDATA[<p><img src="http://abh1nav.github.io/images/tumblr/2013-12-31-1.jpg" width="640" height="640"></p>
+    <id>http://blog.abhinav.ca/blog/2013/12/31/bro-do-you-even-chromecast</id>
+    <content type="html"><![CDATA[<p><img src="http://blog.abhinav.ca/images/tumblr/2013-12-31-1.jpg" width="640" height="640"></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting the Titan-0.3.2 Java Driver to work in Scala]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/12/10/getting-the-titan-0-3-2-java-driver-to-work-in-scala/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/12/10/getting-the-titan-0-3-2-java-driver-to-work-in-scala/"/>
     <updated>2013-12-10T14:32:38-05:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/12/10/getting-the-titan-0-3-2-java-driver-to-work-in-scala</id>
+    <id>http://blog.abhinav.ca/blog/2013/12/10/getting-the-titan-0-3-2-java-driver-to-work-in-scala</id>
     <content type="html"><![CDATA[<p>Attempting to use the Java driver for Titan-0.3.2 (the current stable Titan release) with Cassandra v1.2.6 in a Scala project throws the following Astyanax error:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -102,9 +366,9 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[Setup Ruby (2.x) on Rails (4.x) in 10 lines or less]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/12/01/setup-ruby-2-x-on-rails-4-x-in-10-lines-or-less/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/12/01/setup-ruby-2-x-on-rails-4-x-in-10-lines-or-less/"/>
     <updated>2013-12-01T01:38:00-05:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/12/01/setup-ruby-2-x-on-rails-4-x-in-10-lines-or-less</id>
+    <id>http://blog.abhinav.ca/blog/2013/12/01/setup-ruby-2-x-on-rails-4-x-in-10-lines-or-less</id>
     <content type="html"><![CDATA[<p>As a first time user of Ruby and Rails, I was able to setup a sane environment on Ubuntu Server 12.04 (x64) in less than 10 commands:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -143,9 +407,9 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[Prevent Facebook from tracking you on the Web]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/11/11/prevent-facebook-from-tracking-you-on-the-web/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/11/11/prevent-facebook-from-tracking-you-on-the-web/"/>
     <updated>2013-11-11T12:51:00-05:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/11/11/prevent-facebook-from-tracking-you-on-the-web</id>
+    <id>http://blog.abhinav.ca/blog/2013/11/11/prevent-facebook-from-tracking-you-on-the-web</id>
     <content type="html"><![CDATA[<p>A simple search for “facebook like button tracking you” turns up a bunch of articles and blog posts about how Facebook is creeping on you wherever you go; even if you’re not signed in or actively clicking their ubiquitous <em>like</em> button (<a href="http://bit.ly/1fwCi5i">example</a>). I’ve come up with a simple solution to the problem.</p>
 
 <p><em>Caveat</em>: This will prevent you from being able to use Facebook.</p>
@@ -171,9 +435,9 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[Joda Time with Scala]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/10/08/joda-time-with-scala/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/10/08/joda-time-with-scala/"/>
     <updated>2013-10-08T14:25:02-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/10/08/joda-time-with-scala</id>
+    <id>http://blog.abhinav.ca/blog/2013/10/08/joda-time-with-scala</id>
     <content type="html"><![CDATA[<p>When trying to use Joda-Time in a Scala project, I encountered a rather cryptic error:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -188,9 +452,9 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[pip install scipy on Ubuntu]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/09/19/pip-install-scipy-on-ubuntu/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/09/19/pip-install-scipy-on-ubuntu/"/>
     <updated>2013-09-19T01:17:29-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/09/19/pip-install-scipy-on-ubuntu</id>
+    <id>http://blog.abhinav.ca/blog/2013/09/19/pip-install-scipy-on-ubuntu</id>
     <content type="html"><![CDATA[<p>On Ubuntu 12.04 Server, a pip install scipy barfs with</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -230,18 +494,18 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[System Architecture planning at @CrowdRiff]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/08/20/system-architecture-planning-at-crowdriff/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/08/20/system-architecture-planning-at-crowdriff/"/>
     <updated>2013-08-20T16:20:02-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/08/20/system-architecture-planning-at-crowdriff</id>
-    <content type="html"><![CDATA[<p><img src="http://abh1nav.github.io/images/tumblr/2013-08-20-1.jpg" width="640" height="640"></p>
+    <id>http://blog.abhinav.ca/blog/2013/08/20/system-architecture-planning-at-crowdriff</id>
+    <content type="html"><![CDATA[<p><img src="http://blog.abhinav.ca/images/tumblr/2013-08-20-1.jpg" width="640" height="640"></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[Homebrew and Python-MySQL ]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/08/13/homebrew-and-python-mysql/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/08/13/homebrew-and-python-mysql/"/>
     <updated>2013-08-13T17:05:12-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/08/13/homebrew-and-python-mysql</id>
+    <id>http://blog.abhinav.ca/blog/2013/08/13/homebrew-and-python-mysql</id>
     <content type="html"><![CDATA[<p>To be able to pip install the python mysql library on OS X, you need mysql client installed locally. If you have no need for the full mysql package, here’s how to get it working:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -257,18 +521,18 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[#pycon #canada 2013 is getting underway]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/08/10/pycon-canada-2013-is-getting-underway/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/08/10/pycon-canada-2013-is-getting-underway/"/>
     <updated>2013-08-10T09:53:49-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/08/10/pycon-canada-2013-is-getting-underway</id>
-    <content type="html"><![CDATA[<p><img src="http://abh1nav.github.io/images/tumblr/2013-08-13-1.jpg" width="640" height="640"></p>
+    <id>http://blog.abhinav.ca/blog/2013/08/10/pycon-canada-2013-is-getting-underway</id>
+    <content type="html"><![CDATA[<p><img src="http://blog.abhinav.ca/images/tumblr/2013-08-13-1.jpg" width="640" height="640"></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[Those @!#$ weird characters in Hadoop / Faunus output]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/08/07/those-weird-characters-in-hadoop-faunus-output/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/08/07/those-weird-characters-in-hadoop-faunus-output/"/>
     <updated>2013-08-07T14:40:00-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/08/07/those-weird-characters-in-hadoop-faunus-output</id>
+    <id>http://blog.abhinav.ca/blog/2013/08/07/those-weird-characters-in-hadoop-faunus-output</id>
     <content type="html"><![CDATA[<p>Text-file output from Faunus often always contains garbage characters. To scrub them out, I use this little python script:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -319,9 +583,9 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[IAM Policy for access to a Single S3 Bucket]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/08/06/iam-policy-for-access-to-a-single-s3-bucket/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/08/06/iam-policy-for-access-to-a-single-s3-bucket/"/>
     <updated>2013-08-06T10:54:00-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/08/06/iam-policy-for-access-to-a-single-s3-bucket</id>
+    <id>http://blog.abhinav.ca/blog/2013/08/06/iam-policy-for-access-to-a-single-s3-bucket</id>
     <content type="html"><![CDATA[<p>Assuming the bucket name is <strong>my-bucket</strong></p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -370,9 +634,9 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[MongoDB Cursor Timeout]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/08/01/mongodb-cursor-timeout/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/08/01/mongodb-cursor-timeout/"/>
     <updated>2013-08-01T15:04:00-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/08/01/mongodb-cursor-timeout</id>
+    <id>http://blog.abhinav.ca/blog/2013/08/01/mongodb-cursor-timeout</id>
     <content type="html"><![CDATA[<p>When using the MongoDB Java Driver, if you have long running operations that require you to keep a cursor open, you’ll end up with a MongoException that says <strong>“oops, the cursor timed out”</strong> after about 10 minutes of activity.</p>
 
 <p>The Mongo docs say that cursors timeout due to inactivity, but as of driver version 2.11.1, I’ve had cursors timeout after 10 minutes even though documents were being fetched from the cursor continuously. Turns out, the fix to keep the cursor alive is surprisingly easy.</p>
@@ -388,31 +652,31 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[TIL: Cassandra is awesome]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/05/31/today-i-learned-cassandra-is-awesome/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/05/31/today-i-learned-cassandra-is-awesome/"/>
     <updated>2013-05-31T02:52:30-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/05/31/today-i-learned-cassandra-is-awesome</id>
-    <content type="html"><![CDATA[<p><img src="http://abh1nav.github.io/images/tumblr/2013-05-31-1.jpg" width="640" height="640"></p>
+    <id>http://blog.abhinav.ca/blog/2013/05/31/today-i-learned-cassandra-is-awesome</id>
+    <content type="html"><![CDATA[<p><img src="http://blog.abhinav.ca/images/tumblr/2013-05-31-1.jpg" width="640" height="640"></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[Vandalism]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/05/26/vandalism/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/05/26/vandalism/"/>
     <updated>2013-05-26T17:46:37-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/05/26/vandalism</id>
+    <id>http://blog.abhinav.ca/blog/2013/05/26/vandalism</id>
     <content type="html"><![CDATA[<p>Generally against vandalism but this is funny.
-<img src="http://abh1nav.github.io/images/tumblr/2013-05-26-1.jpg" width="640" height="640"></p>
+<img src="http://blog.abhinav.ca/images/tumblr/2013-05-26-1.jpg" width="640" height="640"></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[Twitter API: 401 Unauthorized]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/05/23/twitter-api-401-unauthorized/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/05/23/twitter-api-401-unauthorized/"/>
     <updated>2013-05-23T19:30:00-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/05/23/twitter-api-401-unauthorized</id>
+    <id>http://blog.abhinav.ca/blog/2013/05/23/twitter-api-401-unauthorized</id>
     <content type="html"><![CDATA[<p><strong>Symptom</strong>: Twitter API returns a 401 Unauthorized when you start the OAuth process by obtaining a bearer token. This can happen all of a sudden possibly breaking existing processes that were working.</p>
 
-<p><img src="http://abh1nav.github.io/images/tumblr/2013-05-23-1.jpg" width="640" height="640"></p>
+<p><img src="http://blog.abhinav.ca/images/tumblr/2013-05-23-1.jpg" width="640" height="640"></p>
 
 <p><strong>Problem</strong>: The most likely culprit is the clock on your server. If this gets out of sync (even by as little as 20s), Twitter’s amazing API will barf and return a helpful <em>“401 Unauthorized”</em></p>
 
@@ -429,9 +693,9 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[MongoDB 2.4.0 EXT4 Readahead Warnings]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/03/20/mongodb-2-4-0-ext4-readahead-warnings/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/03/20/mongodb-2-4-0-ext4-readahead-warnings/"/>
     <updated>2013-03-20T18:01:00-04:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/03/20/mongodb-2-4-0-ext4-readahead-warnings</id>
+    <id>http://blog.abhinav.ca/blog/2013/03/20/mongodb-2-4-0-ext4-readahead-warnings</id>
     <content type="html"><![CDATA[<p>After deploying MongoDB 2.4.0 for the first time and connecting to it from a remote shell, it warned me:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -465,9 +729,9 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[Install Oracle JDK7 on Ubuntu]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/01/22/install-oracle-jdk7-on-ubuntu/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/01/22/install-oracle-jdk7-on-ubuntu/"/>
     <updated>2013-01-22T00:11:00-05:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/01/22/install-oracle-jdk7-on-ubuntu</id>
+    <id>http://blog.abhinav.ca/blog/2013/01/22/install-oracle-jdk7-on-ubuntu</id>
     <content type="html"><![CDATA[
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -483,9 +747,9 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   
   <entry>
     <title type="html"><![CDATA[Hidden VNC Client in OS X]]></title>
-    <link href="http://abh1nav.github.io/blog/2013/01/11/native-mac-vnc-client/"/>
+    <link href="http://blog.abhinav.ca/blog/2013/01/11/native-mac-vnc-client/"/>
     <updated>2013-01-11T12:10:17-05:00</updated>
-    <id>http://abh1nav.github.io/blog/2013/01/11/native-mac-vnc-client</id>
+    <id>http://blog.abhinav.ca/blog/2013/01/11/native-mac-vnc-client</id>
     <content type="html"><![CDATA[<p>Useful alias to add to your .zshrc or .bashrc or .profile or whatever.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -494,29 +758,6 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
 </span><span class='line'><span class="nb">alias </span><span class="nv">vnc</span><span class="o">=</span><span class="s2">&quot;/System/Library/CoreServices/Screen\ Sharing.app/Contents/MacOS/Screen\ Sharing&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Vim won't let you paste properly?]]></title>
-    <link href="http://abh1nav.github.io/blog/2012/12/21/vim-paste-indent-fail/"/>
-    <updated>2012-12-21T00:45:03-05:00</updated>
-    <id>http://abh1nav.github.io/blog/2012/12/21/vim-paste-indent-fail</id>
-    <content type="html"><![CDATA[<p>When you paste in vim, if the indents look funny, then before you paste, run:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='vim'><span class='line'><span class="p">:</span><span class="k">set</span> <span class="nb">paste</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>make sure you&rsquo;re in insert mode, do paste, then</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='vim'><span class='line'><span class="p">:</span><span class="k">set</span> <span class="nb">nopaste</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and continue editing.</p>
 ]]></content>
   </entry>
   
