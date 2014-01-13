@@ -1,0 +1,743 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>sqldump</title>
+  <meta name="author" content="Abhinav Ajgaonkar">
+
+  
+  <meta name="description" content="daleV, of Geek Gumbo, presents an interesting take on the impending decline of MySQL. Look for Oracle not to drop it’s Open Source version after 2015 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abh1nav.github.io/blog/page/4">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="sqldump" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-23345729-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">sqldump</a></h1>
+  
+    <h2>(coffee) => code</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abh1nav.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/18/the-decline-of-mysql/">The Decline of MySQL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-18T11:44:05-04:00" pubdate data-updated="true">Aug 18<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>daleV, of Geek Gumbo, presents an interesting take on the impending decline of MySQL.</p>
+
+<blockquote><p>Look for Oracle not to drop it’s Open Source version after 2015. It will keep a stripped down version available to entice new users to their revenue stream when they need to upgrade, and to claim they still support the Open Source community. The prices for MySQL will steadily climb. This will kill MySQL as the database of choice for web development. Look for MySQL to decline in use.</p><footer><strong>daleV</strong> <cite><a href='http://www.geekgumbo.com/2010/11/06/the-decline-of-mysql/'>&#8216;The Decline of MySQL?&#8217;</a></cite></footer></blockquote>
+
+
+<p>Ever climbing license costs, “paid-only” versions of MySQL Workbench and other tools along with the lack of “Basic” and “Silver” level support pretty much sums up the basis for the prediction. He ends with the following nugget:</p>
+
+<blockquote><p>This reminds me of the old quote, first uttered in 1422 at the coronation of French King Charles VII, after the death of his father, Charles VI, “The King is dead. Long live the King.” Just maybe we’re a bit premature, but we see it coming.</p><footer><strong>daleV</strong> <cite><a href='http://www.geekgumbo.com/2010/11/06/the-decline-of-mysql/'>&#8216;The Decline of MySQL?&#8217;</a></cite></footer></blockquote>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/17/mongo-db-log-rotate/">Simple logRotate Script for MongoDB</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-17T10:34:50-04:00" pubdate data-updated="true">Aug 17<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>logRotate.js</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">getMongo</span><span class="p">().</span><span class="nx">getDB</span><span class="p">(</span><span class="s2">&quot;admin&quot;</span><span class="p">).</span><span class="nx">runCommand</span><span class="p">(</span><span class="s2">&quot;logRotate&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>logRotate.sh</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'><span class="c"># Clear old logs</span>
+</span><span class='line'>rm /data/logs/mongod.log.*
+</span><span class='line'><span class="c"># Rotate logs</span>
+</span><span class='line'>mongo logRotate.js
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/03/delete-all-objects-in-s3-bucket/">Delete All Objects in an S3 Bucket</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-03T15:25:00-04:00" pubdate data-updated="true">Aug 3<span>rd</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Using <a href="http://s3tools.org/s3cmd">s3cmd</a>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>s3cmd --recursive ls s3://bucketname | <span class="se">\</span>
+</span><span class='line'>awk <span class="s1">&#39;&#39;</span><span class="o">{</span>print <span class="nv">$4</span><span class="o">}</span><span class="s1">&#39;&#39;</span> | <span class="se">\</span>
+</span><span class='line'>xargs s3cmd del
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/07/19/making-os-xs-preview-and-quicktime-less-annoying/">Making OS X&#8217;s Preview and Quicktime Less Annoying</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-19T15:46:44-04:00" pubdate data-updated="true">Jul 19<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Product discussion at Apple:</p>
+
+<p>&ldquo;Guys, we need 250 new features for the next release. What do you have for me?&rdquo;</p>
+
+<p>&ldquo;Here’s something: let’s open up ALL the files from the user’s previous session when the user decides to launch apps like Preview or Quicktime”</p>
+
+<p>&ldquo;Why Bob, that’s a brilliant idea!&rdquo;</p>
+
+<p>&ldquo;Improving on what Bob said, let’s NOT give them the option to turn this behaviour off!”</p>
+
+<p>&ldquo;Alright, let’s make it happen. 1 down, 249 to go.&rdquo;</p>
+
+<p>Run the following in your Terminal to prevent Preview (and/or Quicktime) from opening up all the windows from your previous session:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>defaults write com.apple.Preview <span class="se">\</span>
+</span><span class='line'>NSQuitAlwaysKeepsWindows -bool <span class="nb">false</span>
+</span><span class='line'>defaults write com.apple.QuickTimePlayerX <span class="se">\</span>
+</span><span class='line'>NSQuitAlwaysKeepsWindows -bool <span class="nb">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/13/getting-rid-of-chromes-flash-plug-in-out-of-date/">Getting Rid of Chrome&#8217;s &#8220;Flash Plug-in Out of Date&#8221; Message on Ubuntu 12.04</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-13T16:14:00-04:00" pubdate data-updated="true">Jun 13<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Type <code>about:plugins</code> in the address bar and click <code>Details</code> on the top right corner.</p>
+
+<p>Under <code>Flash</code>, look at all the <code>libflashplayer.so</code> files in use.</p>
+
+<p>Disable all except the actual chrome plugin listed under <code>/opt/google/chrome/plugins</code>.</p>
+
+<p>Check the version number of the Chrome flashplayer and update as necessary by downloading the latest package from adobe.com.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/17/delete-all-keys-in-redis/">Delete All Keys in Redis</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-17T13:10:25-04:00" pubdate data-updated="true">May 17<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The <strong>fun</strong> way:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>redis-cli KEYS ‘*’ | awk ‘<span class="o">{</span>print <span class="nv">$1</span><span class="o">}</span>’ | xargs redis-cli DEL
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <strong>recommended</strong> way:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>redis-cli FLUSHALL
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/07/17/ubuntu-11-04-stuttering-stinkbug/">Ubuntu 11.04 - Stuttering Stinkbug</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-17T01:04:15-04:00" pubdate data-updated="true">Jul 17<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I’ve been living with an annoying bug in Ubuntu on my ThinkPad for quite a while now. If I recall correctly, it started off in Ubuntu 9.10 and has continued through to 11.04 as well. The main effect of this bug causes the mouse to stutter, even when the system is idle. This bug reported on launchpad describes the stuttering as a result of kslowd spawning multiple instances and pegging CPU time. This bug was prevalent throughout <code>2.6.35-*</code> versions of the Ubuntu kernels.</p>
+
+<p>In the <code>2.6.36-*</code> variation, kslowd was renamed to kworker and contrary to what others have reported, in my experience, the problem worsened. No fix was in sight yet.</p>
+
+<p>Even in today’s latest <code>2.6.38-*</code> series, many users have reported <code>kworker</code> processes pegging enormous amounts of CPU time, rendering the system useless for a few seconds ever so often.</p>
+
+<p>A fix that worked for me involves disabling the poll parameter of the <code>drm_kms_helper</code> kernel module. You can try out the fix by executing (as root, of course)</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">echo </span>N &gt; /sys/module/drm_kms_helper/parameters/poll
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If it works out well, you can make the fix permanent by adding the following line to your <code>/etc/modprobe.d/local.conf</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>options drm_kms_helper <span class="nv">poll</span><span class="o">=</span>N
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Good luck!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/06/23/mod-python-on-amazon-linux/">Mod_python on Amazon Linux</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-23T18:56:00-04:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>It takes a few commands to get mod_python with Apache up and running on the free tier Amazon Linux AMI of EC2.</p>
+
+<p><strong>Step 1</strong><br/>
+Install <code>Apache</code> and <code>mod_python</code> using</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>yum install httpd mod_python
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Step 2</strong><br/>
+Add python handlers by adding the following lines to <code>/etc/httpd/conf.d/python.conf</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>LoadModule python_module modules/mod_python.so
+</span><span class='line'>
+</span><span class='line'>&lt;Directory "/var/www/html">
+</span><span class='line'>  Options Indexes FollowSymlinks MultiViews
+</span><span class='line'>  AllowOverride None
+</span><span class='line'>  Order allow,deny
+</span><span class='line'>  allow from all
+</span><span class='line'>  AddHandler mod_python .py
+</span><span class='line'>  PythonHandler mod_python.publisher
+</span><span class='line'>  PythonDebug On
+</span><span class='line'>&lt;/Directory></span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Step 3</strong><br/>
+Add a script to serve by creating a file <code>/var/www/html/my.py</code> and add the following code to it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="s">&quot;Hello World!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Access the file using <a href="http://my-ec2-address/my.py">http://my-ec2-address/my.py</a> (make sure port 80 is open on the EC2-firewall)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/06/19/reinstall-apache-on-ubuntu/">Reinstall Apache on Ubuntu</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-19T22:47:12-04:00" pubdate data-updated="true">Jun 19<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This handy little shell script will reset your entire apache installation to what it was like when you first installed it.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">APACHE_PKGS</span><span class="o">=</span><span class="sb">`</span>sudo dpkg --get-selections | grep apache | cut -f 1<span class="sb">`</span>
+</span><span class='line'><span class="nb">echo</span> <span class="nv">$APACHE_PKGS</span>
+</span><span class='line'>sudo apt-get remove --purge <span class="nv">$APACHE_PKGS</span>
+</span><span class='line'>sudo apt-get install <span class="nv">$APACHE_PKGS</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Worked on Ubuntu 11.04. Source: <a href="http://bit.ly/mR0bOq">http://bit.ly/mR0bOq</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/06/19/spin-up-an-ec2-instance-using-boto/">Spin Up an EC2 Instance Using Boto</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-19T17:20:00-04:00" pubdate data-updated="true">Jun 19<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Boto provides an amazing interface to AWS APIs. Here is a simple example to spin up a <code>t1.micro</code> sized EC2 instance of the default Amazon Linux 64 bit AMI.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">boto.ec2.connection</span> <span class="kn">import</span> <span class="n">EC2Connection</span>
+</span><span class='line'><span class="n">key</span> <span class="o">=</span> <span class="s">&#39;aws access key&#39;</span>
+</span><span class='line'><span class="n">secret</span> <span class="o">=</span> <span class="s">&#39;aws secret access key&#39;</span>
+</span><span class='line'><span class="n">connection</span> <span class="o">=</span> <span class="n">EC2Connection</span><span class="p">(</span>
+</span><span class='line'>              <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span class='line'>              <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+</span><span class='line'><span class="n">ami</span> <span class="o">=</span> <span class="s">&#39;ami-8e1fece7&#39;</span> <span class="c"># AMI ID of the Amazon Linux x86_64 AMI </span>
+</span><span class='line'><span class="n">reservation</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">run_instances</span><span class="p">(</span><span class="n">ami</span><span class="p">,</span>
+</span><span class='line'>              <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>              <span class="n">max_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="err"> </span>
+</span><span class='line'>              <span class="n">key_name</span><span class="o">=</span><span class="s">&#39;MyKeyPairName&#39;</span><span class="p">,</span><span class="err"> </span>
+</span><span class='line'>              <span class="n">instance_type</span><span class="o">=</span><span class="s">&#39;t1.micro&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">instance</span> <span class="o">=</span> <span class="n">reservation</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'><span class="k">while</span> <span class="n">instance</span><span class="o">.</span><span class="n">update</span><span class="p">()</span> <span class="o">!=</span> <span class="s">&#39;running&#39;</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>min_count</code> and <code>max_count</code> determine how many instances are to be started. By default, Amazon limits you to starting a maximum of 20 instances. If you need to start more, they require you to contact them with your use case.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/5/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/3/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/01/08/executioncontext-for-long-running-tasks/">ExecutionContext for Long Running Tasks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/31/bro-do-you-even-chromecast/">Bro, Do You Even #chromecast?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/10/getting-the-titan-0-3-2-java-driver-to-work-in-scala/">Getting the Titan-0.3.2 Java Driver to Work in Scala</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/01/setup-ruby-2-x-on-rails-4-x-in-10-lines-or-less/">Setup Ruby (2.x) on Rails (4.x) in 10 Lines or Less</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/11/prevent-facebook-from-tracking-you-on-the-web/">Prevent Facebook From Tracking You on the Web</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/abh1nav">@abh1nav</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'abh1nav',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Abhinav Ajgaonkar -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
