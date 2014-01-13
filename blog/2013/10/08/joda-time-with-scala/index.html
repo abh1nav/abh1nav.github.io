@@ -5,13 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Joda Time With Scala - sqldump</title>
+  <title>Joda Time with Scala - sqldump</title>
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
   <meta name="description" content="When trying to use Joda-Time in a Scala project, I encountered a rather cryptic error: 1
 2
-scala: error while loading Instant, class file &#39;&#39;/ &hellip;">
+scala: error while loading Instant, class file '/Users/ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,14 +20,13 @@ scala: error while loading Instant, class file &#39;&#39;/ &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abh1nav.github.io/blog/2013/10/08/joda-time-with-scala">
+  <link rel="canonical" href="http://abh1nav.github.io/blog/2013/10/08/joda-time-with-scala/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="sqldump" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/ender.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="sqldump" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -109,9 +108,8 @@ scala: error while loading Instant, class file &#39;&#39;/ &hellip;">
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>scala: error <span class="k">while </span>loading Instant, class file <span class="s1">&#39;&#39;</span>/Users/asdf/.m2/repository/joda-time/joda-time/2.3/joda-time-2.3.jar<span class="o">(</span>org/joda/time/Instant.class<span class="o">)</span><span class="s1">&#39;&#39;</span> is broken
-</span><span class='line'><span class="o">(</span>class java.lang.RuntimeException/bad constant pool tag 9 at byte 48<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>scala: error while loading Instant, class file '/Users/asdf/.m2/repository/joda-time/joda-time/2.3/joda-time-2.3.jar(org/joda/time/Instant.class)' is broken
+</span><span class='line'>(class java.lang.RuntimeException/bad constant pool tag 9 at byte 48)</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This can be solved by adding the <a href="http://mvnrepository.com/artifact/org.joda/joda-convert/1.5">joda-convert</a> dependency into Maven/SBT.</p>
@@ -145,7 +143,7 @@ scala: error while loading Instant, class file &#39;&#39;/ &hellip;">
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://abh1nav.github.io/blog/2013/10/08/joda-time-with-scala/" data-via="abh1nv" data-counturl="http://abh1nav.github.io/blog/2013/10/08/joda-time-with-scala/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abh1nav.github.io/blog/2013/10/08/joda-time-with-scala/" data-via="abh1nv" data-counturl="http://abh1nav.github.io/blog/2013/10/08/joda-time-with-scala/" >Tweet</a>
   
   
   
@@ -167,33 +165,7 @@ scala: error while loading Instant, class file &#39;&#39;/ &hellip;">
 
 <aside class="sidebar">
   
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
     
-      <li class="post">
-        <a href="/blog/2014/01/08/executioncontext-for-long-running-tasks/">ExecutionContext for Long Running Tasks</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/31/bro-do-you-even-chromecast/">Bro, Do You Even #chromecast?</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/10/getting-the-titan-0-3-2-java-driver-to-work-in-scala/">Getting the Titan-0.3.2 Java Driver to Work in Scala</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/01/setup-ruby-2-x-on-rails-4-x-in-10-lines-or-less/">Setup Ruby (2.x) on Rails (4.x) in 10 Lines or Less</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/11/prevent-facebook-from-tracking-you-on-the-web/">Prevent Facebook From Tracking You on the Web</a>
-      </li>
-    
-  </ul>
-</section>
-
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
@@ -203,7 +175,7 @@ scala: error while loading Instant, class file &#39;&#39;/ &hellip;">
   <a href="https://github.com/abh1nav">@abh1nav</a> on GitHub
   
   <script type="text/javascript">
-    $(document).ready(function(){
+    $.domReady(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -249,7 +221,7 @@ scala: error while loading Instant, class file &#39;&#39;/ &hellip;">
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

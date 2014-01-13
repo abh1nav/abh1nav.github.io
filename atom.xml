@@ -4,7 +4,7 @@
   <title><![CDATA[sqldump]]></title>
   <link href="http://abh1nav.github.io/atom.xml" rel="self"/>
   <link href="http://abh1nav.github.io/"/>
-  <updated>2014-01-12T19:32:23-05:00</updated>
+  <updated>2014-01-12T23:20:56-05:00</updated>
   <id>http://abh1nav.github.io/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -72,7 +72,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Bro, Do You Even #chromecast?]]></title>
+    <title type="html"><![CDATA[Bro, do you even #chromecast?]]></title>
     <link href="http://abh1nav.github.io/blog/2013/12/31/bro-do-you-even-chromecast/"/>
     <updated>2013-12-31T20:40:13-05:00</updated>
     <id>http://abh1nav.github.io/blog/2013/12/31/bro-do-you-even-chromecast</id>
@@ -81,7 +81,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Getting the Titan-0.3.2 Java Driver to Work in Scala]]></title>
+    <title type="html"><![CDATA[Getting the Titan-0.3.2 Java Driver to work in Scala]]></title>
     <link href="http://abh1nav.github.io/blog/2013/12/10/getting-the-titan-0-3-2-java-driver-to-work-in-scala/"/>
     <updated>2013-12-10T14:32:38-05:00</updated>
     <id>http://abh1nav.github.io/blog/2013/12/10/getting-the-titan-0-3-2-java-driver-to-work-in-scala</id>
@@ -101,7 +101,7 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Setup Ruby (2.x) on Rails (4.x) in 10 Lines or Less]]></title>
+    <title type="html"><![CDATA[Setup Ruby (2.x) on Rails (4.x) in 10 lines or less]]></title>
     <link href="http://abh1nav.github.io/blog/2013/12/01/setup-ruby-2-x-on-rails-4-x-in-10-lines-or-less/"/>
     <updated>2013-12-01T01:38:00-05:00</updated>
     <id>http://abh1nav.github.io/blog/2013/12/01/setup-ruby-2-x-on-rails-4-x-in-10-lines-or-less</id>
@@ -142,7 +142,7 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Prevent Facebook From Tracking You on the Web]]></title>
+    <title type="html"><![CDATA[Prevent Facebook from tracking you on the Web]]></title>
     <link href="http://abh1nav.github.io/blog/2013/11/11/prevent-facebook-from-tracking-you-on-the-web/"/>
     <updated>2013-11-11T12:51:00-05:00</updated>
     <id>http://abh1nav.github.io/blog/2013/11/11/prevent-facebook-from-tracking-you-on-the-web</id>
@@ -170,7 +170,7 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Joda Time With Scala]]></title>
+    <title type="html"><![CDATA[Joda Time with Scala]]></title>
     <link href="http://abh1nav.github.io/blog/2013/10/08/joda-time-with-scala/"/>
     <updated>2013-10-08T14:25:02-04:00</updated>
     <id>http://abh1nav.github.io/blog/2013/10/08/joda-time-with-scala</id>
@@ -178,9 +178,8 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>scala: error <span class="k">while </span>loading Instant, class file <span class="s1">&#39;&#39;</span>/Users/asdf/.m2/repository/joda-time/joda-time/2.3/joda-time-2.3.jar<span class="o">(</span>org/joda/time/Instant.class<span class="o">)</span><span class="s1">&#39;&#39;</span> is broken
-</span><span class='line'><span class="o">(</span>class java.lang.RuntimeException/bad constant pool tag 9 at byte 48<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>scala: error while loading Instant, class file '/Users/asdf/.m2/repository/joda-time/joda-time/2.3/joda-time-2.3.jar(org/joda/time/Instant.class)' is broken
+</span><span class='line'>(class java.lang.RuntimeException/bad constant pool tag 9 at byte 48)</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This can be solved by adding the <a href="http://mvnrepository.com/artifact/org.joda/joda-convert/1.5">joda-convert</a> dependency into Maven/SBT.</p>
@@ -188,7 +187,7 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Pip Install Scipy on Ubuntu]]></title>
+    <title type="html"><![CDATA[pip install scipy on Ubuntu]]></title>
     <link href="http://abh1nav.github.io/blog/2013/09/19/pip-install-scipy-on-ubuntu/"/>
     <updated>2013-09-19T01:17:29-04:00</updated>
     <id>http://abh1nav.github.io/blog/2013/09/19/pip-install-scipy-on-ubuntu</id>
@@ -230,7 +229,7 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[System Architecture Planning at @CrowdRiff]]></title>
+    <title type="html"><![CDATA[System Architecture planning at @CrowdRiff]]></title>
     <link href="http://abh1nav.github.io/blog/2013/08/20/system-architecture-planning-at-crowdriff/"/>
     <updated>2013-08-20T16:20:02-04:00</updated>
     <id>http://abh1nav.github.io/blog/2013/08/20/system-architecture-planning-at-crowdriff</id>
@@ -239,7 +238,7 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Homebrew and Python-MySQL]]></title>
+    <title type="html"><![CDATA[Homebrew and Python-MySQL ]]></title>
     <link href="http://abh1nav.github.io/blog/2013/08/13/homebrew-and-python-mysql/"/>
     <updated>2013-08-13T17:05:12-04:00</updated>
     <id>http://abh1nav.github.io/blog/2013/08/13/homebrew-and-python-mysql</id>
@@ -257,7 +256,7 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[#pycon #canada 2013 Is Getting Underway]]></title>
+    <title type="html"><![CDATA[#pycon #canada 2013 is getting underway]]></title>
     <link href="http://abh1nav.github.io/blog/2013/08/10/pycon-canada-2013-is-getting-underway/"/>
     <updated>2013-08-10T09:53:49-04:00</updated>
     <id>http://abh1nav.github.io/blog/2013/08/10/pycon-canada-2013-is-getting-underway</id>
@@ -266,7 +265,7 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Those @!#$ Weird Characters in Hadoop / Faunus Output]]></title>
+    <title type="html"><![CDATA[Those @!#$ weird characters in Hadoop / Faunus output]]></title>
     <link href="http://abh1nav.github.io/blog/2013/08/07/those-weird-characters-in-hadoop-faunus-output/"/>
     <updated>2013-08-07T14:40:00-04:00</updated>
     <id>http://abh1nav.github.io/blog/2013/08/07/those-weird-characters-in-hadoop-faunus-output</id>
@@ -319,7 +318,7 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[IAM Policy for Access to a Single S3 Bucket]]></title>
+    <title type="html"><![CDATA[IAM Policy for access to a Single S3 Bucket]]></title>
     <link href="http://abh1nav.github.io/blog/2013/08/06/iam-policy-for-access-to-a-single-s3-bucket/"/>
     <updated>2013-08-06T10:54:00-04:00</updated>
     <id>http://abh1nav.github.io/blog/2013/08/06/iam-policy-for-access-to-a-single-s3-bucket</id>
@@ -388,7 +387,7 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[TIL: Cassandra Is Awesome]]></title>
+    <title type="html"><![CDATA[TIL: Cassandra is awesome]]></title>
     <link href="http://abh1nav.github.io/blog/2013/05/31/today-i-learned-cassandra-is-awesome/"/>
     <updated>2013-05-31T02:52:30-04:00</updated>
     <id>http://abh1nav.github.io/blog/2013/05/31/today-i-learned-cassandra-is-awesome</id>
@@ -499,7 +498,7 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Vim Won't Let You Paste Properly?]]></title>
+    <title type="html"><![CDATA[Vim won't let you paste properly?]]></title>
     <link href="http://abh1nav.github.io/blog/2012/12/21/vim-paste-indent-fail/"/>
     <updated>2012-12-21T00:45:03-05:00</updated>
     <id>http://abh1nav.github.io/blog/2012/12/21/vim-paste-indent-fail</id>
