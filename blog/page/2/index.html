@@ -9,8 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="To be able to pip install the python mysql library on OS X, you need mysql client installed locally. If you have no need for the full mysql package, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +76,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/13/homebrew-and-python-mysql/">Homebrew and Python-MySQL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-13T17:05:12-04:00" pubdate data-updated="true">Aug 13<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>To be able to pip install the python mysql library on OS X, you need mysql client installed locally. If you have no need for the full mysql package, here’s how to get it working:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>brew install mysql --client-only --universal
+</span><span class='line'>pip install MySQL-python
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -538,49 +582,6 @@
 </pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo add-apt-repository ppa:webupd8team/java
 </span><span class='line'>sudo apt-get update
 </span><span class='line'>sudo apt-get install oracle-java7-installer
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/01/11/native-mac-vnc-client/">Hidden VNC Client in OS X</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-11T12:10:17-05:00" pubdate data-updated="true">Jan 11<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Useful alias to add to your .zshrc or .bashrc or .profile or whatever.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># VNC</span>
-</span><span class='line'><span class="nb">alias </span><span class="nv">vnc</span><span class="o">=</span><span class="s2">&quot;/System/Library/CoreServices/Screen\ Sharing.app/Contents/MacOS/Screen\ Sharing&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 </div>

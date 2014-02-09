@@ -9,15 +9,9 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Fancy du trick to list all folders in the current folder in descending order of size of content with human readable folder-sizes. 1
-2
-3
-4
-5
-6
-7
-8
-9 &hellip;">
+  <meta name="description" content="Delete a local git branch: 1
+git branch -D mybranch Delete a remote git branch: 1
+git push remotename :mybranch ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,6 +78,54 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/10/19/delete-local-remote-git-branches/">Deleting Local and Remote Git Branches</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-19T14:09:43-04:00" pubdate data-updated="true">Oct 19<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Delete a local git branch:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>git branch -D mybranch
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Delete a remote git branch:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>git push remotename :mybranch
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -586,55 +628,6 @@ Add a script to serve by creating a file <code>/var/www/html/my.py</code> and ad
 
 
 <p>Access the file using <a href="http://my-ec2-address/my.py">http://my-ec2-address/my.py</a> (make sure port 80 is open on the EC2-firewall)</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/06/19/reinstall-apache-on-ubuntu/">Reinstall Apache on Ubuntu</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-06-19T22:47:12-04:00" pubdate data-updated="true">Jun 19<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This handy little shell script will reset your entire apache installation to what it was like when you first installed it.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">APACHE_PKGS</span><span class="o">=</span><span class="sb">`</span>sudo dpkg --get-selections | grep apache | cut -f 1<span class="sb">`</span>
-</span><span class='line'><span class="nb">echo</span> <span class="nv">$APACHE_PKGS</span>
-</span><span class='line'>sudo apt-get remove --purge <span class="nv">$APACHE_PKGS</span>
-</span><span class='line'>sudo apt-get install <span class="nv">$APACHE_PKGS</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Worked on Ubuntu 11.04. Source: <a href="http://bit.ly/mR0bOq">http://bit.ly/mR0bOq</a></p>
 </div>
   
   

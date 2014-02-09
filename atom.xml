@@ -4,7 +4,7 @@
   <title><![CDATA[sqldump]]></title>
   <link href="http://blog.abhinav.ca/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-01-13T23:46:45-05:00</updated>
+  <updated>2014-02-08T21:32:06-05:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -12,6 +12,178 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[File uploads in Scala via Apache HttpComponents]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/02/08/file-uploads-via-apache-httpcomponents/"/>
+    <updated>2014-02-08T20:10:05-05:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/02/08/file-uploads-via-apache-httpcomponents</id>
+    <content type="html"><![CDATA[<p>In order to upload photos to Facebook from the server-side, the Graph API requires you to make a POST request with the image attached as multipart/form-data. Since I couldn&rsquo;t find any native Scala libraries that make this task easy or intuitive, I went with the battle-tested Apache HttpComponents library.</p>
+
+<p>Since the app was going to upload photos to Facebook in an on-demand fashion, I went with an HTTPClient that could be reused and was able handle multiple requests concurrently.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">httpClient</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">connManager</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">PoolingHttpClientConnectionManager</span><span class="o">()</span>
+</span><span class='line'>  <span class="nc">HttpClients</span><span class="o">.</span><span class="n">custom</span><span class="o">().</span><span class="n">setConnectionManager</span><span class="o">(</span><span class="n">connManager</span><span class="o">).</span><span class="n">build</span><span class="o">()</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The next step was to create an entity that contains all the POST data:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">accessToken</span> <span class="k">=</span> <span class="s">&quot;MY_FACEBOOK_ACCESS_TOKEN&quot;</span>
+</span><span class='line'><span class="k">val</span> <span class="n">file</span> <span class="k">=</span> <span class="s">&quot;/absolute/path/to/file.jpg&quot;</span>
+</span><span class='line'><span class="k">val</span> <span class="n">reqEntity</span> <span class="k">=</span> <span class="nc">MultipartEntityBuilder</span><span class="o">.</span><span class="n">create</span><span class="o">()</span>
+</span><span class='line'><span class="n">reqEntity</span><span class="o">.</span><span class="n">addPart</span><span class="o">(</span><span class="s">&quot;source&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="nc">FileBody</span><span class="o">(</span><span class="n">file</span><span class="o">))</span>
+</span><span class='line'><span class="n">reqEntity</span><span class="o">.</span><span class="n">addPart</span><span class="o">(</span><span class="s">&quot;access_token&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="nc">StringBody</span><span class="o">(</span><span class="n">accessToken</span><span class="o">,</span> <span class="nc">ContentType</span><span class="o">.</span><span class="nc">TEXT_PLAIN</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this case <code>source</code> is the name of the form field whose value is the image file. The next step is to create a POST request and execute it using our <code>httpClient</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">uri</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">URI</span><span class="o">(</span><span class="s">&quot;https://graph.facebook.com/me/photos&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">httpPost</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">HttpPost</span><span class="o">(</span><span class="n">uri</span><span class="o">)</span>
+</span><span class='line'><span class="n">httpPost</span><span class="o">.</span><span class="n">setEntity</span><span class="o">(</span><span class="n">reqEntity</span><span class="o">.</span><span class="n">build</span><span class="o">())</span>
+</span><span class='line'><span class="k">val</span> <span class="n">response</span> <span class="k">=</span> <span class="n">httpClient</span><span class="o">.</span><span class="n">execute</span><span class="o">(</span><span class="n">httpPost</span><span class="o">,</span> <span class="nc">HttpClientContext</span><span class="o">.</span><span class="n">create</span><span class="o">())</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Use <code>EntityUtils</code> to read the response text:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">entity</span> <span class="k">=</span> <span class="n">response</span><span class="o">.</span><span class="n">getEntity</span>
+</span><span class='line'><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">EntityUtils</span><span class="o">.</span><span class="n">toString</span><span class="o">(</span><span class="n">entity</span><span class="o">)</span>
+</span><span class='line'><span class="k">if</span><span class="o">(</span><span class="n">response</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">response</span><span class="o">.</span><span class="n">close</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Remember to close the response after you&rsquo;re done reading from it. Here&rsquo;s a full example including all the imports:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.io.File</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">java.net.URI</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">org.apache.http.client.methods.</span><span class="o">{</span><span class="nc">HttpPost</span><span class="o">,</span> <span class="nc">CloseableHttpResponse</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">org.apache.http.client.protocol.HttpClientContext</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">org.apache.http.entity.mime.MultipartEntityBuilder</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">org.apache.http.entity.mime.content.</span><span class="o">{</span><span class="nc">StringBody</span><span class="o">,</span> <span class="nc">FileBody</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">org.apache.http.entity.ContentType</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">org.apache.http.util.EntityUtils</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">org.apache.http.impl.conn.PoolingHttpClientConnectionManager</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">org.apache.http.impl.client.HttpClients</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.util.Try</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Uploader</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">lazy</span> <span class="k">val</span> <span class="n">httpClient</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">connManager</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">PoolingHttpClientConnectionManager</span><span class="o">()</span>
+</span><span class='line'>    <span class="nc">HttpClients</span><span class="o">.</span><span class="n">custom</span><span class="o">().</span><span class="n">setConnectionManager</span><span class="o">(</span><span class="n">connManager</span><span class="o">).</span><span class="n">build</span><span class="o">()</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">uploadToFacebook</span><span class="o">(</span><span class="n">file</span><span class="k">:</span> <span class="kt">File</span><span class="o">,</span> <span class="n">accessToken</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Try</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">uri</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">URI</span><span class="o">(</span><span class="s">&quot;https://graph.facebook.com/me/photos&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nc">Try</span><span class="o">({</span>
+</span><span class='line'>      <span class="c1">// Create the entity</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">reqEntity</span> <span class="k">=</span> <span class="nc">MultipartEntityBuilder</span><span class="o">.</span><span class="n">create</span><span class="o">()</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// Attach the file</span>
+</span><span class='line'>      <span class="n">reqEntity</span><span class="o">.</span><span class="n">addPart</span><span class="o">(</span><span class="s">&quot;source&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="nc">FileBody</span><span class="o">(</span><span class="n">file</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// Attach the access token as plain text</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">tokenBody</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">StringBody</span><span class="o">(</span><span class="n">accessToken</span><span class="o">,</span> <span class="nc">ContentType</span><span class="o">.</span><span class="nc">TEXT_PLAIN</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">reqEntity</span><span class="o">.</span><span class="n">addPart</span><span class="o">(</span><span class="s">&quot;access_token&quot;</span><span class="o">,</span> <span class="n">tokenBody</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// Create POST request</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">httpPost</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">HttpPost</span><span class="o">(</span><span class="n">uri</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">httpPost</span><span class="o">.</span><span class="n">setEntity</span><span class="o">(</span><span class="n">reqEntity</span><span class="o">.</span><span class="n">build</span><span class="o">())</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// Execute the request in a new HttpContext</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">ctx</span> <span class="k">=</span> <span class="nc">HttpClientContext</span><span class="o">.</span><span class="n">create</span><span class="o">()</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">response</span><span class="k">:</span> <span class="kt">CloseableHttpResponse</span> <span class="o">=</span> <span class="n">httpClient</span><span class="o">.</span><span class="n">execute</span><span class="o">(</span><span class="n">httpPost</span><span class="o">,</span> <span class="n">ctx</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// Read the response</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">entity</span> <span class="k">=</span> <span class="n">response</span><span class="o">.</span><span class="n">getEntity</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">EntityUtils</span><span class="o">.</span><span class="n">toString</span><span class="o">(</span><span class="n">entity</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// Close the response</span>
+</span><span class='line'>      <span class="k">if</span><span class="o">(</span><span class="n">response</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">response</span><span class="o">.</span><span class="n">close</span><span class="o">()</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">result</span>
+</span><span class='line'>    <span class="o">})</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Akka and Backpressure]]></title>
@@ -22,9 +194,9 @@
 
 <h4>Step 1: Bounded Mailboxes and Push Timeouts</h4>
 
-<p>The default mailbox for an actor is an <code>UnboundedMailbox</code> backed by Java&rsquo;s <code>ConcurrentLinkedQueue</code>. As the name indicates, this mailbox grows without bound and will end up crashing the JVM with an <code>OutOfMemoryError</code> if the consumer is significantly slower than the producer. If we want to tell the producer to slow down, the first step is to switch to a <code>BoundedMailbox</code> backed by Java&rsquo;s <code>LinkedBlockingQueue</code> that will block the producer if the mailbox is full. More info about different types of mailboxes can be found <a href="http://doc.akka.io/docs/akka/snapshot/scala/mailboxes.html">here</a>.</p>
+<p>The default mailbox for an actor is an <code>UnboundedMailbox</code> backed by Java&rsquo;s <code>ConcurrentLinkedQueue</code>. As the name indicates, this mailbox grows without bound and will end up crashing the JVM with an <code>OutOfMemoryError</code> if the consumer significantly slower than the producer. If we want to be able to signal the producer to slow down, the first step is to switch to a <code>BoundedMailbox</code> backed by Java&rsquo;s <code>LinkedBlockingQueue</code> that will block the producer if the mailbox is full. More info about different types of mailboxes can be found <a href="http://doc.akka.io/docs/akka/snapshot/scala/mailboxes.html">here</a>.</p>
 
-<p>Blocking the producer forever is not a good solution because: <code>Rule #1 of Akka =&gt; don't block</code>. The solution to this problem is provided to us by Akka in the form of a <code>push timeout</code> for an Actor&rsquo;s mailbox. A push timeout is exactly what it sounds like: when you try to push a message to an actor&rsquo;s mailbox, if the mailbox is full, the action will timeout and the message will get routed to the <code>DeadLetterActorRef</code>.</p>
+<p>Blocking the producer forever is not a good solution because: <code>Rule #1 of Akka =&gt; don't block inside actors</code>. The solution to this problem is provided to us by Akka in the form of a <code>push timeout</code> for an Actor&rsquo;s mailbox. A push timeout is exactly what it sounds like: when you try to push a message to an actor&rsquo;s mailbox, if the mailbox is full, the action will timeout and the message will get routed to the <code>DeadLetterActorRef</code>.</p>
 
 <p>Configuring an actor to use a bounded mailbox with a 1000 message capacity and a push timeout of 100ms requires the following addition to the <code>application.conf</code>:</p>
 
@@ -49,9 +221,9 @@
 
 <h4>Step 2: DeadLetter Watcher</h4>
 
-<p>When an actor&rsquo;s mailbox is full and sent messages start timing out, they get routed to the <code>DeadLetterActorRef</code> via the <a href="http://doc.akka.io/docs/akka/2.2.3/scala/event-bus.html#event-stream-scala">Event Stream</a> of the actor system. Akka allows actors to subscribe to event streams and listen in on all, or a filtered subset of, the messages flying around in the actor system. Since the dead letters service also utilizes the event stream infrastructure, we can subscribe to all <code>DeadLetter</code> messages being published in the stream and use this fact to realize that the producer should slow down.</p>
+<p>When an actor&rsquo;s mailbox is full and sent messages start timing out, they get routed to the <code>DeadLetterActorRef</code> via the <a href="http://doc.akka.io/docs/akka/2.2.3/scala/event-bus.html#event-stream-scala">Event Stream</a> of the actor system. Akka allows actors to subscribe to event streams and listen in on all, or a filtered subset of, the messages flying around in the actor system. Since the dead letters service also utilizes the event stream infrastructure, we can subscribe to all <code>DeadLetter</code> messages being published in the stream and signal the producer to slow down.</p>
 
-<p>The following snippet can be used to get an actor subscribed to all the <code>DeadLetter</code> messages in a system:</p>
+<p>The following snipped can be used to get an actor subscribed to all the <code>DeadLetter</code> messages in a system</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">system</span><span class="o">.</span><span class="n">eventStream</span><span class="o">.</span><span class="n">subscribe</span><span class="o">(</span><span class="n">listeningActor</span><span class="o">,</span> <span class="n">classOf</span><span class="o">[</span><span class="kt">DeadLetter</span><span class="o">])</span>
@@ -61,20 +233,6 @@
 <h3>Tying it all together with an Example</h3>
 
 <p>In this example, a fast producer sends messages to a slow consumer. The slow consumer has a bounded mailbox of size 10 and a push timeout of 10ms.</p>
-
-<h5>application.conf</h5>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>bounded-mailbox {
-</span><span class='line'>  mailbox-type = "akka.dispatch.BoundedMailbox"
-</span><span class='line'>  mailbox-capacity = 10
-</span><span class='line'>  mailbox-push-timeout-time = 10ms
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
 
 <h5>SlowReceiver</h5>
 
@@ -111,7 +269,7 @@
 
 <h5>FastSender</h5>
 
-<p>The <code>FastSender</code> waits for a kickoff message and then sends 15 messages to the <code>SlowReceiver</code> and a <code>PoisonPill</code> to itself. After terminating itself, the actor&rsquo;s <code>postStop</code> hook schedules a <code>PoisonPill</code> to be sent to the <code>SlowReceiver</code> 2 seconds after the <code>FastSender</code> has been terminated.</p>
+<p>The <code>FastSender</code> waits for a kickoff message and then sends 15 messages to the <code>SlowReceiver</code> and a <code>PoisonPill</code> to itself. After terminating itself, the actor&rsquo;s <code>postStop</code> hook schedules a <code>PoisonPill</code> to be sent to the <code>SlowReceiver</code> 3 seconds after the <code>FastSender</code> has been terminated.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -154,7 +312,7 @@
 
 <h5>Watcher</h5>
 
-<p>The <code>Watcher</code> watches for and prints <code>DeadLetter</code>s being routed away from the <code>SlowReceiver</code>. It also <code>context.watch</code>es the <code>SlowReceiver</code> and terminates the actor system when the <code>SlowReceiver</code> is killed.</p>
+<p>The <code>Watcher</code> watches for and prints <code>DeadLetter</code>s being sent to the <code>SlowReceiver</code>. It also <code>context.watch</code>es the <code>SlowReceiver</code> and terminates the actor system when the <code>SlowReceiver</code> is killed.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -754,22 +912,6 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
 </pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo add-apt-repository ppa:webupd8team/java
 </span><span class='line'>sudo apt-get update
 </span><span class='line'>sudo apt-get install oracle-java7-installer
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Hidden VNC Client in OS X]]></title>
-    <link href="http://blog.abhinav.ca/blog/2013/01/11/native-mac-vnc-client/"/>
-    <updated>2013-01-11T12:10:17-05:00</updated>
-    <id>http://blog.abhinav.ca/blog/2013/01/11/native-mac-vnc-client</id>
-    <content type="html"><![CDATA[<p>Useful alias to add to your .zshrc or .bashrc or .profile or whatever.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># VNC</span>
-</span><span class='line'><span class="nb">alias </span><span class="nv">vnc</span><span class="o">=</span><span class="s2">&quot;/System/Library/CoreServices/Screen\ Sharing.app/Contents/MacOS/Screen\ Sharing&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
