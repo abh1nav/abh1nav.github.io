@@ -9,7 +9,10 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="In order to upload photos to Facebook from the server-side, the Graph API requires you to make a POST request with the image attached as multipart/ &hellip;">
+  <meta name="description" content="Prerequisites Assuming you have 3 nodes: node1, node2, node3, ensure the hosts file contains the following entries on all nodes: 1
+2
+3
+192.168.1.100 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +79,83 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/13/setup-a-spark-cluster-in-5-minutes/">Setup a Spark Cluster in 5 Minutes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-13T23:31:45-04:00" pubdate data-updated="true">Apr 13<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>Prerequisites</h4>
+
+<p>Assuming you have 3 nodes: <code>node1, node2, node3</code>, ensure the hosts file contains the following entries on all nodes:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>192.168.1.100  node1
+</span><span class='line'>192.168.1.101  node2
+</span><span class='line'>192.168.1.102  node3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Be sure replace <code>192.168.x.x</code> with the actual IPs for each node.</p>
+
+<h4>Get Spark</h4>
+
+<p>Download binaries from <a href="http://spark.apache.org/downloads.html">http://spark.apache.org/downloads.html</a> and extract it to <code>/opt/</code>.</p>
+
+<h4>Spark Master</h4>
+
+<p>Start the master process on <code>node1</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /opt/spark-0.9.0-incubating-bin-hadoop1
+</span><span class='line'>sbin/start-master.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Spark Workers</h4>
+
+<p>Start worker processes on each node:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /opt/spark-0.9.0-incubating-bin-hadoop1
+</span><span class='line'>bin/spark-class org.apache.spark.deploy.worker.Worker spark://node1:7077
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Check the Spark UI at <code>http://node1:8080</code> to make sure all workers have registered with the master.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -964,42 +1044,6 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
 
 
 
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/08/20/system-architecture-planning-at-crowdriff/">System Architecture Planning at @CrowdRiff</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-20T16:20:02-04:00" pubdate data-updated="true">Aug 20<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="/images/tumblr/2013-08-20-1.jpg" width="640" height="640"></p>
 </div>
   
   

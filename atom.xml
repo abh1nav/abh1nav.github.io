@@ -4,7 +4,7 @@
   <title><![CDATA[sqldump]]></title>
   <link href="http://blog.abhinav.ca/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-02-08T21:32:06-05:00</updated>
+  <updated>2014-04-13T23:33:47-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -12,6 +12,56 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Setup a Spark Cluster in 5 minutes]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/04/13/setup-a-spark-cluster-in-5-minutes/"/>
+    <updated>2014-04-13T23:31:45-04:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/04/13/setup-a-spark-cluster-in-5-minutes</id>
+    <content type="html"><![CDATA[<h4>Prerequisites</h4>
+
+<p>Assuming you have 3 nodes: <code>node1, node2, node3</code>, ensure the hosts file contains the following entries on all nodes:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>192.168.1.100  node1
+</span><span class='line'>192.168.1.101  node2
+</span><span class='line'>192.168.1.102  node3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Be sure replace <code>192.168.x.x</code> with the actual IPs for each node.</p>
+
+<h4>Get Spark</h4>
+
+<p>Download binaries from <a href="http://spark.apache.org/downloads.html">http://spark.apache.org/downloads.html</a> and extract it to <code>/opt/</code>.</p>
+
+<h4>Spark Master</h4>
+
+<p>Start the master process on <code>node1</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /opt/spark-0.9.0-incubating-bin-hadoop1
+</span><span class='line'>sbin/start-master.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Spark Workers</h4>
+
+<p>Start worker processes on each node:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /opt/spark-0.9.0-incubating-bin-hadoop1
+</span><span class='line'>bin/spark-class org.apache.spark.deploy.worker.Worker spark://node1:7077
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Check the Spark UI at <code>http://node1:8080</code> to make sure all workers have registered with the master.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[File uploads in Scala via Apache HttpComponents]]></title>
@@ -896,24 +946,6 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
 
 
 <p>Where /dev/md2 is the disk where the database files are stored.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Install Oracle JDK7 on Ubuntu]]></title>
-    <link href="http://blog.abhinav.ca/blog/2013/01/22/install-oracle-jdk7-on-ubuntu/"/>
-    <updated>2013-01-22T00:11:00-05:00</updated>
-    <id>http://blog.abhinav.ca/blog/2013/01/22/install-oracle-jdk7-on-ubuntu</id>
-    <content type="html"><![CDATA[
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo add-apt-repository ppa:webupd8team/java
-</span><span class='line'>sudo apt-get update
-</span><span class='line'>sudo apt-get install oracle-java7-installer
-</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   

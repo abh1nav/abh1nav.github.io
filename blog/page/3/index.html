@@ -9,10 +9,12 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Useful alias to add to your .zshrc or .bashrc or .profile or whatever. 1
+  <meta name="description" content=" 1
 2
-# VNC
-alias vnc=&quot;/System/Library/CoreServices/Screen\ Sharing.app/ &hellip;">
+3
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java7-installer ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +81,51 @@ alias vnc=&quot;/System/Library/CoreServices/Screen\ Sharing.app/ &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/22/install-oracle-jdk7-on-ubuntu/">Install Oracle JDK7 on Ubuntu</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-22T00:11:00-05:00" pubdate data-updated="true">Jan 22<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo add-apt-repository ppa:webupd8team/java
+</span><span class='line'>sudo apt-get update
+</span><span class='line'>sudo apt-get install oracle-java7-installer
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -509,49 +556,6 @@ public class ISODateParsing {
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">PYTHONPATH</span><span class="o">=</span>/usr/local/lib/python2.7/site-packages:<span class="nv">$PYTHONPATH</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/11/02/checkout-and-track-remote-git-branch-github/">Check Out and Track Remote Branch From GitHub</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-11-02T02:05:31-04:00" pubdate data-updated="true">Nov 2<span>nd</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>For those times when you need to checkout a branch locally and set it up to track a remote branch that already exists on GitHub:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>git checkout -t origin/myremotebranch
 </span></code></pre></td></tr></table></div></figure>
 
 

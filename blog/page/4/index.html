@@ -9,9 +9,8 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Delete a local git branch: 1
-git branch -D mybranch Delete a remote git branch: 1
-git push remotename :mybranch ">
+  <meta name="description" content="For those times when you need to checkout a branch locally and set it up to track a remote branch that already exists on GitHub: 1
+git checkout -t &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +77,49 @@ git push remotename :mybranch ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/11/02/checkout-and-track-remote-git-branch-github/">Check Out and Track Remote Branch From GitHub</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-11-02T02:05:31-04:00" pubdate data-updated="true">Nov 2<span>nd</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>For those times when you need to checkout a branch locally and set it up to track a remote branch that already exists on GitHub:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>git checkout -t origin/myremotebranch
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -545,89 +587,6 @@ git push remotename :mybranch ">
 
 
 <p>Good luck!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/06/23/mod-python-on-amazon-linux/">Mod_python on Amazon Linux</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-06-23T18:56:00-04:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>It takes a few commands to get mod_python with Apache up and running on the free tier Amazon Linux AMI of EC2.</p>
-
-<p><strong>Step 1</strong><br/>
-Install <code>Apache</code> and <code>mod_python</code> using</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>yum install httpd mod_python
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Step 2</strong><br/>
-Add python handlers by adding the following lines to <code>/etc/httpd/conf.d/python.conf</code></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>LoadModule python_module modules/mod_python.so
-</span><span class='line'>
-</span><span class='line'>&lt;Directory "/var/www/html">
-</span><span class='line'>  Options Indexes FollowSymlinks MultiViews
-</span><span class='line'>  AllowOverride None
-</span><span class='line'>  Order allow,deny
-</span><span class='line'>  allow from all
-</span><span class='line'>  AddHandler mod_python .py
-</span><span class='line'>  PythonHandler mod_python.publisher
-</span><span class='line'>  PythonDebug On
-</span><span class='line'>&lt;/Directory></span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Step 3</strong><br/>
-Add a script to serve by creating a file <code>/var/www/html/my.py</code> and add the following code to it:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">return</span> <span class="s">&quot;Hello World!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Access the file using <a href="http://my-ec2-address/my.py">http://my-ec2-address/my.py</a> (make sure port 80 is open on the EC2-firewall)</p>
 </div>
   
   
