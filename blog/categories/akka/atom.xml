@@ -4,7 +4,7 @@
   <title><![CDATA[Category: akka | sqldump]]></title>
   <link href="http://blog.abhinav.ca/blog/categories/akka/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-04-13T23:33:47-04:00</updated>
+  <updated>2014-04-17T02:10:49-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -12,6 +12,44 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Scaffolding an Akka project]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/04/17/scaffolding-an-akka-project/"/>
+    <updated>2014-04-17T01:34:01-04:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/04/17/scaffolding-an-akka-project</id>
+    <content type="html"><![CDATA[<p>Every time I&rsquo;ve needed to start a new Akka project, I&rsquo;ve had to go through the process of scaffolding a new project from scratch. So I finally got around to creating a skeleton project that includes the bare minimum dependencies along with a build file, plugins and configuration required to create a fat jar as well as the ability to run in place. You can find the akka-skeleton project <a href="https://github.com/abh1nav/akka-skeleton">here</a>.</p>
+
+<p>To get going with akka-skeleton,</p>
+
+<ol>
+<li>Modify the <code>organization, name &amp; version</code> in <code>build.sbt</code></li>
+<li>Rename the package heirarchy under <code>src/main/scala</code></li>
+<li>Ensure you have atleast one class that <code>extends App</code></li>
+<li><code>sbt run</code></li>
+</ol>
+
+
+<h3>Included Dependencies</h3>
+
+<ol>
+<li>Akka Actor Module</li>
+<li>Akka Agent Module</li>
+<li>Google Guava</li>
+<li>Joda Time (and <code>joda-convert</code> to be able to make it work correctly with Scala)</li>
+<li>JUnit, ScalaTest and Akka TestKit</li>
+<li>Akka SLF4J Adapter</li>
+</ol>
+
+
+<h3>Build, Run and Assembly</h3>
+
+<p><code>sbt clean</code> to clean.<br/>
+<code>sbt compile</code> to build.<br/>
+<code>sbt run</code> to run.<br/>
+<code>sbt assembly</code> to create a fat jar.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Akka and Backpressure]]></title>

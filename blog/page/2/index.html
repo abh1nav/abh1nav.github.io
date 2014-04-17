@@ -9,8 +9,8 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="On Ubuntu 12.04 Server, a pip install scipy barfs with 1
+library dfftpack has Fortran sources but no Fortran compiler found because it wants you to 1 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,75 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/19/pip-install-scipy-on-ubuntu/">Pip Install Scipy on Ubuntu</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-19T01:17:29-04:00" pubdate data-updated="true">Sep 19<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>On Ubuntu 12.04 Server, a pip install scipy barfs with</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>library dfftpack has Fortran sources but no Fortran compiler found</span></code></pre></td></tr></table></div></figure>
+
+
+<p>because it wants you to</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo apt-get install libamd2.2.0 libblas3gf libc6 libgcc1 <span class="se">\</span>
+</span><span class='line'>libgfortran3 liblapack3gf libumfpack5.4.0 libstdc++6 <span class="se">\</span>
+</span><span class='line'>build-essential gfortran python-all-dev <span class="se">\</span>
+</span><span class='line'>libatlas-base-dev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and,</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>pip install numpy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>before you try to</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>pip install scipy
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -513,69 +582,6 @@
 
 
 
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/20/mongodb-2-4-0-ext4-readahead-warnings/">MongoDB 2.4.0 EXT4 Readahead Warnings</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-20T18:01:00-04:00" pubdate data-updated="true">Mar 20<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>After deploying MongoDB 2.4.0 for the first time and connecting to it from a remote shell, it warned me:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>MongoDB shell version: 2.4.0
-</span><span class='line'>connecting to: abc.com/test
-</span><span class='line'>Server has startup warnings:
-</span><span class='line'>Wed Mar 20 22:40:49.850 [initandlisten]
-</span><span class='line'>Wed Mar 20 22:40:49.850 [initandlisten] ** WARNING: Readahead for /data/db is set to 2048KB
-</span><span class='line'>Wed Mar 20 22:40:49.850 [initandlisten] ** We suggest setting it to 256KB (512 sectors) or less
-</span><span class='line'>Wed Mar 20 22:40:49.850 [initandlisten] ** http://dochub.mongodb.org/core/readahead
-</span><span class='line'>></span></code></pre></td></tr></table></div></figure>
-
-
-<p>The fix for this turned out to be:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo blockdev --setra 256 /dev/md2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Where /dev/md2 is the disk where the database files are stored.</p>
 </div>
   
   

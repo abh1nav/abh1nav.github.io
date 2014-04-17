@@ -9,8 +9,8 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="For those times when you need to checkout a branch locally and set it up to track a remote branch that already exists on GitHub: 1
-git checkout -t &hellip;">
+  <meta name="description" content="You need to 1
+export PYTHONPATH=/usr/local/lib/python2.7/site-packages:$PYTHONPATH ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,49 @@ git checkout -t &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/11/05/cant-brew-git-cola-on-mountain-lion/">Can&#8217;t Brew Git-cola on Mountain Lion?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-11-05T16:25:00-05:00" pubdate data-updated="true">Nov 5<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>You need to</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">PYTHONPATH</span><span class="o">=</span>/usr/local/lib/python2.7/site-packages:<span class="nv">$PYTHONPATH</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -531,62 +574,6 @@ git checkout -t &hellip;">
 
 
 
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/07/17/ubuntu-11-04-stuttering-stinkbug/">Ubuntu 11.04 - Stuttering Stinkbug</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-07-17T01:04:15-04:00" pubdate data-updated="true">Jul 17<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I’ve been living with an annoying bug in Ubuntu on my ThinkPad for quite a while now. If I recall correctly, it started off in Ubuntu 9.10 and has continued through to 11.04 as well. The main effect of this bug causes the mouse to stutter, even when the system is idle. This bug reported on launchpad describes the stuttering as a result of kslowd spawning multiple instances and pegging CPU time. This bug was prevalent throughout <code>2.6.35-*</code> versions of the Ubuntu kernels.</p>
-
-<p>In the <code>2.6.36-*</code> variation, kslowd was renamed to kworker and contrary to what others have reported, in my experience, the problem worsened. No fix was in sight yet.</p>
-
-<p>Even in today’s latest <code>2.6.38-*</code> series, many users have reported <code>kworker</code> processes pegging enormous amounts of CPU time, rendering the system useless for a few seconds ever so often.</p>
-
-<p>A fix that worked for me involves disabling the poll parameter of the <code>drm_kms_helper</code> kernel module. You can try out the fix by executing (as root, of course)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">echo </span>N &gt; /sys/module/drm_kms_helper/parameters/poll
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If it works out well, you can make the fix permanent by adding the following line to your <code>/etc/modprobe.d/local.conf</code></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>options drm_kms_helper <span class="nv">poll</span><span class="o">=</span>N
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Good luck!</p>
 </div>
   
   

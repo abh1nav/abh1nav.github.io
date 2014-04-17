@@ -9,10 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Prerequisites Assuming you have 3 nodes: node1, node2, node3, ensure the hosts file contains the following entries on all nodes: 1
-2
-3
-192.168.1.100 &hellip;">
+  <meta name="description" content="Every time I&rsquo;ve needed to start a new Akka project, I&rsquo;ve had to go through the process of scaffolding a new project from scratch. So I &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +76,71 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/17/scaffolding-an-akka-project/">Scaffolding an Akka Project</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-17T01:34:01-04:00" pubdate data-updated="true">Apr 17<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Every time I&rsquo;ve needed to start a new Akka project, I&rsquo;ve had to go through the process of scaffolding a new project from scratch. So I finally got around to creating a skeleton project that includes the bare minimum dependencies along with a build file, plugins and configuration required to create a fat jar as well as the ability to run in place. You can find the akka-skeleton project <a href="https://github.com/abh1nav/akka-skeleton">here</a>.</p>
+
+<p>To get going with akka-skeleton,</p>
+
+<ol>
+<li>Modify the <code>organization, name &amp; version</code> in <code>build.sbt</code></li>
+<li>Rename the package heirarchy under <code>src/main/scala</code></li>
+<li>Ensure you have atleast one class that <code>extends App</code></li>
+<li><code>sbt run</code></li>
+</ol>
+
+
+<h3>Included Dependencies</h3>
+
+<ol>
+<li>Akka Actor Module</li>
+<li>Akka Agent Module</li>
+<li>Google Guava</li>
+<li>Joda Time (and <code>joda-convert</code> to be able to make it work correctly with Scala)</li>
+<li>JUnit, ScalaTest and Akka TestKit</li>
+<li>Akka SLF4J Adapter</li>
+</ol>
+
+
+<h3>Build, Run and Assembly</h3>
+
+<p><code>sbt clean</code> to clean.<br/>
+<code>sbt compile</code> to build.<br/>
+<code>sbt run</code> to run.<br/>
+<code>sbt assembly</code> to create a fat jar.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -975,75 +1037,6 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
 
 
 <p>This can be solved by adding the <a href="http://mvnrepository.com/artifact/org.joda/joda-convert/1.5">joda-convert</a> dependency into Maven/SBT.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/09/19/pip-install-scipy-on-ubuntu/">Pip Install Scipy on Ubuntu</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-19T01:17:29-04:00" pubdate data-updated="true">Sep 19<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>On Ubuntu 12.04 Server, a pip install scipy barfs with</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>library dfftpack has Fortran sources but no Fortran compiler found</span></code></pre></td></tr></table></div></figure>
-
-
-<p>because it wants you to</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo apt-get install libamd2.2.0 libblas3gf libc6 libgcc1 <span class="se">\</span>
-</span><span class='line'>libgfortran3 liblapack3gf libumfpack5.4.0 libstdc++6 <span class="se">\</span>
-</span><span class='line'>build-essential gfortran python-all-dev <span class="se">\</span>
-</span><span class='line'>libatlas-base-dev
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and,</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>pip install numpy
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>before you try to</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>pip install scipy
-</span></code></pre></td></tr></table></div></figure>
-
-
-
 </div>
   
   

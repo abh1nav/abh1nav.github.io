@@ -9,12 +9,15 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content=" 1
+  <meta name="description" content="After deploying MongoDB 2.4.0 for the first time and connecting to it from a remote shell, it warned me: 1
 2
 3
-sudo add-apt-repository ppa:webupd8team/java
-sudo apt-get update
-sudo apt-get install oracle-java7-installer ">
+4
+5
+6
+7
+8
+MongoDB shell version: 2.4.0 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +84,69 @@ sudo apt-get install oracle-java7-installer ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/20/mongodb-2-4-0-ext4-readahead-warnings/">MongoDB 2.4.0 EXT4 Readahead Warnings</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-20T18:01:00-04:00" pubdate data-updated="true">Mar 20<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>After deploying MongoDB 2.4.0 for the first time and connecting to it from a remote shell, it warned me:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>MongoDB shell version: 2.4.0
+</span><span class='line'>connecting to: abc.com/test
+</span><span class='line'>Server has startup warnings:
+</span><span class='line'>Wed Mar 20 22:40:49.850 [initandlisten]
+</span><span class='line'>Wed Mar 20 22:40:49.850 [initandlisten] ** WARNING: Readahead for /data/db is set to 2048KB
+</span><span class='line'>Wed Mar 20 22:40:49.850 [initandlisten] ** We suggest setting it to 256KB (512 sectors) or less
+</span><span class='line'>Wed Mar 20 22:40:49.850 [initandlisten] ** http://dochub.mongodb.org/core/readahead
+</span><span class='line'>></span></code></pre></td></tr></table></div></figure>
+
+
+<p>The fix for this turned out to be:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo blockdev --setra 256 /dev/md2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where /dev/md2 is the disk where the database files are stored.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -514,49 +580,6 @@ public class ISODateParsing {
   }
 }
 </code></pre></noscript></div>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/11/05/cant-brew-git-cola-on-mountain-lion/">Can&#8217;t Brew Git-cola on Mountain Lion?</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-11-05T16:25:00-05:00" pubdate data-updated="true">Nov 5<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>You need to</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">PYTHONPATH</span><span class="o">=</span>/usr/local/lib/python2.7/site-packages:<span class="nv">$PYTHONPATH</span>
-</span></code></pre></td></tr></table></div></figure>
 
 
 
