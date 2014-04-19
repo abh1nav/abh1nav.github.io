@@ -9,7 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Every time I&rsquo;ve needed to start a new Akka project, I&rsquo;ve had to go through the process of scaffolding a new project from scratch. So I &hellip;">
+  <meta name="description" content="Atmos is an SBT plugin that allows you to trace Akka and Play projects to help identify and fix bottlenecks. Installation Add the following lines to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,98 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/19/tracing-akka-projects-with-atmos/">Tracing Akka Projects With Atmos</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-19T16:37:28-04:00" pubdate data-updated="true">Apr 19<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://github.com/sbt/sbt-atmos">Atmos</a> is an SBT plugin that allows you to trace Akka and Play projects to help identify and fix bottlenecks.</p>
+
+<h3>Installation</h3>
+
+<p>Add the following lines to your project:</p>
+
+<figure class='code'><figcaption><span>project/plugins.sbt </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">addSbtPlugin</span><span class="o">(</span><span class="s">&quot;com.typesafe.sbt&quot;</span> <span class="o">%</span> <span class="s">&quot;sbt-atmos&quot;</span> <span class="o">%</span> <span class="s">&quot;0.3.2&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>build.sbt </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">atmosSettings</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">atmosTestSettings</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sbt atmos:run</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The Atmos UI comes up on <code>localhost:9900</code>.</p>
+
+<h3>Screenshots</h3>
+
+<p>Atmos has a great overview screen that shows you vital system-wide statistics.</p>
+
+<p><a href="/images/2014-04-19-Atmos-Overview.png"><img src="/images/2014-04-19-Atmos-Overview.png" width="1436" height="697"></a></p>
+
+<p>It also allows you to drill down and dig into dispatcher-level as well as ActorSystem level stats.</p>
+
+<p><a href="/images/2014-04-19-Atmos-Dispatchers.png"><img src="/images/2014-04-19-Atmos-Dispatchers.png" width="1078"></a></p>
+
+<p><a href="/images/2014-04-19-Atmos-ActorSystems.png"><img src="/images/2014-04-19-Atmos-ActorSystems.png" width="1077"></a></p>
+
+<p>And, best of all, it shows you Actor-level stats like message throughput, mailbox size over time as well as mean time spent in mailboxwhich are extremely helpful when tracing bottlenecks.</p>
+
+<p><a href="/images/2014-04-19-Atmos-Actor.png"><img src="/images/2014-04-19-Atmos-Actor.png" width="1437"></a></p>
+
+<p>I&rsquo;ve put up a working project with Atmos <a href="https://github.com/sqldump/akka-atmos">here</a>. It&rsquo;ll run for about 5 minutes so you can explore the Atmos UI and then terminate. If you want to give it a try:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git clone https://github.com/sqldump/akka-atmos.git
+</span><span class='line'>cd akka-atmos
+</span><span class='line'>sbt atmos:run</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1028,50 +1120,6 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
 <p><strong>Step 2</strong>: Reboot</p>
 
 <p>And done!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/10/08/joda-time-with-scala/">Joda Time With Scala</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-10-08T14:25:02-04:00" pubdate data-updated="true">Oct 8<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>When trying to use Joda-Time in a Scala project, I encountered a rather cryptic error:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>scala: error while loading Instant, class file '/Users/asdf/.m2/repository/joda-time/joda-time/2.3/joda-time-2.3.jar(org/joda/time/Instant.class)' is broken
-</span><span class='line'>(class java.lang.RuntimeException/bad constant pool tag 9 at byte 48)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This can be solved by adding the <a href="http://mvnrepository.com/artifact/org.joda/joda-convert/1.5">joda-convert</a> dependency into Maven/SBT.</p>
 </div>
   
   

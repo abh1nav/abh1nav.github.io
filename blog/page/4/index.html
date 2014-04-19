@@ -9,8 +9,10 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="You need to 1
-export PYTHONPATH=/usr/local/lib/python2.7/site-packages:$PYTHONPATH ">
+  <meta name="description" content="This requires Joda-Time. import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +79,61 @@ export PYTHONPATH=/usr/local/lib/python2.7/site-packages:$PYTHONPATH ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/11/14/iso-date-string-to-java-date/">ISO Date-time String to DateTime in Java</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-11-14T15:29:00-05:00" pubdate data-updated="true">Nov 14<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This requires Joda-Time.</p>
+
+<div><script src='https://gist.github.com/4074498.js'></script>
+<noscript><pre><code>import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+
+public class ISODateParsing {
+  public static void main(String[] args) {
+    DateTimeFormatter parser = ISODateTimeFormat.dateTimeNoMillis();
+    String str = &quot;2012-01-01T00:00:00-0500&quot;;
+    DateTime dt = parser.parseDateTime(str);
+    System.out.println(dt);
+  }
+}
+</code></pre></noscript></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -524,56 +581,6 @@ export PYTHONPATH=/usr/local/lib/python2.7/site-packages:$PYTHONPATH ">
 <p>Disable all except the actual chrome plugin listed under <code>/opt/google/chrome/plugins</code>.</p>
 
 <p>Check the version number of the Chrome flashplayer and update as necessary by downloading the latest package from adobe.com.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/05/17/delete-all-keys-in-redis/">Delete All Keys in Redis</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-17T13:10:25-04:00" pubdate data-updated="true">May 17<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The <strong>fun</strong> way:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>redis-cli KEYS ‘*’ | awk ‘<span class="o">{</span>print <span class="nv">$1</span><span class="o">}</span>’ | xargs redis-cli DEL
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <strong>recommended</strong> way:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>redis-cli FLUSHALL
-</span></code></pre></td></tr></table></div></figure>
-
-
-
 </div>
   
   

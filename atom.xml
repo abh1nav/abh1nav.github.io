@@ -4,7 +4,7 @@
   <title><![CDATA[sqldump]]></title>
   <link href="http://blog.abhinav.ca/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-04-19T16:27:07-04:00</updated>
+  <updated>2014-04-19T19:07:22-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -12,6 +12,71 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tracing Akka Projects with Atmos]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/04/19/tracing-akka-projects-with-atmos/"/>
+    <updated>2014-04-19T16:37:28-04:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/04/19/tracing-akka-projects-with-atmos</id>
+    <content type="html"><![CDATA[<p><a href="https://github.com/sbt/sbt-atmos">Atmos</a> is an SBT plugin that allows you to trace Akka and Play projects to help identify and fix bottlenecks.</p>
+
+<h3>Installation</h3>
+
+<p>Add the following lines to your project:</p>
+
+<figure class='code'><figcaption><span>project/plugins.sbt </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">addSbtPlugin</span><span class="o">(</span><span class="s">&quot;com.typesafe.sbt&quot;</span> <span class="o">%</span> <span class="s">&quot;sbt-atmos&quot;</span> <span class="o">%</span> <span class="s">&quot;0.3.2&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>build.sbt </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">atmosSettings</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">atmosTestSettings</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Usage</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sbt atmos:run</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The Atmos UI comes up on <code>localhost:9900</code>.</p>
+
+<h3>Screenshots</h3>
+
+<p>Atmos has a great overview screen that shows you vital system-wide statistics.</p>
+
+<p><a href="http://blog.abhinav.ca/images/2014-04-19-Atmos-Overview.png"><img src="http://blog.abhinav.ca/images/2014-04-19-Atmos-Overview.png" width="1436" height="697"></a></p>
+
+<p>It also allows you to drill down and dig into dispatcher-level as well as ActorSystem level stats.</p>
+
+<p><a href="http://blog.abhinav.ca/images/2014-04-19-Atmos-Dispatchers.png"><img src="http://blog.abhinav.ca/images/2014-04-19-Atmos-Dispatchers.png" width="1078"></a></p>
+
+<p><a href="http://blog.abhinav.ca/images/2014-04-19-Atmos-ActorSystems.png"><img src="http://blog.abhinav.ca/images/2014-04-19-Atmos-ActorSystems.png" width="1077"></a></p>
+
+<p>And, best of all, it shows you Actor-level stats like message throughput, mailbox size over time as well as mean time spent in mailboxwhich are extremely helpful when tracing bottlenecks.</p>
+
+<p><a href="http://blog.abhinav.ca/images/2014-04-19-Atmos-Actor.png"><img src="http://blog.abhinav.ca/images/2014-04-19-Atmos-Actor.png" width="1437"></a></p>
+
+<p>I&rsquo;ve put up a working project with Atmos <a href="https://github.com/sqldump/akka-atmos">here</a>. It&rsquo;ll run for about 5 minutes so you can explore the Atmos UI and then terminate. If you want to give it a try:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git clone https://github.com/sqldump/akka-atmos.git
+</span><span class='line'>cd akka-atmos
+</span><span class='line'>sbt atmos:run</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Scaffolding an Akka project]]></title>
@@ -961,28 +1026,6 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
     <id>http://blog.abhinav.ca/blog/2013/05/26/vandalism</id>
     <content type="html"><![CDATA[<p>Generally against vandalism but this is funny.
 <img src="http://blog.abhinav.ca/images/tumblr/2013-05-26-1.jpg" width="640" height="640"></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Twitter API: 401 Unauthorized]]></title>
-    <link href="http://blog.abhinav.ca/blog/2013/05/23/twitter-api-401-unauthorized/"/>
-    <updated>2013-05-23T19:30:00-04:00</updated>
-    <id>http://blog.abhinav.ca/blog/2013/05/23/twitter-api-401-unauthorized</id>
-    <content type="html"><![CDATA[<p><strong>Symptom</strong>: Twitter API returns a 401 Unauthorized when you start the OAuth process by obtaining a bearer token. This can happen all of a sudden possibly breaking existing processes that were working.</p>
-
-<p><img src="http://blog.abhinav.ca/images/tumblr/2013-05-23-1.jpg" width="640" height="640"></p>
-
-<p><strong>Problem</strong>: The most likely culprit is the clock on your server. If this gets out of sync (even by as little as 20s), Twitter’s amazing API will barf and return a helpful <em>“401 Unauthorized”</em></p>
-
-<p><strong>Solution</strong>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo ntpdate ntp.ubuntu.com
-</span></code></pre></td></tr></table></div></figure>
-
-
-
 ]]></content>
   </entry>
   

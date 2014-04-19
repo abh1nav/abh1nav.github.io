@@ -9,7 +9,9 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="I’ve been living with an annoying bug in Ubuntu on my ThinkPad for quite a while now. If I recall correctly, it started off in Ubuntu 9.10 and has &hellip;">
+  <meta name="description" content="The fun way: 1
+redis-cli KEYS ‘*’ | awk ‘{print $1}’ | xargs redis-cli DEL The recommended way: 1
+redis-cli FLUSHALL ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +78,56 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/17/delete-all-keys-in-redis/">Delete All Keys in Redis</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-17T13:10:25-04:00" pubdate data-updated="true">May 17<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The <strong>fun</strong> way:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>redis-cli KEYS ‘*’ | awk ‘<span class="o">{</span>print <span class="nv">$1</span><span class="o">}</span>’ | xargs redis-cli DEL
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <strong>recommended</strong> way:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>redis-cli FLUSHALL
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -738,63 +790,9 @@ Python-MySQLdb needs an additional connection.commit() statement for all the i
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/05/13/renaming-a-mysql-database/">Renaming a MySQL Database</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-05-13T00:46:00-04:00" pubdate data-updated="true">May 13<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p> 
-I was surprised to learn that there is no simple way to rename a database in MySQL without bringing the whole server down and renaming data files.</p>
-
-<p>You’d think it would be a trivial task, especially considering the SQL Server docs provide the following procedure to rename a database:</p>
-
-<blockquote><p>To rename a database<br/>In Object Explorer, connect to an instance of the SQL Server Database Engine, and then expand that instance.<br/>Make sure that no one is using the database, and then set the database to single-user mode.<br/>Expand Databases, right-click the database to rename, and then click Rename.<br/>Enter the new database name, and then click OK</p><footer><strong>SQL Server Documentation</strong></footer></blockquote>
-
-
-<p>The closest I’ve come to finding a non-invasive way is by running the following series of commands (courtesy of Stack Overflow):</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>mysqldump -u username -p -v olddatabase &gt; olddbdump.sql
-</span><span class='line'>mysqladmin -u username -p create newdatabase
-</span><span class='line'>mysql -u username -p newdatabase &lt; olddbdump.sql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Make sure there are no connections active to the old database at the time as you may not get the freshest data and remember to drop the old database after you’re done.
-Original Stack Overflow thread: <a href="http://bit.ly/14ETgF">http://bit.ly/14ETgF</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/blog/page/6/">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
