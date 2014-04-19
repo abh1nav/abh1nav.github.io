@@ -4,7 +4,7 @@
   <title><![CDATA[Category: sbt | sqldump]]></title>
   <link href="http://blog.abhinav.ca/blog/categories/sbt/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-04-17T02:10:49-04:00</updated>
+  <updated>2014-04-19T14:35:40-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -36,11 +36,41 @@
 <li>Akka Actor Module</li>
 <li>Akka Agent Module</li>
 <li>Google Guava</li>
-<li>Joda Time (and <code>joda-convert</code> to be able to make it work correctly with Scala)</li>
+<li>Joda Time (and <code>joda-convert</code> to make it work correctly with Scala)</li>
 <li>JUnit, ScalaTest and Akka TestKit</li>
 <li>Akka SLF4J Adapter</li>
 </ol>
 
+
+<h3>Exploring the File Structure</h3>
+
+<p>The project root looks like this:</p>
+
+<p><code>
+project/
+src/
+build.sbt
+</code></p>
+
+<h4><code>project</code></h4>
+
+<p>The <code>project</code> folder contains all the files that help SBT build the project.</p>
+
+<p><code>
+project
+|-Dependencies.scala
+|-build.properties
+|-plugins.sbt
+</code></p>
+
+<ul>
+<li><code>build.properties</code> describes the SBT version used to build the project</li>
+<li><code>plugins.sbt</code> describes all the SBT plugins used to build the project &ndash; for example, the <code>assembly</code> plugin is used to create a fat jar of the project including all the dependencies</li>
+<li><code>Dependencies.scala</code> describes all the project dependencies &ndash; objects from here are imported by the <code>build.sbt</code> file when building the project</li>
+</ul>
+
+
+<p>The <code>src</code> folder contains the project source, test and resource files.</p>
 
 <h3>Build, Run and Assembly</h3>
 
