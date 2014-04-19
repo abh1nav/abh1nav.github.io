@@ -4,7 +4,7 @@
   <title><![CDATA[sqldump]]></title>
   <link href="http://blog.abhinav.ca/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-04-19T14:35:40-04:00</updated>
+  <updated>2014-04-19T16:27:07-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -42,7 +42,7 @@
 </ol>
 
 
-<h3>Exploring the File Structure</h3>
+<h3>File Structure</h3>
 
 <p>The project root looks like this:</p>
 
