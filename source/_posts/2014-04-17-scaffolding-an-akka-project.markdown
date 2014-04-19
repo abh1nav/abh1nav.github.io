@@ -23,7 +23,7 @@ To get going with akka-skeleton,
 5. JUnit, ScalaTest and Akka TestKit
 6. Akka SLF4J Adapter
   
-### Exploring the File Structure
+### File Structure
 
 The project root looks like this:
   
