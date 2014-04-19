@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "Akka and Backpressure"
+title: "Akka and Back-pressure"
 date: 2014-01-13 12:46:04 -0500
 comments: false
 tags:
 - akka
 - scala
 - programming
-- backpressure
+- back-pressure
 - actors
 categories: [akka]
 ---
