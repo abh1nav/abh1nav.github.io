@@ -19,9 +19,35 @@ To get going with akka-skeleton,
 1. Akka Actor Module
 2. Akka Agent Module
 3. Google Guava
-4. Joda Time (and `joda-convert` to be able to make it work correctly with Scala)
+4. Joda Time (and `joda-convert` to make it work correctly with Scala)
 5. JUnit, ScalaTest and Akka TestKit
 6. Akka SLF4J Adapter
+  
+### Exploring the File Structure
+
+The project root looks like this:
+  
+```
+project/
+src/
+build.sbt
+```
+  
+####`project`
+The `project` folder contains all the files that help SBT build the project. 
+  
+```
+project
+|-Dependencies.scala
+|-build.properties
+|-plugins.sbt
+```
+  
+* `build.properties` describes the SBT version used to build the project  
+* `plugins.sbt` describes all the SBT plugins used to build the project - for example, the `assembly` plugin is used to create a fat jar of the project including all the dependencies  
+* `Dependencies.scala` describes all the project dependencies - objects from here are imported by the `build.sbt` file when building the project  
+  
+The `src` folder contains the project source, test and resource files.
 
 ### Build, Run and Assembly
 `sbt clean` to clean.  
