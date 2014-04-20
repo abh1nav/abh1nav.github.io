@@ -12,7 +12,7 @@ tags:
 categories: [akka]
 ---
 
-Two steps are needed in order to correctly apply backpressure in an Akka system:  
+Two steps are needed in order to correctly apply back-pressure in an Akka system:  
 
 ####Step 1: Bounded Mailboxes and Push Timeouts
 The default mailbox for an actor is an `UnboundedMailbox` backed by Java's `ConcurrentLinkedQueue`. As the name indicates, this mailbox grows without bound and will end up crashing the JVM with an `OutOfMemoryError` if the consumer significantly slower than the producer. If we want to be able to signal the producer to slow down, the first step is to switch to a `BoundedMailbox` backed by Java's `LinkedBlockingQueue` that will block the producer if the mailbox is full. More info about different types of mailboxes can be found [here](http://doc.akka.io/docs/akka/snapshot/scala/mailboxes.html).  
@@ -155,8 +155,8 @@ Running the `BackPressureTest` app gives the following output:
 Process finished with exit code 0
 {% endcodeblock %}
 
-#####Backpressure Strategy
-While this example doesn't actually implement backpressure, it provides the infrastructure for applying a backpressure strategy. A possible strategy would be to send `FastSender` a `SlowDown` message from within the `Watcher` for each dead letter received. The `SlowDown` case class could be defined as
+#####Back-pressure Strategy
+While this example doesn't actually implement back-pressure, it provides the infrastructure for applying a back-pressure strategy. A possible strategy would be to send `FastSender` a `SlowDown` message from within the `Watcher` for each dead letter received. The `SlowDown` case class could be defined as
 
 {% codeblock lang:scala %}
 case class SlowDown(dl: DeadLetter)
