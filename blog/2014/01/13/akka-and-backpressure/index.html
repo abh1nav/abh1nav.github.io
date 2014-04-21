@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Akka and Backpressure - sqldump</title>
+  <title>Akka and Back-pressure - sqldump</title>
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Two steps are needed in order to correctly apply backpressure in an Akka system: Step 1: Bounded Mailboxes and Push Timeouts The default mailbox for &hellip;">
+  <meta name="description" content="Two steps are needed in order to correctly apply back-pressure in an Akka system: Step 1: Bounded Mailboxes and Push Timeouts The default mailbox for &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,7 +79,7 @@
   
   <header>
     
-      <h1 class="entry-title">Akka and Backpressure</h1>
+      <h1 class="entry-title">Akka and Back-pressure</h1>
     
     
       <p class="meta">
@@ -102,7 +102,7 @@
   </header>
 
 
-<div class="entry-content"><p>Two steps are needed in order to correctly apply backpressure in an Akka system:</p>
+<div class="entry-content"><p>Two steps are needed in order to correctly apply back-pressure in an Akka system:</p>
 
 <h4>Step 1: Bounded Mailboxes and Push Timeouts</h4>
 
@@ -348,9 +348,9 @@
 </span><span class='line'>Process finished with exit code 0</span></code></pre></td></tr></table></div></figure>
 
 
-<h5>Backpressure Strategy</h5>
+<h5>Back-pressure Strategy</h5>
 
-<p>While this example doesn&rsquo;t actually implement backpressure, it provides the infrastructure for applying a backpressure strategy. A possible strategy would be to send <code>FastSender</code> a <code>SlowDown</code> message from within the <code>Watcher</code> for each dead letter received. The <code>SlowDown</code> case class could be defined as</p>
+<p>While this example doesn&rsquo;t actually implement back-pressure, it provides the infrastructure for applying a back-pressure strategy. A possible strategy would be to send <code>FastSender</code> a <code>SlowDown</code> message from within the <code>Watcher</code> for each dead letter received. The <code>SlowDown</code> case class could be defined as</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">SlowDown</span><span class="o">(</span><span class="n">dl</span><span class="k">:</span> <span class="kt">DeadLetter</span><span class="o">)</span>

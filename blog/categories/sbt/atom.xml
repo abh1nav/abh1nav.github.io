@@ -4,7 +4,7 @@
   <title><![CDATA[Category: sbt | sqldump]]></title>
   <link href="http://blog.abhinav.ca/blog/categories/sbt/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-04-19T19:07:22-04:00</updated>
+  <updated>2014-04-21T02:27:30-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -57,7 +57,7 @@ The Atmos UI comes up on <code>localhost:9900</code>.</p>
 
 <p><a href="/images/2014-04-19-Atmos-ActorSystems.png"><img src="/images/2014-04-19-Atmos-ActorSystems.png" width="1077"></a></p>
 
-<p>And, best of all, it shows you Actor-level stats like message throughput, mailbox size over time as well as mean time spent in mailboxwhich are extremely helpful when tracing bottlenecks.</p>
+<p>And, best of all, it shows you Actor-level stats like message throughput, mailbox size over time as well as mean time spent in mailbox- which are extremely helpful when tracing bottlenecks.</p>
 
 <p><a href="/images/2014-04-19-Atmos-Actor.png"><img src="/images/2014-04-19-Atmos-Actor.png" width="1437"></a></p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: akka | sqldump]]></title>
   <link href="http://blog.abhinav.ca/blog/categories/akka/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-04-19T19:07:22-04:00</updated>
+  <updated>2014-04-21T02:27:30-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -57,7 +57,7 @@ The Atmos UI comes up on <code>localhost:9900</code>.</p>
 
 <p><a href="/images/2014-04-19-Atmos-ActorSystems.png"><img src="/images/2014-04-19-Atmos-ActorSystems.png" width="1077"></a></p>
 
-<p>And, best of all, it shows you Actor-level stats like message throughput, mailbox size over time as well as mean time spent in mailboxwhich are extremely helpful when tracing bottlenecks.</p>
+<p>And, best of all, it shows you Actor-level stats like message throughput, mailbox size over time as well as mean time spent in mailbox- which are extremely helpful when tracing bottlenecks.</p>
 
 <p><a href="/images/2014-04-19-Atmos-Actor.png"><img src="/images/2014-04-19-Atmos-Actor.png" width="1437"></a></p>
 
@@ -140,11 +140,11 @@ project
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Akka and Backpressure]]></title>
+    <title type="html"><![CDATA[Akka and Back-pressure]]></title>
     <link href="http://blog.abhinav.ca/blog/2014/01/13/akka-and-backpressure/"/>
     <updated>2014-01-13T12:46:04-05:00</updated>
     <id>http://blog.abhinav.ca/blog/2014/01/13/akka-and-backpressure</id>
-    <content type="html"><![CDATA[<p>Two steps are needed in order to correctly apply backpressure in an Akka system:</p>
+    <content type="html"><![CDATA[<p>Two steps are needed in order to correctly apply back-pressure in an Akka system:</p>
 
 <h4>Step 1: Bounded Mailboxes and Push Timeouts</h4>
 
@@ -418,9 +418,9 @@ The actor can then be initialized as follows
 </span><span class='line'>
 </span><span class='line'>&lt;p>Process finished with exit code 0</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<h5>Backpressure Strategy</h5>
+<h5>Back-pressure Strategy</h5>
 
-<p>While this example doesn&rsquo;t actually implement backpressure, it provides the infrastructure for applying a backpressure strategy. A possible strategy would be to send <code>FastSender</code> a <code>SlowDown</code> message from within the <code>Watcher</code> for each dead letter received. The <code>SlowDown</code> case class could be defined as</p>
+<p>While this example doesn&rsquo;t actually implement back-pressure, it provides the infrastructure for applying a back-pressure strategy. A possible strategy would be to send <code>FastSender</code> a <code>SlowDown</code> message from within the <code>Watcher</code> for each dead letter received. The <code>SlowDown</code> case class could be defined as</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">SlowDown</span><span class="o">(</span><span class="n">dl</span><span class="k">:</span> <span class="kt">DeadLetter</span><span class="o">)</span>
