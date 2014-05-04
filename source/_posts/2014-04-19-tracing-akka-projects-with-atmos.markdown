@@ -38,7 +38,7 @@ It also allows you to drill down and dig into dispatcher-level as well as ActorS
 
 [{% img /images/2014-04-19-Atmos-ActorSystems.png 1077 502 %}](/images/2014-04-19-Atmos-ActorSystems.png)
 
-And, best of all, it shows you Actor-level stats like message throughput, mailbox size over time as well as mean time spent in mailboxwhich are extremely helpful when tracing bottlenecks.
+And, best of all, it shows you Actor-level stats like message throughput, mailbox size over time as well as mean time spent in mailbox- which are extremely helpful when tracing bottlenecks.
 
 [{% img /images/2014-04-19-Atmos-Actor.png 1437 439 %}](/images/2014-04-19-Atmos-Actor.png)
 
