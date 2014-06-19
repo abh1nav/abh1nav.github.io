@@ -4,7 +4,7 @@
   <title><![CDATA[sqldump]]></title>
   <link href="http://blog.abhinav.ca/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-06-19T10:52:14-04:00</updated>
+  <updated>2014-06-19T11:10:57-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -18,7 +18,7 @@
     <link href="http://blog.abhinav.ca/blog/2014/06/17/develop-a-nodejs-app-with-docker/"/>
     <updated>2014-06-17T01:58:40-04:00</updated>
     <id>http://blog.abhinav.ca/blog/2014/06/17/develop-a-nodejs-app-with-docker</id>
-    <content type="html"><![CDATA[<p>This is a somewhat detailed tutorial on using Docker as a replacement for <a href="http://www.vagrantup.com/">Vagrant</a> when developing a Node app using the <a href="http://expressjs.com/">Express</a> framework. To make things a bit more representative of the real world, the app will persist session information in Redis using the <a href="https://github.com/visionmedia/connect-redis">connect-redis</a> middleware.</p>
+    <content type="html"><![CDATA[<p>This is the first of two posts. This post covers a somewhat detailed tutorial on using Docker as a replacement for <a href="http://www.vagrantup.com/">Vagrant</a> when developing a Node app using the <a href="http://expressjs.com/">Express</a> framework. To make things a bit non-trivial, the app will persist session information in Redis using the <a href="https://github.com/visionmedia/connect-redis">connect-redis</a> middleware. The second post will cover productionizing this development setup.</p>
 
 <h3>The Node App</h3>
 
@@ -324,7 +324,7 @@
 
 <h3>Production</h3>
 
-<p>The container, in its current state, is nowehere near production-ready. The data in redis won&rsquo;t be persisted across container restarts, i.e. if you restart the container, you&rsquo;ll have effectively blown away all your session data. The same thing will happen if you destroy the container and start a new one. Presumably, this is not what you want. I&rsquo;ll cover production setup in another post.</p>
+<p>The container, in its current state, is nowehere near production-ready. The data in redis won&rsquo;t be persisted across container restarts, i.e. if you restart the container, you&rsquo;ll have effectively blown away all your session data. The same thing will happen if you destroy the container and start a new one. Presumably, this is not what you want. I&rsquo;ll cover production setup in part II.</p>
 ]]></content>
   </entry>
   
