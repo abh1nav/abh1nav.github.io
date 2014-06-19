@@ -6,7 +6,7 @@ comments: true
 categories: docker, nodejs
 ---
 
-This is a somewhat detailed tutorial on using Docker as a replacement for [Vagrant](http://www.vagrantup.com/) when developing a Node app using the [Express](http://expressjs.com/) framework. To make things a bit more representative of the real world, the app will persist session information in Redis using the [connect-redis](https://github.com/visionmedia/connect-redis) middleware.
+This is the first of two posts. This post covers a somewhat detailed tutorial on using Docker as a replacement for [Vagrant](http://www.vagrantup.com/) when developing a Node app using the [Express](http://expressjs.com/) framework. To make things a bit non-trivial, the app will persist session information in Redis using the [connect-redis](https://github.com/visionmedia/connect-redis) middleware. The second post will cover productionizing this development setup.
   
 ###The Node App
 The app consists of a `package.json`, `server.js` and a `.gitignore` file, which is about as simple as it gets.
@@ -218,4 +218,4 @@ And now, if you point your browser to `http://localhost:3000/hello/world`, you s
 
 ###Production
 
-The container, in its current state, is nowehere near production-ready. The data in redis won't be persisted across container restarts, i.e. if you restart the container, you'll have effectively blown away all your session data. The same thing will happen if you destroy the container and start a new one. Presumably, this is not what you want. I'll cover production setup in another post.
+The container, in its current state, is nowehere near production-ready. The data in redis won't be persisted across container restarts, i.e. if you restart the container, you'll have effectively blown away all your session data. The same thing will happen if you destroy the container and start a new one. Presumably, this is not what you want. I'll cover production setup in part II.
