@@ -9,9 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="The fun way: 1
-redis-cli KEYS ‘*’ | awk ‘{print $1}’ | xargs redis-cli DEL The recommended way: 1
-redis-cli FLUSHALL ">
+  <meta name="description" content="Type about:plugins in the address bar and click Details on the top right corner. Under Flash, look at all the libflashplayer.so files in use. Disable &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +76,48 @@ redis-cli FLUSHALL ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/13/getting-rid-of-chromes-flash-plug-in-out-of-date/">Getting Rid of Chrome&#8217;s &#8220;Flash Plug-in Out of Date&#8221; Message on Ubuntu 12.04</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-13T16:14:00-04:00" pubdate data-updated="true">Jun 13<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Type <code>about:plugins</code> in the address bar and click <code>Details</code> on the top right corner.</p>
+
+<p>Under <code>Flash</code>, look at all the <code>libflashplayer.so</code> files in use.</p>
+
+<p>Disable all except the actual chrome plugin listed under <code>/opt/google/chrome/plugins</code>.</p>
+
+<p>Check the version number of the Chrome flashplayer and update as necessary by downloading the latest package from adobe.com.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -684,112 +724,6 @@ Python-MySQLdb needs an additional connection.commit() statement for all the i
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/05/15/dating-mysql-in-python/">Dating MySQL in Python</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-05-15T00:00:00-04:00" pubdate data-updated="true">May 15<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I’ve always found it difficult to wrap my head around the various language date implementations because each one has its idiosyncrasies. Each time I have to work with a new language, I have to re-learn their date handling constructs, which is a bit of a pain. Databases are the worst culprits in this respect because each database offers a date, datetime or timestamp field and each database engine has its own expectation for how that date time field should be queried. SQL Server and C# work together to simplify matters a bit (or so I thought). Consider the following sample:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">string</span> <span class="n">queryString</span> <span class="p">=</span> <span class="s">&quot;Data Source=sqladdr; Initial Catalog=mydb; User Id=usr; Password=pwd;&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="n">SqlConnection</span> <span class="n">conn</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SqlConnection</span><span class="p">(</span><span class="n">queryString</span><span class="p">);</span>
-</span><span class='line'><span class="n">conn</span><span class="p">.</span><span class="n">Open</span><span class="p">();</span>
-</span><span class='line'><span class="n">SqlCommand</span> <span class="n">cmd</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SqlCommand</span><span class="p">(</span><span class="n">conn</span><span class="p">);</span>
-</span><span class='line'><span class="n">cmd</span><span class="p">.</span><span class="n">CommandText</span> <span class="p">=</span> <span class="s">&quot;INSERT INTO tblTest (currDate) VALUES (@DateParam)&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="n">SqlParameter</span> <span class="n">param</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SqlParameter</span><span class="p">();</span>
-</span><span class='line'><span class="n">param</span><span class="p">.</span><span class="n">ParameterName</span> <span class="p">=</span> <span class="s">&quot;@DateParam&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="n">param</span><span class="p">.</span><span class="n">Value</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span><span class="p">;</span>
-</span><span class='line'><span class="n">cmd</span><span class="p">.</span><span class="n">Parameters</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">param</span><span class="p">);</span>
-</span><span class='line'><span class="n">cmd</span><span class="p">.</span><span class="n">ExecuteNonQuery</span><span class="p">();</span>
-</span><span class='line'><span class="n">conn</span><span class="p">.</span><span class="n">Close</span><span class="p">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Today I learned, by delegating the task to a friend, that Python exposes the MySQL datetime in a much easier-to-grasp manner. A sample date interaction in python would be:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="o">*</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">MySQLdb</span>
-</span><span class='line'><span class="err"> </span>
-</span><span class='line'><span class="n">conn</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-</span><span class='line'>      <span class="n">host</span><span class="o">=</span><span class="s">&quot;dbhost&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">user</span><span class="o">=</span><span class="s">&quot;username&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">passwd</span><span class="o">=</span><span class="s">&quot;pwd&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">db</span><span class="o">=</span><span class="s">&quot;schema&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-</span><span class='line'><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;SELECT * FROM tblTest&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">row</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
-</span><span class='line'>  <span class="c"># the field index according to the select statement</span>
-</span><span class='line'>    <span class="n">date_value</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span class='line'><span class="c"># here, date_value is a datetime object. automatically. :D</span>
-</span><span class='line'><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;INSERT INTO `date_table` (`the_date`) &quot;</span> <span class="o">+</span> \
-</span><span class='line'>               <span class="s">&quot;VALUES (&#39;&#39;</span><span class="si">%s</span><span class="s">&#39;&#39;)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">date_value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()))</span>
-</span><span class='line'><span class="c"># and just like that, you&#39;&#39;re done.</span>
-</span><span class='line'><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>All it takes is to enclose the date in quotes and invoke the <code>date_object.isoformat()</code> method, and voila, you’re done. What can I say, I’m really starting to dig python.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -802,7 +736,11 @@ Python-MySQLdb needs an additional connection.commit() statement for all the i
 </div>
 <aside class="sidebar">
   
-    
+    <section>
+  <h1>About Me</h1>
+  <p>Data fanatic. Scala fanboy. TV connoisseur. Coffee drinker. CTO <a href="http://crowdriff.com">CrowdRiff</a>. Creator of <a href="http://getriffle.com/">Riffle</a> and <a href="http://mytoptweet.com">MyTopTweet</a>. Find me on Twitter at <a href="https://twitter.com/abh1nv">@abh1nv</a>.</p>
+</section>
+
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">

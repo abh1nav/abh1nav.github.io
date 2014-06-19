@@ -9,7 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Symptom: Twitter API returns a 401 Unauthorized when you start the OAuth process by obtaining a bearer token. This can happen all of a sudden &hellip;">
+  <meta name="description" content="Generally against vandalism but this is funny. ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,43 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/26/vandalism/">Vandalism</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T17:46:37-04:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Generally against vandalism but this is funny.
+<img src="/images/tumblr/2013-05-26-1.jpg" width="640" height="640"></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -513,69 +550,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/11/26/vagrant-on-ubuntu/">Vagrant on Ubuntu</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-11-26T21:21:00-05:00" pubdate data-updated="true">Nov 26<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Getting vagrant installed on ubuntu isn’t as easy as it should be (as of v1.0.5 on 12.10). Here are a few solutions to make your life easier:</p>
-
-<p><em>Bug 1</em>:<br/>
-I noticed that ruby + gems didn’t exist on a vanilla 12.10 install and that installing the official .deb from vagrantup.com resulted in a vagrant not found error.</p>
-
-<p><em>Fix 1</em>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo apt-get install ruby1.8 ruby1.8-dev rubygems1.8 virtualbox-ose
-</span><span class='line'>sudo gem install vagrant
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>Bug 2</em>:<br/>
-After running my first vagrant up with a precise64 base box, I noticed that the guest VM was having trouble with resolving domain names. Peeking at the /etc/hosts file, I saw an entry that read:127.0.1.1  precise64
-After correcting this to 127.0.0.1 precise64, it still froze when pip installing some python modules. This was strange considering the guest was configured to run in bridge mode.</p>
-
-<p><em>Fix 2</em>: The following settings cured it:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>VBoxManage modifyvm <span class="s2">&quot;myvagrantbox_23901293&quot;</span> --natdnshostresolver1 on
-</span><span class='line'>VBoxManage modifyvm <span class="s2">&quot;myvagrantbox_23901293&quot;</span> --natdnsproxy1 on
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here, <strong>myvagrantbox_23901293</strong> is the name assigned to the guest in virtualbox by vagrant and can be found via the virtualbox UI.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -588,7 +562,11 @@ After correcting this to 127.0.0.1 precise64, it still froze when pip installing
 </div>
 <aside class="sidebar">
   
-    
+    <section>
+  <h1>About Me</h1>
+  <p>Data fanatic. Scala fanboy. TV connoisseur. Coffee drinker. CTO <a href="http://crowdriff.com">CrowdRiff</a>. Creator of <a href="http://getriffle.com/">Riffle</a> and <a href="http://mytoptweet.com">MyTopTweet</a>. Find me on Twitter at <a href="https://twitter.com/abh1nv">@abh1nv</a>.</p>
+</section>
+
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
