@@ -3,14 +3,17 @@ layout: post
 title: "Develop a NodeJS app with Docker"
 date: 2014-06-17 01:58:40 -0400
 comments: true
-categories: 
-published: false
+categories: docker, nodejs
 ---
 
 This is a somewhat detailed tutorial on using Docker as a replacement for [Vagrant](http://www.vagrantup.com/) when developing a Node app using the [Express](http://expressjs.com/) framework. To make things a bit more representative of the real world, the app will persist session information in Redis using the [connect-redis](https://github.com/visionmedia/connect-redis) middleware.
   
-###Step 1: The Node App
-The app consists of a `package.json` and `server.js` which is about as simple as it gets.
+###The Node App
+The app consists of a `package.json`, `server.js` and a `.gitignore` file, which is about as simple as it gets.
+
+{% codeblock .gitignore %}
+node_modules/*
+{% endcodeblock %}
 
 {% codeblock lang:javascript package.json %}
 {
@@ -63,7 +66,7 @@ console.log('Listening on port ' + port);
   
 One thing to note here is that the connection information for redis can be overridden using environment variables - this will be useful later on when moving from dev to prod.  
   
-###Step 2: The Dockerfile
+###The Dockerfile
 For development, we'll have redis and node running in the same container. To make this happen, we'll use a Dockerfile to configure the container.
 
 {% codeblock Dockerfile %}
@@ -87,6 +90,8 @@ RUN	\
 
 # Set the working directory
 WORKDIR	/src
+
+CMD ["/bin/bash"]
 {% endcodeblock %}
 
 Taking it line by line,
@@ -121,9 +126,15 @@ This downloads and extracts the 64-bit NodeJS binaries.
 WORKDIR	/src
 ```
   
-This tells docker to `cd /src` once the container has started.
+This tells docker to `cd /src` once the container has started, before executing what's specified in the `CMD` property.
+  
+```
+CMD ["/bin/bash"]
+```
+  
+Launch `/bin/bash` as a final step.
 
-###Step 3: Build and run the container
+###Build and run the container
 
 Now that the docker file is written, let's build a Docker image.
   
@@ -137,8 +148,7 @@ Once the image done building, we can launch a container using:
 docker run -i -t --rm \
            -p 3000:3000 \
            -v `pwd`:/src \
-           sqldump/docker-dev:0.1 \
-           /bin/bash
+           sqldump/docker-dev:0.1
 ```
   
 Let's see what's going on in the docker run command.
@@ -151,17 +161,19 @@ Let's see what's going on in the docker run command.
   
 `-p 3000:3000` forwards port 3000 on to the host to port 3000 on the container.
   
-`-v {% raw %}`pwd`{% endraw %}:/src` mounts the current working directory in the host (i.e. our project files) to `/src` inside the container. We mount the current folder as a volume rather than using the `ADD` command in the Dockerfile so that any changes we make to the files in a text editor will be seen by the container right away.
+```
+-v `pwd`:/src
+``` 
+
+This mounts the current working directory in the host (i.e. our project files) to `/src` inside the container. We mount the current folder as a volume rather than using the `ADD` command in the Dockerfile so that any changes we make to the files in a text editor will be seen by the container right away.
 
 `sqldump/docker-dev:0.1` the name and version of the docker image to run - this is the same one we used when building the docker image.
 
-`/bin/bash` is the command that's executed once the container has started. In development, we want it to drop into a bash shell.
-  
-If the docker run command succeeds, it'll drop you into something that looks like this:
+Since the Dockerfile specifies `CMD ["/bin/bash"]`, we're dropped into a bash shell once the container has started. If the docker run command succeeds, it'll look something like this:
 
 [{% img /images/2014-06-17-Docker-Run.png 482 139 %}](/images/2014-06-17-Docker-Run.png)
   
-###Step 4: Start Developing
+###Start Developing
 
 Now that the container is running, we'll need to get a few standard, non-docker related things sorted out before we can start writing code. First, start redis server inside the container using:
 
@@ -169,26 +181,24 @@ Now that the container is running, we'll need to get a few standard, non-docker 
 service redis-server start
 ```
 
-Second, install project dependencies:
+Then, install project dependencies and `nodemon`. [Nodemon](https://github.com/remy/nodemon) watches for changes in project files and restarts the server as needed. 
 
 ```
 npm install
 npm install -g nodemon
 ```
 
-Nodemon will be used to watch for changes in your JS files and restart the server as needed. 
-
-Third, start up the server using:
+Finally, start up the server using:
 
 ```
 nodemon server.js
 ```
 
-Now, if you got `http://localhost:3000` in your browser, you should see something like this:
+Now, if you go to `http://localhost:3000` in your browser, you should see something like this:
 
 [{% img /images/2014-06-17-First-Run.png 230 110 %}](/images/2014-06-17-First-Run.png)
 
-Let's add another endpoint to `server.js`:
+Let's add another endpoint to `server.js` to simulate development workflow:
 
 {% codeblock lang:javascript server.js %}
 app.get('/hello/:name', function(req, res) {
@@ -198,7 +208,7 @@ app.get('/hello/:name', function(req, res) {
 });
 {% endcodeblock %}
 
-You should see that nodemon inside the container has detected your changes and restarted the server:
+You should see that nodemon has detected your changes and restarted the server:
 
 [{% img /images/2014-06-17-Reload.png 1072 390 %}](/images/2014-06-17-Reload.png)
 
@@ -206,46 +216,6 @@ And now, if you point your browser to `http://localhost:3000/hello/world`, you s
 
 [{% img /images/2014-06-17-Second-Run.png 348 140 %}](/images/2014-06-17-Second-Run.png)
 
-###Step 5: Production
+###Production
 
-When pushing the app to production, we'll need a script to do all the things we did manually, such as starting redis-server, invoking npm install etc. I typically create a `run.sh` script next to the Dockerfile.
-
-{% codeblock lang:bash run.sh %}
-#!/bin/bash
-
-echo Starting Redis
-service redis-server start
-
-cd /src
-
-echo Cleaning up
-rm -Rf node_modules
-
-echo NPM Install
-npm install -g forever --quiet
-npm install --quiet
-
-echo Starting server
-forever server.js
-{% endcodeblock %}
-
-In the production script, we've switched from using `nodemon` to using `foreverjs` because we don't need a file watcher, just a process supervisor.
-
-After making sure `run.sh` is executable, the next step is to modify the Dockerfile to tell it about the start script by appending the following to the end:
-
-{% codeblock Dockerfile %}
-RUN /src/run.sh
-{% endcodeblock %}
-
-##Level 2: Persisting Redis State Between Containers
-
-```
-RUN \
-	cd /etc/redis && \
-	mv redis.conf redis.conf.default && \
-	ln -s /src/conf/redis.conf
-```
-  
-This is a tricky bit- we move the default `/etc/redis/redis.conf` file to `/etc/redis/redis.conf.default`. At this point, if you try to start `redis-server` - it won't work because the config's missing. 
-  
-However, we then force a symlink in `/etc/redis/` to `/src/conf/redis.conf` - mind you, the `/src` directory doesn't exist yet, but more on that later.
+The container, in its current state, is nowehere near production-ready. The data in redis won't be persisted across container restarts, i.e. if you restart the container, you'll have effectively blown away all your session data. The same thing will happen if you destroy the container and start a new one. Presumably, this is not what you want. I'll cover production setup in another post.
