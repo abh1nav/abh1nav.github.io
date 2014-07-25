@@ -9,7 +9,14 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="A simple search for “facebook like button tracking you” turns up a bunch of articles and blog posts about how Facebook is creeping on you wherever &hellip;">
+  <meta name="description" content="As a first time user of Ruby and Rails, I was able to setup a sane environment on Ubuntu Server 12.04 (x64) in less than 10 commands: 1
+2
+3
+4
+5
+6
+7
+8 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +83,74 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/01/setup-ruby-2-x-on-rails-4-x-in-10-lines-or-less/">Setup Ruby (2.x) on Rails (4.x) in 10 Lines or Less</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-01T01:38:00-05:00" pubdate data-updated="true">Dec 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As a first time user of Ruby and Rails, I was able to setup a sane environment on Ubuntu Server 12.04 (x64) in less than 10 commands:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">cd</span> <span class="nv">$HOME</span>
+</span><span class='line'>curl -L https://get.rvm.io | bash
+</span><span class='line'><span class="nb">source</span> <span class="nv">$HOME</span>/.rvm/scripts/rvm
+</span><span class='line'>rvm requirements
+</span><span class='line'>rvm install ruby
+</span><span class='line'>rvm use ruby --default
+</span><span class='line'>rvm rubygems current
+</span><span class='line'>gem install rails
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And, if you already have a rails app to run, continue along with:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">cd </span>myapp
+</span><span class='line'>bundle install
+</span><span class='line'>rails server
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will get you up and running with a dev server.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -558,42 +633,6 @@
 
 
 
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/31/today-i-learned-cassandra-is-awesome/">TIL: Cassandra Is Awesome</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-31T02:52:30-04:00" pubdate data-updated="true">May 31<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img src="/images/tumblr/2013-05-31-1.jpg" width="640" height="640"></p>
 </div>
   
   

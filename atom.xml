@@ -4,7 +4,7 @@
   <title><![CDATA[sqldump]]></title>
   <link href="http://blog.abhinav.ca/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-06-19T11:10:57-04:00</updated>
+  <updated>2014-07-25T04:48:41-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -12,6 +12,150 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Docker + NodeJS Dev Environment: Take 2 - Container Linking]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/07/25/docker-nodejs-dev-environment-take-2/"/>
+    <updated>2014-07-25T10:31:08-04:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/07/25/docker-nodejs-dev-environment-take-2</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve had lots of feedback on my previous <a href="http://blog.abhinav.ca/blog/2014/06/17/develop-a-nodejs-app-with-docker/">post</a> and I&rsquo;d like to share some of it which I found especially helpful.</p>
+
+<p><a href="https://github.com/larose">Mathieu Larose</a> sent over a much shorter one-liner that installs Node in the docker container. This means my original <code>Dockerfile</code> step</p>
+
+<figure class='code'><figcaption><span>Dockerfile </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>RUN  \
+</span><span class='line'>  cd /opt && \
+</span><span class='line'>  wget http://nodejs.org/dist/v0.10.28/node-v0.10.28-linux-x64.tar.gz && \
+</span><span class='line'>  tar -xzf node-v0.10.28-linux-x64.tar.gz && \
+</span><span class='line'>  mv node-v0.10.28-linux-x64 node && \
+</span><span class='line'>  cd /usr/local/bin && \
+</span><span class='line'>  ln -s /opt/node/bin/* . && \
+</span><span class='line'>  rm -f /opt/node-v0.10.28-linux-x64.tar.gz</span></code></pre></td></tr></table></div></figure>
+
+
+<p>turns into</p>
+
+<figure class='code'><figcaption><span>Dockerfile </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>RUN \
+</span><span class='line'>  wget -O - http://nodejs.org/dist/v0.10.29/node-v0.10.29-linux-x64.tar.gz \
+</span><span class='line'>  | tar xzf - --strip-components=1 --exclude="README.md" --exclude="LICENSE" \
+</span><span class='line'>  --exclude="ChangeLog" -C "/usr/local"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The second piece of feedback was via Twitter from <a href="http://twitter.com/DShankar">Darshan Shankar</a></p>
+
+<p><a href="http://blog.abhinav.ca/images/2014-07-25-Feedback-2.png"><img src="http://blog.abhinav.ca/images/2014-07-25-Feedback-2.png"></a></p>
+
+<p>As I explained on Twitter and at the end of the previous post, having Redis and Node in the same container was meant only to demonstrate how Docker works to first-timers. It isn&rsquo;t recommended as a production setup.</p>
+
+<h3>Unbundling Redis and Container Links</h3>
+
+<p>Since I&rsquo;ve already agreed that having Redis and Node together is probably not the greatest idea, I&rsquo;m going to take this opportunity to fix this mistake and demonstrate container linking at the same time.</p>
+
+<p>The fundamental idea is to strive for single-purpose Docker containers and then compose them together to build more complex systems. This implies we need to rip out the Redis related bits from our old Dockerfile and run Redis in a Docker container by itself.</p>
+
+<h3>Redis in a Docker container</h3>
+
+<p>Now that we&rsquo;ve decided to unbundle Redis, let&rsquo;s run it in its own container. Fortunately, as is often the case with Docker, someone else has already done the hard work for us. Running Redis locally is as simple as:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>docker run -d --name="myredis" -p 6379:6379 dockerfile/redis</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You&rsquo;ll notice the extra <code>--name="myredis"</code> parameter. We&rsquo;ll use that in the next step to tell our app&rsquo;s container about this Redis container.</p>
+
+<h3>Dockerfile update</h3>
+
+<p>The next step is to update our Dockerfile and exclude the Redis-related instructions.</p>
+
+<figure class='code'><figcaption><span>Dockerfile </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>FROM dockerfile/ubuntu
+</span><span class='line'>
+</span><span class='line'>MAINTAINER Abhinav Ajgaonkar &lt;abhinav316@gmail.com&gt;
+</span><span class='line'>
+</span><span class='line'># Install pre-reqs
+</span><span class='line'>RUN   \
+</span><span class='line'>  apt-get -y -qq install python
+</span><span class='line'>
+</span><span class='line'># Install Node
+</span><span class='line'>RUN \
+</span><span class='line'>  wget -O - http://nodejs.org/dist/v0.10.29/node-v0.10.29-linux-x64.tar.gz \
+</span><span class='line'>  | tar xzf - --strip-components=1 --exclude=&quot;README.md&quot; --exclude=&quot;LICENSE&quot; \
+</span><span class='line'>  --exclude=&quot;ChangeLog&quot; -C &quot;/usr/local&quot;
+</span><span class='line'>
+</span><span class='line'># Set the working directory
+</span><span class='line'>WORKDIR   /src
+</span><span class='line'>
+</span><span class='line'>CMD [&quot;/bin/bash&quot;]
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Build, Link and Run</h3>
+
+<p>Our app image can now be built with:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>docker build -t sqldump/docker-dev:0.2 .</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once the build has completed, we can launch a container using the image.
+The command for launching an instance of this image also needs to be modified slightly:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>docker run -i -t --rm                     \
+</span><span class='line'>      -p 3000:3000                        \
+</span><span class='line'>      -v `pwd`:/src                       \
+</span><span class='line'>      --name="myapp"                      \
+</span><span class='line'>      --link myredis:myredis              \
+</span><span class='line'>      -e REDIS_HOST="myredis"             \
+</span><span class='line'>      sqldump/docker-dev:0.2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here, I&rsquo;ve used the <code>--link</code> option to tell the <code>myapp</code> container about the <code>redis</code> container. The <code>--link</code> option allows linked containers to communicate securely over the <code>docker0</code> interface. When we link the <code>myredis</code> container to the <code>myapp</code> container, <code>myapp</code> can then access services on <code>myredis</code> just by using the hostname and the hostname-to-IP resolution will be handled transparently by Docker.</p>
+
+<p>I&rsquo;ve also injected an environment variable called <code>REDIS_HOST</code> using the <code>-e</code> flag to tell our node app where to find the linked Redis.</p>
+
+<p>Once the container is running, you can utilize the methods described in the previous post to install dependencies and get your server running.</p>
+
+<p>I hope this provides a satisfactory demonstration of how linked containers can be used to compose single-purpose docker containers into a more complex working system.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Develop a NodeJS app with Docker]]></title>
@@ -1322,15 +1466,6 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
 
 
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[TIL: Cassandra is awesome]]></title>
-    <link href="http://blog.abhinav.ca/blog/2013/05/31/today-i-learned-cassandra-is-awesome/"/>
-    <updated>2013-05-31T02:52:30-04:00</updated>
-    <id>http://blog.abhinav.ca/blog/2013/05/31/today-i-learned-cassandra-is-awesome</id>
-    <content type="html"><![CDATA[<p><img src="http://blog.abhinav.ca/images/tumblr/2013-05-31-1.jpg" width="640" height="640"></p>
 ]]></content>
   </entry>
   

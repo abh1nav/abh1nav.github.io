@@ -9,7 +9,10 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Getting vagrant installed on ubuntu isn’t as easy as it should be (as of v1.0.5 on 12.10). Here are a few solutions to make your life easier: Bug 1: &hellip;">
+  <meta name="description" content="Add a tag: 1
+git tag -a v0.1 -m &quot;Version 0.1 Stable&quot; Push tags to GitHub: 1
+git push origin --tags Delete tag locally: 1
+git tag -d v0.1 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +79,72 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/06/git-tags-github/">Git, Tags and GitHub</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-06T05:06:47-05:00" pubdate data-updated="true">Dec 6<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Add a tag:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>git tag -a v0.1 -m <span class="s2">&quot;Version 0.1 Stable&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Push tags to GitHub:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>git push origin --tags
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Delete tag locally:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>git tag -d v0.1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Push to GitHub:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>git push origin --tags
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Rinse.</p>
+
+<p>Repeat.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -534,67 +603,6 @@ public class ISODateParsing {
 </pre></td><td class='code'><pre><code class='sh'><span class='line'>s3cmd --recursive ls s3://bucketname | <span class="se">\</span>
 </span><span class='line'>awk <span class="s1">&#39;&#39;</span><span class="o">{</span>print <span class="nv">$4</span><span class="o">}</span><span class="s1">&#39;&#39;</span> | <span class="se">\</span>
 </span><span class='line'>xargs s3cmd del
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/07/19/making-os-xs-preview-and-quicktime-less-annoying/">Making OS X&#8217;s Preview and Quicktime Less Annoying</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-07-19T15:46:44-04:00" pubdate data-updated="true">Jul 19<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Product discussion at Apple:</p>
-
-<p>&ldquo;Guys, we need 250 new features for the next release. What do you have for me?&rdquo;</p>
-
-<p>&ldquo;Here’s something: let’s open up ALL the files from the user’s previous session when the user decides to launch apps like Preview or Quicktime”</p>
-
-<p>&ldquo;Why Bob, that’s a brilliant idea!&rdquo;</p>
-
-<p>&ldquo;Improving on what Bob said, let’s NOT give them the option to turn this behaviour off!”</p>
-
-<p>&ldquo;Alright, let’s make it happen. 1 down, 249 to go.&rdquo;</p>
-
-<p>Run the following in your Terminal to prevent Preview (and/or Quicktime) from opening up all the windows from your previous session:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>defaults write com.apple.Preview <span class="se">\</span>
-</span><span class='line'>NSQuitAlwaysKeepsWindows -bool <span class="nb">false</span>
-</span><span class='line'>defaults write com.apple.QuickTimePlayerX <span class="se">\</span>
-</span><span class='line'>NSQuitAlwaysKeepsWindows -bool <span class="nb">false</span>
 </span></code></pre></td></tr></table></div></figure>
 
 

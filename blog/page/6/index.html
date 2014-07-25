@@ -9,7 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="I’ve always found it difficult to wrap my head around the various language date implementations because each one has its idiosyncrasies. Each time I &hellip;">
+  <meta name="description" content="A fairly common requirement for database tables is to have a created and last modified timestamp for each record. This seems to be yet another spot &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,114 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/05/19/created-and-modified-timestamps-for-mysql/">Created and Modified Timestamps for MySQL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-19T00:00:00-04:00" pubdate data-updated="true">May 19<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A fairly common requirement for database tables is to have a created and last modified timestamp for each record. This seems to be yet another spot where something fairly straightforward requires you to take the scenic route to implement. Ordinarily, the create table statement would look like:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="k">CREATE</span>  <span class="k">TABLE</span> <span class="ss">`mydb`</span><span class="p">.</span><span class="ss">`mytable`</span> <span class="p">(</span>
+</span><span class='line'>  <span class="ss">`id`</span> <span class="kt">INT</span> <span class="k">UNSIGNED</span> <span class="k">NOT</span> <span class="no">NULL</span> <span class="kp">AUTO_INCREMENT</span> <span class="p">,</span>
+</span><span class='line'>  <span class="ss">`myfield`</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="no">NULL</span> <span class="p">,</span>
+</span><span class='line'>  <span class="ss">`modified`</span> <span class="kt">TIMESTAMP</span> <span class="no">NULL</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="nf">NOW</span><span class="p">()</span> <span class="p">,</span>
+</span><span class='line'>  <span class="ss">`created`</span> <span class="kt">TIMESTAMP</span> <span class="no">NULL</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="ss">`id`</span><span class="p">)</span> <span class="p">)</span>
+</span><span class='line'><span class="kp">ENGINE</span> <span class="o">=</span> <span class="n">MyISAM</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And that’s when MySQL threw me a nice</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Incorrect table definition; there can be only one TIMESTAMP column with CURRENT_TIMESTAMP in DEFAULT or ON UPDATE clause.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Upon digging a little further, I found this little nugget in the documentation:</p>
+
+<blockquote><p>For one TIMESTAMP column in a table, you can assign the current timestamp as the default value and the auto-update value. It is possible to have the current timestamp be the default value for initializing the column, for the auto-update value, or both. It is not possible to have the current timestamp be the default value for one column and the auto-update value for another column.</p><footer><strong>MySQL Docs</strong> <cite><a href='http://dev.mysql.com/doc/refman/4.1/en/timestamp.html'>dev.mysql.com/doc/refman/4.1/en/&hellip;</a></cite></footer></blockquote>
+
+
+<p>Well isn’t that just peachy.</p>
+
+<p><strong>The Solution</strong></p>
+
+<p>To overcome this hurdle, I employed the use of a trigger for the created timestamp and decided to leave the modified as is. The create table statement then turned into:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="k">CREATE</span>  <span class="k">TABLE</span> <span class="ss">`mydb`</span><span class="p">.</span><span class="ss">`mytable`</span> <span class="p">(</span>
+</span><span class='line'>  <span class="ss">`id`</span> <span class="kt">INT</span> <span class="k">UNSIGNED</span> <span class="k">NOT</span> <span class="no">NULL</span> <span class="kp">AUTO_INCREMENT</span> <span class="p">,</span>
+</span><span class='line'>  <span class="ss">`myfield`</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="no">NULL</span> <span class="p">,</span>
+</span><span class='line'>  <span class="ss">`modified`</span> <span class="kt">TIMESTAMP</span> <span class="no">NULL</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span> <span class="k">ON</span> <span class="k">UPDATE</span> <span class="nf">NOW</span><span class="p">()</span> <span class="p">,</span>
+</span><span class='line'>  <span class="ss">`created`</span> <span class="kt">TIMESTAMP</span> <span class="no">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="ss">`id`</span><span class="p">)</span> <span class="p">)</span>
+</span><span class='line'><span class="kp">ENGINE</span> <span class="o">=</span> <span class="n">MyISAM</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And used the following trigger to process the created timestamp &ndash;</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="k">USE</span> <span class="ss">`mydb`</span><span class="p">;</span>
+</span><span class='line'><span class="n">DELIMITER</span> <span class="err">$$</span>
+</span><span class='line'>  <span class="k">CREATE</span> <span class="k">TRIGGER</span> <span class="n">trigger_mytable_before_insert</span> <span class="k">BEFORE</span> <span class="k">INSERT</span> <span class="k">ON</span> <span class="ss">`mytable`</span>
+</span><span class='line'>  <span class="k">FOR</span> <span class="k">EACH</span> <span class="n">ROW</span> <span class="n">BEGIN</span>
+</span><span class='line'>      <span class="kt">SET</span> <span class="n">NEW</span><span class="p">.</span><span class="n">created</span> <span class="o">=</span> <span class="nf">NOW</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">END</span><span class="p">;</span>
+</span><span class='line'><span class="err">$$</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
