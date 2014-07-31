@@ -157,7 +157,7 @@
 
 <p>Update: <a href="https://twitter.com/upthecyberpunks">Nathan LeClaire</a> from <a href="http://docker.io">Docker</a> was kind enough to write up a <a href="https://gist.github.com/nathanleclaire/c7c402f7a9889ca77b98">quick script</a> that combines these two steps:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -173,7 +173,7 @@
 </span><span class='line'><span class="k">done</span>
 </span><span class='line'>
 </span><span class='line'><span class="k">for </span>name in cb<span class="o">{</span>1..5<span class="o">}</span>; <span class="k">do</span>
-</span><span class='line'><span class="k">    </span>docker inspect -f <span class="s1">&#39;&#39;</span> <span class="nv">$name</span>
+</span><span class='line'><span class="k">    </span>docker inspect -f <span class="s1">&#39;{{ .NetworkSettings.IPAddress }}&#39;</span> <span class="nv">$name</span>
 </span><span class='line'><span class="k">done</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -184,8 +184,8 @@
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Username: Administrator
-</span><span class='line'>Password: password
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="err">Username:</span> <span class="err">Administrator</span>
+</span><span class='line'><span class="err">Password:</span> <span class="err">password</span>
 </span></code></pre></td></tr></table></div></figure>
 
 

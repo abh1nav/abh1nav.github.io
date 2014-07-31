@@ -4,7 +4,7 @@
   <title><![CDATA[Category: python, | sqldump]]></title>
   <link href="http://blog.abhinav.ca/blog/categories/python/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-07-31T15:32:31-04:00</updated>
+  <updated>2014-07-31T15:42:17-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -56,23 +56,31 @@ docker run -d --name cb5 dustin/couchbase
 
 <p>Update: <a href="https://twitter.com/upthecyberpunks">Nathan LeClaire</a> from <a href="http://docker.io">Docker</a> was kind enough to write up a <a href="https://gist.github.com/nathanleclaire/c7c402f7a9889ca77b98">quick script</a> that combines these two steps:</p>
 
-<p>```bash
-docker run -d -p 11210:11210 -p 11211:11211 -p 8091:8091 -p 8092:8092 &mdash;name cb1 dustin/couchbase</p>
-
-<p>for name in cb{2..5}; do</p>
-
-<pre><code>docker run -d --name $name dustin/couchbase
-</code></pre>
-
-<p>done</p>
-
-<p>for name in cb{1..5}; do</p>
-
-<pre><code>docker inspect -f '' $name
-</code></pre>
-
-<p>done
-```</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker run -d -p 11210:11210 -p 11211:11211 -p 8091:8091 -p 8092:8092 &amp;mdash;name cb1 dustin/couchbase&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;for name in cb<span class="o">{</span>2..5<span class="o">}</span>; <span class="k">do</span>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;docker run -d --name <span class="nv">$name</span> dustin/couchbase
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;done&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;for name in cb<span class="o">{</span>1..5<span class="o">}</span>; <span class="k">do</span>
+</span><span class='line'><span class="k">    </span>docker inspect -f &amp;lsquo;<span class="o">{{</span> .NetworkSettings.IPAddress <span class="o">}}</span>&amp;rsquo; <span class="nv">$name</span>
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h3>Setup Cluster using WebUI</h3>
 
