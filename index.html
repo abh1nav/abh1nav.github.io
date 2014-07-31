@@ -155,14 +155,37 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>Update: <a href="https://twitter.com/upthecyberpunks">Nathan LeClaire</a> from <a href="http://docker.io">Docker</a> was kind enough to write up a <a href="https://gist.github.com/nathanleclaire/c7c402f7a9889ca77b98">quick script</a> that combines these two steps:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker run -d -p 11210:11210 -p 11211:11211 -p 8091:8091 -p 8092:8092 --name cb1 dustin/couchbase
+</span><span class='line'>
+</span><span class='line'><span class="k">for </span>name in cb<span class="o">{</span>2..5<span class="o">}</span>; <span class="k">do </span>
+</span><span class='line'><span class="k">    </span>docker run -d --name <span class="nv">$name</span> dustin/couchbase
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for </span>name in cb<span class="o">{</span>1..5<span class="o">}</span>; <span class="k">do</span>
+</span><span class='line'><span class="k">    </span>docker inspect -f <span class="s1">&#39;&#39;</span> <span class="nv">$name</span>
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
 <h3>Setup Cluster using WebUI</h3>
 
 <p>If <code>cb1</code> is at <code>172.17.0.27</code>, then the Couchbase management interface comes up at <code>http://172.17.0.27:8091</code> and the default credentials are:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="err">Username:</span> <span class="err">Administrator</span>
-</span><span class='line'><span class="err">Password:</span> <span class="err">password</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Username: Administrator
+</span><span class='line'>Password: password
 </span></code></pre></td></tr></table></div></figure>
 
 

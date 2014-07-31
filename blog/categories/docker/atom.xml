@@ -4,7 +4,7 @@
   <title><![CDATA[Category: docker, | sqldump]]></title>
   <link href="http://blog.abhinav.ca/blog/categories/docker/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-07-31T11:43:04-04:00</updated>
+  <updated>2014-07-31T14:56:05-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -12,6 +12,107 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Kickstart a Couchbase cluster with Docker]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/07/31/kickstart-a-couchbase-cluster-with-docker/"/>
+    <updated>2014-07-31T11:01:15-04:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/07/31/kickstart-a-couchbase-cluster-with-docker</id>
+    <content type="html"><![CDATA[<p>A few days ago, I was officially introduced to <a href="http://www.couchbase.com/">Couchbase</a> at a <a href="http://www.meetup.com/TorontoHUG/events/191410172/">Toronto Hadoop User Group meetup</a>. I say &ldquo;officially&rdquo; because I&rsquo;ve known about some Couchbase use-cases / pros and cons on a high level since v1.8, but never really had the time to look at it in detail.</p>
+
+<p>As the presentation progressed, it got me interested in actually tinkering around with a Couchbase cluster (kudos to <a href="https://twitter.com/NoSQLDon">Don Pinto</a>). My first instinct was to head over to the <a href="https://registry.hub.docker.com">Docker Registry</a> and do a quick search for <code>couchbase</code>. Using the <code>dustin/couchbase</code> image, I was able to get a 5-node cluster running in under 5 minutes.</p>
+
+<h3>Run 5 containers</h3>
+
+<p><code>bash
+docker run -d -p 11210:11210 -p 11211:11211 -p 8091:8091 -p 8092:8092 --name cb1 dustin/couchbase
+docker run -d --name cb2 dustin/couchbase
+docker run -d --name cb3 dustin/couchbase
+docker run -d --name cb4 dustin/couchbase
+docker run -d --name cb5 dustin/couchbase
+</code></p>
+
+<h3>Find Container IPs</h3>
+
+<p>Once the containers were up, I used <code>docker inspect</code> to find their internal IPs (usually in the <code>172.17.x.x</code> range). For example, <code>docker inspect cb1</code> returns</p>
+
+<p>```json
+[{</p>
+
+<pre><code>"Args": [
+    "run"
+],
+"Config": {
+    "AttachStderr": false,
+...
+"NetworkSettings": {
+    "Bridge": "docker0",
+    "Gateway": "172.17.42.1",
+    "IPAddress": "172.17.0.27",
+...
+</code></pre>
+
+<p>```</p>
+
+<p>Update: <a href="https://twitter.com/upthecyberpunks">Nathan LeClaire</a> from <a href="http://docker.io">Docker</a> was kind enough to write up a <a href="https://gist.github.com/nathanleclaire/c7c402f7a9889ca77b98">quick script</a> that combines these two steps:</p>
+
+<p>```bash
+docker run -d -p 11210:11210 -p 11211:11211 -p 8091:8091 -p 8092:8092 &mdash;name cb1 dustin/couchbase</p>
+
+<p>for name in cb{2..5}; do</p>
+
+<pre><code>docker run -d --name $name dustin/couchbase
+</code></pre>
+
+<p>done</p>
+
+<p>for name in cb{1..5}; do</p>
+
+<pre><code>docker inspect -f '' $name
+</code></pre>
+
+<p>done
+```</p>
+
+<h3>Setup Cluster using WebUI</h3>
+
+<p>If <code>cb1</code> is at <code>172.17.0.27</code>, then the Couchbase management interface comes up at <code>http://172.17.0.27:8091</code> and the default credentials are:</p>
+
+<p><code>
+Username: Administrator
+Password: password
+</code></p>
+
+<p>Once you&rsquo;re in, setting up a cluster is as easy as clicking &ldquo;Add Server&rdquo; and giving it the IPs of the other containers. As soon as you add a new server to the cluster, Couchbase will prompt you to run a &ldquo;Cluster Rebalance&rdquo; operation &ndash; hold off until you&rsquo;ve added all 5 nodes and then run the rebalance.</p>
+
+<h3>Push some data into the cluster</h3>
+
+<p>Once the cluster was up, I wanted to get a feel for how the WebUI works so I wrote this script to grab some data from our existing cluster of JSON-store-that-I-am-too-ashamed-to-mention and added it to Couchbase:</p>
+
+<p>```python</p>
+
+<h1>!/usr/bin/env python</h1>
+
+<h1>encoding: utf-8</h1>
+
+<p>from pymongo import MongoClient
+from couchbase import Couchbase</p>
+
+<p>src = MongoClient([&lsquo;m1&rsquo;, &lsquo;m2&rsquo;, &lsquo;m3&rsquo;])[&lsquo;twitter_raw&rsquo;][&lsquo;starbucks&rsquo;]
+tar = Couchbase.connect(bucket=&lsquo;twitter_starbucks&rsquo;,  host=&lsquo;localhost&rsquo;)</p>
+
+<p>for doc in src.find():</p>
+
+<pre><code>key = str(doc['_id'])
+del doc['_id']
+result = tar.set(key, doc)
+</code></pre>
+
+<p>```</p>
+
+<p>The Couchbase <a href="http://www.couchbase.com/communities/python">python client</a> depends on <a href="http://www.couchbase.com/communities/c-client-library">libcouchbase</a>. Once those two were installed, and the <code>twitter_starbucks</code> bucket had been created in Couchbase, I was able to load ~100k JSON documents in a matter of minutes.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Docker + NodeJS Dev Environment: Take 2 - Container Linking]]></title>
@@ -122,7 +223,7 @@ docker run -d --name="myredis" -p 6379:6379 dockerfile/redis
 <span class='line-number'>25</span>
 </pre></td><td class='code'><pre><code class='text'><span class='line'>FROM dockerfile/ubuntu&lt;/p&gt;
 </span><span class='line'>
-</span><span class='line'>&lt;p&gt;MAINTAINER Abhinav Ajgaonkar &lt;a href=&quot;&amp;#109;&amp;#97;&amp;#x69;&amp;#108;&amp;#x74;&amp;#x6f;&amp;#x3a;&amp;#97;&amp;#x62;&amp;#104;&amp;#x69;&amp;#x6e;&amp;#97;&amp;#118;&amp;#x33;&amp;#49;&amp;#54;&amp;#x40;&amp;#103;&amp;#109;&amp;#97;&amp;#105;&amp;#x6c;&amp;#46;&amp;#x63;&amp;#111;&amp;#109;&quot;&gt;&amp;#x61;&amp;#x62;&amp;#104;&amp;#x69;&amp;#x6e;&amp;#x61;&amp;#118;&amp;#51;&amp;#49;&amp;#54;&amp;#x40;&amp;#103;&amp;#x6d;&amp;#x61;&amp;#105;&amp;#108;&amp;#x2e;&amp;#99;&amp;#x6f;&amp;#109;&lt;/a&gt;&lt;/p&gt;
+</span><span class='line'>&lt;p&gt;MAINTAINER Abhinav Ajgaonkar &lt;a href=&quot;&amp;#109;&amp;#97;&amp;#x69;&amp;#108;&amp;#x74;&amp;#x6f;&amp;#x3a;&amp;#x61;&amp;#98;&amp;#104;&amp;#x69;&amp;#x6e;&amp;#x61;&amp;#118;&amp;#x33;&amp;#49;&amp;#54;&amp;#64;&amp;#x67;&amp;#x6d;&amp;#97;&amp;#105;&amp;#x6c;&amp;#x2e;&amp;#99;&amp;#x6f;&amp;#x6d;&quot;&gt;&amp;#97;&amp;#x62;&amp;#x68;&amp;#105;&amp;#x6e;&amp;#x61;&amp;#118;&amp;#x33;&amp;#49;&amp;#x36;&amp;#64;&amp;#x67;&amp;#x6d;&amp;#x61;&amp;#105;&amp;#x6c;&amp;#46;&amp;#99;&amp;#111;&amp;#x6d;&lt;/a&gt;&lt;/p&gt;
 </span><span class='line'>
 </span><span class='line'>&lt;h1&gt;Install pre-reqs&lt;/h1&gt;
 </span><span class='line'>
@@ -346,7 +447,7 @@ docker run -i -t &mdash;rm                     \</p>
 <span class='line-number'>29</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>FROM dockerfile/ubuntu&lt;/p>
 </span><span class='line'>
-</span><span class='line'>&lt;p>MAINTAINER Abhinav Ajgaonkar &lt;a href="&#x6d;&#97;&#105;&#x6c;&#116;&#111;&#58;&#x61;&#x62;&#x68;&#x69;&#110;&#97;&#x76;&#51;&#49;&#54;&#64;&#103;&#109;&#97;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#109;">&#97;&#x62;&#x68;&#105;&#110;&#97;&#118;&#x33;&#49;&#54;&#64;&#x67;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#x6d;&lt;/a>&lt;/p>
+</span><span class='line'>&lt;p>MAINTAINER Abhinav Ajgaonkar &lt;a href="&#109;&#97;&#105;&#108;&#116;&#x6f;&#x3a;&#x61;&#x62;&#104;&#105;&#x6e;&#97;&#x76;&#51;&#x31;&#54;&#64;&#x67;&#109;&#x61;&#x69;&#x6c;&#46;&#99;&#x6f;&#x6d;">&#x61;&#98;&#x68;&#105;&#110;&#97;&#118;&#51;&#49;&#x36;&#x40;&#103;&#x6d;&#97;&#105;&#108;&#46;&#99;&#111;&#x6d;&lt;/a>&lt;/p>
 </span><span class='line'>
 </span><span class='line'>&lt;h1>Install Redis&lt;/h1>
 </span><span class='line'>
