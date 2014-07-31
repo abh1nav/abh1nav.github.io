@@ -62,6 +62,8 @@ Password: password
 
 Once you're in, setting up a cluster is as easy as clicking "Add Server" and giving it the IPs of the other containers. As soon as you add a new server to the cluster, Couchbase will prompt you to run a "Cluster Rebalance" operation - hold off until you've added all 5 nodes and then run the rebalance.
 
+{% img /images/2014-07-31-Couchbase-WebUI-Rebalance.png %}
+
 ###Push some data into the cluster
 Once the cluster was up, I wanted to get a feel for how the WebUI works so I wrote this script to grab some data from our existing cluster of JSON-store-that-I-am-too-ashamed-to-mention and added it to Couchbase:
 
