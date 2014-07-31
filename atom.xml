@@ -4,7 +4,7 @@
   <title><![CDATA[sqldump]]></title>
   <link href="http://blog.abhinav.ca/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-07-31T14:56:05-04:00</updated>
+  <updated>2014-07-31T15:32:31-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -103,6 +103,8 @@
 
 
 <p>Once you&rsquo;re in, setting up a cluster is as easy as clicking &ldquo;Add Server&rdquo; and giving it the IPs of the other containers. As soon as you add a new server to the cluster, Couchbase will prompt you to run a &ldquo;Cluster Rebalance&rdquo; operation &ndash; hold off until you&rsquo;ve added all 5 nodes and then run the rebalance.</p>
+
+<p><img src="http://blog.abhinav.ca/images/2014-07-31-Couchbase-WebUI-Rebalance.png"></p>
 
 <h3>Push some data into the cluster</h3>
 
