@@ -3,7 +3,7 @@ layout: post
 title: "Kickstart a Couchbase cluster with Docker"
 date: 2014-07-31 11:01:15 -0400
 comments: true
-categories: 
+categories: docker, python, couchbase
 ---
 
 A few days ago, I was officially introduced to [Couchbase](http://www.couchbase.com/) at a [Toronto Hadoop User Group meetup](http://www.meetup.com/TorontoHUG/events/191410172/). I say "officially" because I've known about some Couchbase use-cases / pros and cons on a high level since v1.8, but never really had the time to look at it in detail. 
@@ -36,6 +36,20 @@ Once the containers were up, I used `docker inspect` to find their internal IPs 
         "Gateway": "172.17.42.1",
         "IPAddress": "172.17.0.27",
     ...
+```
+
+Update: [Nathan LeClaire](https://twitter.com/upthecyberpunks) from [Docker](http://docker.io) was kind enough to write up a [quick script](https://gist.github.com/nathanleclaire/c7c402f7a9889ca77b98) that combines these two steps:
+
+```bash
+docker run -d -p 11210:11210 -p 11211:11211 -p 8091:8091 -p 8092:8092 --name cb1 dustin/couchbase
+
+for name in cb{2..5}; do 
+    docker run -d --name $name dustin/couchbase
+done
+
+for name in cb{1..5}; do
+    docker inspect -f '{{ .NetworkSettings.IPAddress }}' $name
+done
 ```
 
 ###Setup Cluster using WebUI
