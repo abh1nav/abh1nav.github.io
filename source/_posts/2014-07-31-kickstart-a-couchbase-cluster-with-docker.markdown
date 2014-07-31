@@ -40,7 +40,7 @@ Once the containers were up, I used `docker inspect` to find their internal IPs 
 
 Update: [Nathan LeClaire](https://twitter.com/upthecyberpunks) from [Docker](http://docker.io) was kind enough to write up a [quick script](https://gist.github.com/nathanleclaire/c7c402f7a9889ca77b98) that combines these two steps:
 
-```bash
+{% codeblock lang:bash %}
 docker run -d -p 11210:11210 -p 11211:11211 -p 8091:8091 -p 8092:8092 --name cb1 dustin/couchbase
 
 for name in cb{2..5}; do 
@@ -48,9 +48,9 @@ for name in cb{2..5}; do
 done
 
 for name in cb{1..5}; do
-    docker inspect -f '{{ .NetworkSettings.IPAddress }}' $name
+{% raw %}    docker inspect -f '{{ .NetworkSettings.IPAddress }}' $name{% endraw %}
 done
-```
+{% endcodeblock %}
 
 ###Setup Cluster using WebUI
 If `cb1` is at `172.17.0.27`, then the Couchbase management interface comes up at `http://172.17.0.27:8091` and the default credentials are:
