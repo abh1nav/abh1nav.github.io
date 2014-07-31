@@ -9,8 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="When using the MongoDB Java Driver, if you have long running operations that require you to keep a cursor open, you’ll end up with a MongoException &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +76,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/01/mongodb-cursor-timeout/">MongoDB Cursor Timeout</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-01T15:04:00-04:00" pubdate data-updated="true">Aug 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When using the MongoDB Java Driver, if you have long running operations that require you to keep a cursor open, you’ll end up with a MongoException that says <strong>“oops, the cursor timed out”</strong> after about 10 minutes of activity.</p>
+
+<p>The Mongo docs say that cursors timeout due to inactivity, but as of driver version 2.11.1, I’ve had cursors timeout after 10 minutes even though documents were being fetched from the cursor continuously. Turns out, the fix to keep the cursor alive is surprisingly easy.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">cursor</span><span class="o">.</span><span class="na">addOption</span><span class="o">(</span><span class="n">com</span><span class="o">.</span><span class="na">mongodb</span><span class="o">.</span><span class="na">Bytes</span><span class="o">.</span><span class="na">QUERYOPTION_NOTIMEOUT</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -473,47 +517,6 @@
 
 
 <p>And restart your redis-server process.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/06/set-hostname-os-x/">Set Hostname in OS X</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-06T05:10:43-05:00" pubdate data-updated="true">Dec 6<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo scutil --set HostName myhostname.local
-</span></code></pre></td></tr></table></div></figure>
-
 </div>
   
   

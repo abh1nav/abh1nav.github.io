@@ -9,7 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="A fairly common requirement for database tables is to have a created and last modified timestamp for each record. This seems to be yet another spot &hellip;">
+  <meta name="description" content="I was using MySQLdb to interact with a MySQL server in Python. The script did some selects and some inserts, nothing fancy. All of a sudden, the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,78 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/06/05/mysqldb-why-you-no-insert-data/">MySQLdb - Why You No INSERT Data?!</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-05T01:00:00-04:00" pubdate data-updated="true">Jun 5<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I was using MySQLdb to interact with a MySQL server in Python. The script did some selects and some inserts, nothing fancy. All of a sudden, the selects are working, but the inserts refuse to stick! The script source hadn’t been touched, far as I could tell.</p>
+
+<p>Despite my faith in <code>git status</code>, after meticulously going through each line of code (to ensure absence of PEBKAC), I determined that the script really hadn’t been touched.</p>
+
+<p>Finally remembered, halfway through a new script, I had decided to switch the storage engine from <strong>MyISAM to InnoDB</strong> and therein, as the Bard would tell us, lies the rub.<br/>
+Python-MySQLdb needs an additional connection.commit() statement for all the inserts to actually go through to InnoDB!</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">connection</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+</span><span class='line'>               <span class="n">host</span> <span class="o">=</span> <span class="n">dbHost</span><span class="p">,</span>
+</span><span class='line'>               <span class="n">user</span> <span class="o">=</span> <span class="n">dbUsername</span><span class="p">,</span>
+</span><span class='line'>               <span class="n">passwd</span> <span class="o">=</span> <span class="n">dbPassword</span><span class="p">,</span>
+</span><span class='line'>               <span class="n">db</span> <span class="o">=</span> <span class="n">dbSchema</span><span class="p">);</span>
+</span><span class='line'><span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span><span class='line'><span class="n">sql</span> <span class="o">=</span> <span class="s">&quot;INSERT INTO ...&quot;</span>
+</span><span class='line'><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+</span><span class='line'><span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="c"># Extra step for InnoDB</span>
+</span><span class='line'><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>

@@ -9,10 +9,8 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Add a tag: 1
-git tag -a v0.1 -m &quot;Version 0.1 Stable&quot; Push tags to GitHub: 1
-git push origin --tags Delete tag locally: 1
-git tag -d v0.1 &hellip;">
+  <meta name="description" content=" 1
+sudo scutil --set HostName myhostname.local ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +77,47 @@ git tag -d v0.1 &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/06/set-hostname-os-x/">Set Hostname in OS X</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-06T05:10:43-05:00" pubdate data-updated="true">Dec 6<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo scutil --set HostName myhostname.local
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -559,53 +598,6 @@ public class ISODateParsing {
 </span><span class='line'><span class="c"># Rotate logs</span>
 </span><span class='line'>mongo logRotate.js
 </span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/08/03/delete-all-objects-in-s3-bucket/">Delete All Objects in an S3 Bucket</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-03T15:25:00-04:00" pubdate data-updated="true">Aug 3<span>rd</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Using <a href="http://s3tools.org/s3cmd">s3cmd</a>.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>s3cmd --recursive ls s3://bucketname | <span class="se">\</span>
-</span><span class='line'>awk <span class="s1">&#39;&#39;</span><span class="o">{</span>print <span class="nv">$4</span><span class="o">}</span><span class="s1">&#39;&#39;</span> | <span class="se">\</span>
-</span><span class='line'>xargs s3cmd del
-</span></code></pre></td></tr></table></div></figure>
-
-
 
 </div>
   

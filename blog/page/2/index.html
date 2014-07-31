@@ -9,14 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="As a first time user of Ruby and Rails, I was able to setup a sane environment on Ubuntu Server 12.04 (x64) in less than 10 commands: 1
-2
-3
-4
-5
-6
-7
-8 &hellip;">
+  <meta name="description" content="Attempting to use the Java driver for Titan-0.3.2 (the current stable Titan release) with Cassandra v1.2.6 in a Scala project throws the following &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +76,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/10/getting-the-titan-0-3-2-java-driver-to-work-in-scala/">Getting the Titan-0.3.2 Java Driver to Work in Scala</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-10T14:32:38-05:00" pubdate data-updated="true">Dec 10<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Attempting to use the Java driver for Titan-0.3.2 (the current stable Titan release) with Cassandra v1.2.6 in a Scala project throws the following Astyanax error:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>java.lang.NoSuchMethodError: 
+</span><span class='line'>org.apache.cassandra.thrift.TBinaryProtocol: 
+</span><span class='line'>method (Lorg/apache/thrift/transport/TTransport;)V not found</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This can be traced back to a <a href="https://github.com/Netflix/astyanax/issues/352">bug</a> in Astyanax v1.56.37 which was fixed in v1.56.43.
+This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/com.netflix.astyanax/astyanax/1.56.43">this</a> dependency is listed above the Titan driver in your pom.xml or sbt.build.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -588,51 +628,6 @@
 
 
 <p>Source: <a href="http://andrewhitchcock.org/?post=325">http://andrewhitchcock.org/?post=325</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/08/01/mongodb-cursor-timeout/">MongoDB Cursor Timeout</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-01T15:04:00-04:00" pubdate data-updated="true">Aug 1<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>When using the MongoDB Java Driver, if you have long running operations that require you to keep a cursor open, you’ll end up with a MongoException that says <strong>“oops, the cursor timed out”</strong> after about 10 minutes of activity.</p>
-
-<p>The Mongo docs say that cursors timeout due to inactivity, but as of driver version 2.11.1, I’ve had cursors timeout after 10 minutes even though documents were being fetched from the cursor continuously. Turns out, the fix to keep the cursor alive is surprisingly easy.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">cursor</span><span class="o">.</span><span class="na">addOption</span><span class="o">(</span><span class="n">com</span><span class="o">.</span><span class="na">mongodb</span><span class="o">.</span><span class="na">Bytes</span><span class="o">.</span><span class="na">QUERYOPTION_NOTIMEOUT</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
 </div>
   
   
