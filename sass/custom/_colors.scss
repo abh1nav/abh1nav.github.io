@@ -47,10 +47,10 @@ $img-border: none;
 $akka_light_green: #5eb037;
 
 // Main Link Colors
-$link-color: $sol_yellow;
-$link-color-hover: $sol_base01;
-$link-color-visited: $link-color;
-$link-color-active: $link-color-hover;
+$link-color: $sol_orange;
+$link-color-hover: $sol_green;
+$link-color-visited: $sol_cyan;
+$link-color-active: $sol_blue;
 
 // Main Section Colors
 $main-bg: #eee; // darken($sol_base3, 8);
@@ -60,7 +60,7 @@ $header-bg: darken(#eee, 3); // $sol_base3;
 $title-color: $sol_green;
 $subtitle-color: $akka_light_green;
 $text-color: #333;
-$text-color-light: $sol_base0;
+$text-color-light: #666;
 
 ///* Navigation */
 $nav-bg: $sol_base1;
