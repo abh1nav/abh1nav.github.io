@@ -9,7 +9,8 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Attempting to use the Java driver for Titan-0.3.2 (the current stable Titan release) with Cassandra v1.2.6 in a Scala project throws the following &hellip;">
+  <meta name="description" content="
+">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +77,42 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/31/bro-do-you-even-chromecast/">Bro, Do You Even #chromecast?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-31T20:40:13-05:00" pubdate data-updated="true">Dec 31<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="/images/tumblr/2013-12-31-1.jpg" width="640" height="640"></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -550,84 +587,6 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
 
 
 
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/08/06/iam-policy-for-access-to-a-single-s3-bucket/">IAM Policy for Access to a Single S3 Bucket</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-06T10:54:00-04:00" pubdate data-updated="true">Aug 6<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Assuming the bucket name is <strong>my-bucket</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>  "Statement": [
-</span><span class='line'>    {
-</span><span class='line'>      "Action": [
-</span><span class='line'>        "s3:ListAllMyBuckets"
-</span><span class='line'>      ],
-</span><span class='line'>      "Effect": "Allow",
-</span><span class='line'>      "Resource": "arn:aws:s3:::*"
-</span><span class='line'>    },
-</span><span class='line'>    {
-</span><span class='line'>      "Action": "s3:*",
-</span><span class='line'>      "Effect": "Allow",
-</span><span class='line'>      "Resource": [
-</span><span class='line'>        "arn:aws:s3:::my-bucket", 
-</span><span class='line'>        "arn:aws:s3:::my-bucket/*"
-</span><span class='line'>      ]
-</span><span class='line'>    }
-</span><span class='line'>  ]
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Source: <a href="http://andrewhitchcock.org/?post=325">http://andrewhitchcock.org/?post=325</a></p>
 </div>
   
   

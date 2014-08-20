@@ -9,8 +9,9 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content=" 1
-sudo scutil --set HostName myhostname.local ">
+  <meta name="description" content="Run as root: 1
+echo 1 &gt; /proc/sys/vm/overcommit_memory And restart your redis-server process.
+">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +78,49 @@ sudo scutil --set HostName myhostname.local ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/10/redis-server-defunct-pwning-disk-io/">Redis Server Pwning Your Disk IO?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-10T13:11:58-05:00" pubdate data-updated="true">Dec 10<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Run as root:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">echo </span>1 &gt; /proc/sys/vm/overcommit_memory
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And restart your redis-server process.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -542,62 +586,6 @@ public class ISODateParsing {
 <p>Ever climbing license costs, “paid-only” versions of MySQL Workbench and other tools along with the lack of “Basic” and “Silver” level support pretty much sums up the basis for the prediction. He ends with the following nugget:</p>
 
 <blockquote><p>This reminds me of the old quote, first uttered in 1422 at the coronation of French King Charles VII, after the death of his father, Charles VI, “The King is dead. Long live the King.” Just maybe we’re a bit premature, but we see it coming.</p><footer><strong>daleV</strong> <cite><a href='http://www.geekgumbo.com/2010/11/06/the-decline-of-mysql/'>&#8216;The Decline of MySQL?&#8217;</a></cite></footer></blockquote>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/08/17/mongo-db-log-rotate/">Simple logRotate Script for MongoDB</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-17T10:34:50-04:00" pubdate data-updated="true">Aug 17<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>logRotate.js</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">getMongo</span><span class="p">().</span><span class="nx">getDB</span><span class="p">(</span><span class="s2">&quot;admin&quot;</span><span class="p">).</span><span class="nx">runCommand</span><span class="p">(</span><span class="s2">&quot;logRotate&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>logRotate.sh</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/sh</span>
-</span><span class='line'><span class="c"># Clear old logs</span>
-</span><span class='line'>rm /data/logs/mongod.log.*
-</span><span class='line'><span class="c"># Rotate logs</span>
-</span><span class='line'>mongo logRotate.js
-</span></code></pre></td></tr></table></div></figure>
 
 </div>
   

@@ -9,7 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="I was using MySQLdb to interact with a MySQL server in Python. The script did some selects and some inserts, nothing fancy. All of a sudden, the &hellip;">
+  <meta name="description" content="Django is awesome. Python is awesome. Mac OS is sort-of ok. So is MySQL. But geez, getting Python’s MySQL connector (MySQLdb) to play nice on the Mac &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,81 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/06/05/django-on-mac-fail/">Django on Mac = FAIL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-05T01:02:57-04:00" pubdate data-updated="true">Jun 5<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Django is awesome. Python is awesome. Mac OS is sort-of ok. So is MySQL. But geez, getting Python’s MySQL connector (MySQLdb) to play nice on the Mac OS made me start to lose my hair. Django needs this to be able to reach a MySQL server (which I wanted to use) to be able seamlessly run syncdb etc.</p>
+
+<p>There are varied sets of sparse instructions all over the interwebs on how to get MySQL db to compile for Mac OS; some ask you to edit source files before compiling, some are out of date and nearly all of them just don’t work.</p>
+
+<p>But&hellip; it’s a Mac&hellip; doesn’t it just work?! Apparently not. <code>&lt;/end rant&gt;</code></p>
+
+<p>The solution, this time, came to me in the form of MacPorts. MacPorts is a brilliant system that is the closest replacement to aptitude, for someone coming from a more Ubuntu-esque background (and I guess its existence makes sense, what with FreeBSD ports and all). A few simple lines to get you going on this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># install django and dependencies</span>
+</span><span class='line'>sudo port install py26-django
+</span><span class='line'><span class="c"># set py26 as default</span>
+</span><span class='line'>sudo port <span class="k">select</span> --set python python26
+</span><span class='line'>sudo port install py26-mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Just to make sure these worked:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>macbookpro:~ asdf$ python
+</span><span class='line'>Python 2.6.6 (r266:84292, May 26 2011, 01:52:07) 
+</span><span class='line'>[GCC 4.2.1 (Apple Inc. build 5664)] on darwin
+</span><span class='line'>Type "help", "copyright", "credits" or "license" for more information.
+</span><span class='line'>>>> import MySQLdb
+</span><span class='line'>>>> MySQLdb.version_info
+</span><span class='line'>(1, 2, 3, ''final'', 0)
+</span><span class='line'>>>></span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>

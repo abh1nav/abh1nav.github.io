@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Hackathon: Bike Share Toronto - sqldump</title>
+  <meta name="author" content="Abhinav Ajgaonkar">
+
+  
+  <meta name="description" content="This past weekend, I had the pleasure of being a participant at the Bike Share Toronto Hackathon &amp; Design Jam. This was my first time attending &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.abhinav.ca/blog/2014/08/19/hackathon-bike-share-toronto/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="sqldump" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-23345729-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">sqldump</a></h1>
+  
+    <h2>(coffee) => code</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.abhinav.ca" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Hackathon: Bike Share Toronto</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-19T21:29:58-04:00" pubdate data-updated="true">Aug 19<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This past weekend, I had the pleasure of being a participant at the <a href="https://bikesharearup-hackathonde.squarespace.com">Bike Share Toronto Hackathon &amp; Design Jam</a>. This was my first time attending an Open Data related hackathon in Toronto and simply put, the experience was absolutely phenomenal. 36 hours of non-stop hacking on data related to usage of the Bike Share Toronto service combined with the data from the Cycling App made available by the City of Toronto with the singular aim of getting more people on bikes.</p>
+
+<h2>The Concept</h2>
+
+<p><a href="https://twitter.com/abh1nv/status/501093674634448896">Team Fixie</a> decided to appeal to the users&#8217; common sense by presenting a comparison of various modes of transportation before embarking on a trip.</p>
+
+<p><a href="/images/2014-08-19-Fixie-UI-1.png"><img src="/images/2014-08-19-Fixie-UI-1.png"></a></p>
+
+<p>In a nutshell, the responsive web app asks for details about your trip, such as the reason for the trip, start / end locations and optionally a time of arrival.</p>
+
+<p><a href="/images/2014-08-19-Fixie-UI-2.png"><img src="/images/2014-08-19-Fixie-UI-2.png"></a></p>
+
+<p>It then presents you with three options that include realistic time estimates (as opposed to average speed based estimates provided by Google Maps) by accounting for factors such as weather and average speeds typically achieved by cyclists during the time of day around the arrival time.</p>
+
+<p><a href="/images/2014-08-19-Fixie-UI-3.png"><img src="/images/2014-08-19-Fixie-UI-3.png"></a></p>
+
+<p>When assessing the Bike Share option, Fixie includes the time required to walk from your starting point to the nearest Bike Share station, the time required to bike from the first Bike Share station to the Bike Share station nearest to your destination and the time required to walk to your destination from the second Bike Share station.</p>
+
+<p><a href="/images/2014-08-19-Fixie-UI-4.png"><img src="/images/2014-08-19-Fixie-UI-4.png"></a></p>
+
+<p>Similarly, when calculating the time required for you to ride your own bike, Fixie includes the time required to bike from your starting point to the bike lock post nearest to your destination (so you can secure your bike) and the time required to walk to your destination from the bike post.</p>
+
+<p><a href="/images/2014-08-19-Fixie-UI-5.png"><img src="/images/2014-08-19-Fixie-UI-5.png"></a></p>
+
+<p>For public transit, driving and walking directions, it relies entirely on Google Maps.</p>
+
+<h2>The Hack</h2>
+
+<p>The front end is backed by <a href="http://nodejs.org/">NodeJS</a> / <a href="http://expressjs.com/">ExpressJS</a> REST API and the client side is built using <a href="http://www.w3.org/TR/html5/">HTML5</a>, <a href="http://sass-lang.com/">SASS</a> and <a href="https://angularjs.org/">AngularJS</a>. The auto-complete for address boxes is powered by the <a href="https://developers.google.com/maps/documentation/javascript/">Google Maps Javascript API v3</a> and location detection is enabled using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation">HTML5 Geo-Location API</a>. The entire javascript layer is uses <a href="http://gulpjs.com/">GulpJS</a> to build and package itself.</p>
+
+<p>The Javascript layer talks to a Python REST API written using <a href="http://www.cherrypy.org/">CherryPy</a> to calculate the time for each type of trip. The python backend talks to the <a href="https://developers.google.com/maps/documentation/directions/">Google Directions API</a> to generate waypoints for a trip and also encapsulates the <a href="http://scikit-learn.org/stable/">SciKit Learn</a> model that predicts travel times between waypoints for a given time of day.</p>
+
+<h2>Datasets Used</h2>
+
+<p>The machine learning system that predicts travel time was trained using data from City of Toronto Cycling App data and the Bike Share data. The difficulty here was that the Bike Share data did not provide the change in elevation for the trip and an analysis of the model&rsquo;s features indicated that altitude change was fairly important to ensure an accurate prediction. Using the <a href="https://developers.google.com/maps/documentation/elevation/">Google Elevation API</a>, we were able to approximate the change in altitude for each Bike Share trip and mix that data to enhance the provided dataset and help train the model.</p>
+
+<p>The python service also used the <a href="http://www1.toronto.ca/wps/portal/contentonly?vgnextoid=d46e94ec9fbf3310VgnVCM1000003dd60f89RCRD">Bicycle Post and Ring Locations</a> dataset provided by the City of Toronto as well as the Bike Share Station dataset to help plan the waypoints for bike trips.</p>
+
+<h2>Conclusion</h2>
+
+<p>At the end some amazing ideas, prototypes and implementations were presented by the 9 participating groups to a packed audience. All in all, the hackathon was a smashing success. I wanted to put this post up to catalogue the concept and implementation that our team came up with, just so I&rsquo;d have something to refer back to, or in case someone else finds some use for it.</p>
+
+<p>Last but not least, a big thank you to all the organizers and sponsors for making this event happen. Shout outs to <a href="https://twitter.com/biancawylie">Bianca Wylie</a>, <a href="https://twitter.com/Naomi_Freeman">Naomi Freeman</a>, <a href="https://twitter.com/abuchanterrell">Allison Buchan-Terrell</a>, <a href="https://twitter.com/MichaelMarkieta">Michael Markieta</a>, <a href="https://twitter.com/CabbagetownMatt">Matthew Browning</a> and Anelia.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Abhinav Ajgaonkar</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-19T21:29:58-04:00" pubdate data-updated="true">Aug 19<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/angularjs/'>angularjs</a>, <a class='category' href='/blog/categories/hackathon/'>hackathon</a>, <a class='category' href='/blog/categories/nodejs/'>nodejs</a>, <a class='category' href='/blog/categories/opendata/'>opendata</a>, <a class='category' href='/blog/categories/python/'>python</a>, <a class='category' href='/blog/categories/scikit/'>scikit</a>, <a class='category' href='/blog/categories/toronto/'>toronto</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.abhinav.ca/blog/2014/08/19/hackathon-bike-share-toronto/" data-via="abh1nv" data-counturl="http://blog.abhinav.ca/blog/2014/08/19/hackathon-bike-share-toronto/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/07/31/kickstart-a-couchbase-cluster-with-docker/" title="Previous Post: Kickstart a Couchbase cluster with Docker">&laquo; Kickstart a Couchbase cluster with Docker</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p>Data fanatic. Scala fanboy. TV connoisseur. Coffee drinker. CTO <a href="http://crowdriff.com">CrowdRiff</a>. Creator of <a href="http://getriffle.com/">Riffle</a> and <a href="http://mytoptweet.com">MyTopTweet</a>. Find me on Twitter at <a href="https://twitter.com/abh1nv">@abh1nv</a>.</p>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/abh1nav">@abh1nav</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'abh1nav',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Abhinav Ajgaonkar -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

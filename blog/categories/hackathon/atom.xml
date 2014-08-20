@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: hackathon | sqldump]]></title>
+  <link href="http://blog.abhinav.ca/blog/categories/hackathon/atom.xml" rel="self"/>
+  <link href="http://blog.abhinav.ca/"/>
+  <updated>2014-08-19T23:41:26-04:00</updated>
+  <id>http://blog.abhinav.ca/</id>
+  <author>
+    <name><![CDATA[Abhinav Ajgaonkar]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Hackathon: Bike Share Toronto]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/08/19/hackathon-bike-share-toronto/"/>
+    <updated>2014-08-19T21:29:58-04:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/08/19/hackathon-bike-share-toronto</id>
+    <content type="html"><![CDATA[<p>This past weekend, I had the pleasure of being a participant at the <a href="https://bikesharearup-hackathonde.squarespace.com">Bike Share Toronto Hackathon &amp; Design Jam</a>. This was my first time attending an Open Data related hackathon in Toronto and simply put, the experience was absolutely phenomenal. 36 hours of non-stop hacking on data related to usage of the Bike Share Toronto service combined with the data from the Cycling App made available by the City of Toronto with the singular aim of getting more people on bikes.</p>
+
+<h2>The Concept</h2>
+
+<p><a href="https://twitter.com/abh1nv/status/501093674634448896">Team Fixie</a> decided to appeal to the users' common sense by presenting a comparison of various modes of transportation before embarking on a trip.</p>
+
+<p><a href="/images/2014-08-19-Fixie-UI-1.png"><img src="/images/2014-08-19-Fixie-UI-1.png"></a></p>
+
+<p>In a nutshell, the responsive web app asks for details about your trip, such as the reason for the trip, start / end locations and optionally a time of arrival.</p>
+
+<p><a href="/images/2014-08-19-Fixie-UI-2.png"><img src="/images/2014-08-19-Fixie-UI-2.png"></a></p>
+
+<p>It then presents you with three options that include realistic time estimates (as opposed to average speed based estimates provided by Google Maps) by accounting for factors such as weather and average speeds typically achieved by cyclists during the time of day around the arrival time.</p>
+
+<p><a href="/images/2014-08-19-Fixie-UI-3.png"><img src="/images/2014-08-19-Fixie-UI-3.png"></a></p>
+
+<p>When assessing the Bike Share option, Fixie includes the time required to walk from your starting point to the nearest Bike Share station, the time required to bike from the first Bike Share station to the Bike Share station nearest to your destination and the time required to walk to your destination from the second Bike Share station.</p>
+
+<p><a href="/images/2014-08-19-Fixie-UI-4.png"><img src="/images/2014-08-19-Fixie-UI-4.png"></a></p>
+
+<p>Similarly, when calculating the time required for you to ride your own bike, Fixie includes the time required to bike from your starting point to the bike lock post nearest to your destination (so you can secure your bike) and the time required to walk to your destination from the bike post.</p>
+
+<p><a href="/images/2014-08-19-Fixie-UI-5.png"><img src="/images/2014-08-19-Fixie-UI-5.png"></a></p>
+
+<p>For public transit, driving and walking directions, it relies entirely on Google Maps.</p>
+
+<h2>The Hack</h2>
+
+<p>The front end is backed by <a href="http://nodejs.org/">NodeJS</a> / <a href="http://expressjs.com/">ExpressJS</a> REST API and the client side is built using <a href="http://www.w3.org/TR/html5/">HTML5</a>, <a href="http://sass-lang.com/">SASS</a> and <a href="https://angularjs.org/">AngularJS</a>. The auto-complete for address boxes is powered by the <a href="https://developers.google.com/maps/documentation/javascript/">Google Maps Javascript API v3</a> and location detection is enabled using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation">HTML5 Geo-Location API</a>. The entire javascript layer is uses <a href="http://gulpjs.com/">GulpJS</a> to build and package itself.</p>
+
+<p>The Javascript layer talks to a Python REST API written using <a href="http://www.cherrypy.org/">CherryPy</a> to calculate the time for each type of trip. The python backend talks to the <a href="https://developers.google.com/maps/documentation/directions/">Google Directions API</a> to generate waypoints for a trip and also encapsulates the <a href="http://scikit-learn.org/stable/">SciKit Learn</a> model that predicts travel times between waypoints for a given time of day.</p>
+
+<h2>Datasets Used</h2>
+
+<p>The machine learning system that predicts travel time was trained using data from City of Toronto Cycling App data and the Bike Share data. The difficulty here was that the Bike Share data did not provide the change in elevation for the trip and an analysis of the model&rsquo;s features indicated that altitude change was fairly important to ensure an accurate prediction. Using the <a href="https://developers.google.com/maps/documentation/elevation/">Google Elevation API</a>, we were able to approximate the change in altitude for each Bike Share trip and mix that data to enhance the provided dataset and help train the model.</p>
+
+<p>The python service also used the <a href="http://www1.toronto.ca/wps/portal/contentonly?vgnextoid=d46e94ec9fbf3310VgnVCM1000003dd60f89RCRD">Bicycle Post and Ring Locations</a> dataset provided by the City of Toronto as well as the Bike Share Station dataset to help plan the waypoints for bike trips.</p>
+
+<h2>Conclusion</h2>
+
+<p>At the end some amazing ideas, prototypes and implementations were presented by the 9 participating groups to a packed audience. All in all, the hackathon was a smashing success. I wanted to put this post up to catalogue the concept and implementation that our team came up with, just so I&rsquo;d have something to refer back to, or in case someone else finds some use for it.</p>
+
+<p>Last but not least, a big thank you to all the organizers and sponsors for making this event happen. Shout outs to <a href="https://twitter.com/biancawylie">Bianca Wylie</a>, <a href="https://twitter.com/Naomi_Freeman">Naomi Freeman</a>, <a href="https://twitter.com/abuchanterrell">Allison Buchan-Terrell</a>, <a href="https://twitter.com/MichaelMarkieta">Michael Markieta</a>, <a href="https://twitter.com/CabbagetownMatt">Matthew Browning</a> and Anelia.</p>
+]]></content>
+  </entry>
+  
+</feed>
