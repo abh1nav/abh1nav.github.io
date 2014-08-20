@@ -4,7 +4,7 @@
   <title><![CDATA[sqldump]]></title>
   <link href="http://blog.abhinav.ca/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-08-19T23:58:15-04:00</updated>
+  <updated>2014-08-20T00:19:28-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -509,7 +509,7 @@ The command for launching an instance of this image also needs to be modified sl
 </pre></td><td class='code'><pre><code class=''><span class='line'>FROM dockerfile/ubuntu</span></code></pre></td></tr></table></div></figure>
 
 
-<blockquote></blockquote>
+<p></p>
 
 <p>This tells docker to use the <code>dockerfile/ubuntu</code> image provided by Docker Inc. as the base image for the build.</p>
 
