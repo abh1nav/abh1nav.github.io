@@ -9,8 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="Rule #1 of Akka: don’t block inside actors. If you do have blocking / high latency calls, wrap them in a future and toss them into a different &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +76,91 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/01/08/executioncontext-for-long-running-tasks/">ExecutionContext for Long Running Tasks</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-08T15:20:32-05:00" pubdate data-updated="true">Jan 8<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Rule #1 of Akka: don’t block inside actors. If you do have blocking / high latency calls, wrap them in a future and toss them into a different execution context specifically meant for high latency tasks.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent.Executors</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">ClassyActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">numThreads</span> <span class="k">=</span> <span class="mi">10</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">pool</span> <span class="k">=</span> <span class="nc">Executors</span><span class="o">.</span><span class="n">newFixedThreadPool</span><span class="o">(</span><span class="n">numThreads</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">ctx</span> <span class="k">=</span> <span class="nc">ExecutionContext</span><span class="o">.</span><span class="n">fromExecutorService</span><span class="o">(</span><span class="n">pool</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span><span class="k">:</span> <span class="kt">Actor.Receive</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// An message that needs some high latency work done</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">m</span><span class="k">:</span> <span class="kt">Message</span> <span class="o">=&gt;</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">future</span> <span class="k">=</span> <span class="nc">Future</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// do something with m: Message</span>
+</span><span class='line'>      <span class="o">}</span> <span class="o">(</span><span class="n">ctx</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">future</span><span class="o">.</span><span class="n">onComplete</span><span class="o">({</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">s</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>          <span class="c1">// do something when the task successfully completed</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nc">Failure</span><span class="o">(</span><span class="n">f</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>          <span class="c1">// do something when the task failed</span>
+</span><span class='line'>      <span class="o">})</span> <span class="o">(</span><span class="n">ctx</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -507,86 +591,6 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
 
 
   <div class="entry-content"><p><img src="/images/tumblr/2013-08-13-1.jpg" width="640" height="640"></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/08/07/those-weird-characters-in-hadoop-faunus-output/">Those @!#$ Weird Characters in Hadoop / Faunus Output</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-07T14:40:00-04:00" pubdate data-updated="true">Aug 7<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Text-file output from Faunus often always contains garbage characters. To scrub them out, I use this little python script:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">re</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">printable</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;output.csv&quot;</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span class='line'><span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;[^{}]+&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">printable</span><span class="p">),</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
-</span><span class='line'><span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">while</span> <span class="n">line</span><span class="p">:</span>
-</span><span class='line'>  <span class="k">print</span> <span class="n">line</span>
-</span><span class='line'>  <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;[^{}]+&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">printable</span><span class="p">),</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then a simple</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>python process.py &gt; scrubbed.output.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-
 </div>
   
   

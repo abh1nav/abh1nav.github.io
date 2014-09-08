@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: testing | sqldump]]></title>
+  <link href="http://blog.abhinav.ca/blog/categories/testing/atom.xml" rel="self"/>
+  <link href="http://blog.abhinav.ca/"/>
+  <updated>2014-09-08T17:18:05-04:00</updated>
+  <id>http://blog.abhinav.ca/</id>
+  <author>
+    <name><![CDATA[Abhinav Ajgaonkar]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Unit Testing Futures with ScalaTest]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/09/08/unit-testing-futures-with-scalatest/"/>
+    <updated>2014-09-08T17:08:08-04:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/09/08/unit-testing-futures-with-scalatest</id>
+    <content type="html"><![CDATA[<p>Unit testing methods that return futures in Scala is quite straightforward using ScalaTest 2.0+</p>
+
+<p>```scala
+import org.scalatest.FunSuite
+import org.scalatest.concurrent.ScalaFutures
+import scala.concurrent.Future</p>
+
+<p>class NiceClass$Test extends FunSuite with ScalaFutures {
+  test(&ldquo;Test a method that returns a future&rdquo;) {</p>
+
+<pre><code>val f: Future[Boolean] = somethingThatReturnsAFuture()
+
+whenReady(f) { result =&gt;
+  assert(result)
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>If your future is making a web service call or doing some sort of IO that takes a few seconds to complete, you might encounter an error like this one:</p>
+
+<p><code>
+A timeout occurred waiting for a future to complete. Queried 11 times, sleeping 15 milliseconds between each query.
+</code></p>
+
+<p>You can fix this by telling ScalaFutures how long its supposed to wait before declaring that the future has timed out.</p>
+
+<p>```scala
+import org.scalatest.time.{Millis, Secpmds, Span}</p>
+
+<p>implicit val defaultPatience =
+  PatienceConfig(timeout = Span(5, Seconds), interval = Span(500, Millis))
+```</p>
+
+<p>Happy testing!</p>
+]]></content>
+  </entry>
+  
+</feed>

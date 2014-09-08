@@ -9,7 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Django is awesome. Python is awesome. Mac OS is sort-of ok. So is MySQL. But geez, getting Python’s MySQL connector (MySQLdb) to play nice on the Mac &hellip;">
+  <meta name="description" content="I was looking to accomplish a simple task &ndash; print debug messages in a Django View that would tell me what’s going on. Came across the following &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,47 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/06/06/debugging-django/">Debugging Django</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-06T14:09:00-04:00" pubdate data-updated="true">Jun 6<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I was looking to accomplish a simple task &ndash; print debug messages in a Django View that would tell me what’s going on. Came across the following in a post:</p>
+
+<blockquote><p>You can configure it in your `settings.py`:</p><p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/><span class='line-number'>4</span><br/><span class='line-number'>5</span><br/></pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">logging</span><br/></span><span class='line'><span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><br/></span><span class='line'>    <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span><br/></span><span class='line'>    <span class="n">format</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">asctime</span><span class="p">)</span><span class="n">s</span> <span class="o">%</span><span class="p">(</span><span class="n">levelname</span><span class="p">)</span><span class="n">s</span> <span class="o">%</span><span class="p">(</span><span class="n">message</span><span class="p">)</span><span class="n">s</span><span class="s">&#39;&#39;</span><span class="p">,</span><br/></span><span class='line'><span class="p">)</span><br/></span></code></pre></td></tr></table></div></figure></p><p>Then call it from any of your views:</p><p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/></pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span><br/></span><span class='line'>    <span class="kn">import</span> <span class="nn">logging</span><br/></span><span class='line'>    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;A log message&quot;</span><span class="p">)</span><br/></span></code></pre></td></tr></table></div></figure></p><footer><strong>Simon Willison</strong> <cite><a href='http://bit.ly/jr3wE1'>bit.ly/jr3wE1/&hellip;</a></cite></footer></blockquote>
+
+
+<p>He then goes on to explain more advanced use cases using the Python Debugger, but this much was enough for what I was looking to do with it.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>

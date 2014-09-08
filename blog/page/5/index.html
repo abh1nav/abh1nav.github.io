@@ -9,15 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="logRotate.js 1
-db.getMongo().getDB(&quot;admin&quot;).runCommand(&quot;logRotate&quot;) logRotate.sh 1
-2
-3
-4
-5
-#!/bin/sh
-# Clear old logs
-rm /data/ &hellip;">
+  <meta name="description" content="daleV, of Geek Gumbo, presents an interesting take on the impending decline of MySQL. Look for Oracle not to drop it’s Open Source version after 2015 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,6 +76,50 @@ rm /data/ &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/18/the-decline-of-mysql/">The Decline of MySQL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-18T11:44:05-04:00" pubdate data-updated="true">Aug 18<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>daleV, of Geek Gumbo, presents an interesting take on the impending decline of MySQL.</p>
+
+<blockquote><p>Look for Oracle not to drop it’s Open Source version after 2015. It will keep a stripped down version available to entice new users to their revenue stream when they need to upgrade, and to claim they still support the Open Source community. The prices for MySQL will steadily climb. This will kill MySQL as the database of choice for web development. Look for MySQL to decline in use.</p><footer><strong>daleV</strong> <cite><a href='http://www.geekgumbo.com/2010/11/06/the-decline-of-mysql/'>&#8216;The Decline of MySQL?&#8217;</a></cite></footer></blockquote>
+
+
+<p>Ever climbing license costs, “paid-only” versions of MySQL Workbench and other tools along with the lack of “Basic” and “Silver” level support pretty much sums up the basis for the prediction. He ends with the following nugget:</p>
+
+<blockquote><p>This reminds me of the old quote, first uttered in 1422 at the coronation of French King Charles VII, after the death of his father, Charles VI, “The King is dead. Long live the King.” Just maybe we’re a bit premature, but we see it coming.</p><footer><strong>daleV</strong> <cite><a href='http://www.geekgumbo.com/2010/11/06/the-decline-of-mysql/'>&#8216;The Decline of MySQL?&#8217;</a></cite></footer></blockquote>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -593,47 +629,6 @@ Add a script to serve by creating a file <code>/var/www/html/my.py</code> and ad
 
 
 <p><code>min_count</code> and <code>max_count</code> determine how many instances are to be started. By default, Amazon limits you to starting a maximum of 20 instances. If you need to start more, they require you to contact them with your use case.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/06/06/debugging-django/">Debugging Django</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-06-06T14:09:00-04:00" pubdate data-updated="true">Jun 6<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I was looking to accomplish a simple task &ndash; print debug messages in a Django View that would tell me what’s going on. Came across the following in a post:</p>
-
-<blockquote><p>You can configure it in your `settings.py`:</p><p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/><span class='line-number'>4</span><br/><span class='line-number'>5</span><br/></pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">logging</span><br/></span><span class='line'><span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><br/></span><span class='line'>    <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span><br/></span><span class='line'>    <span class="n">format</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">asctime</span><span class="p">)</span><span class="n">s</span> <span class="o">%</span><span class="p">(</span><span class="n">levelname</span><span class="p">)</span><span class="n">s</span> <span class="o">%</span><span class="p">(</span><span class="n">message</span><span class="p">)</span><span class="n">s</span><span class="s">&#39;&#39;</span><span class="p">,</span><br/></span><span class='line'><span class="p">)</span><br/></span></code></pre></td></tr></table></div></figure></p><p>Then call it from any of your views:</p><p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/></pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span><br/></span><span class='line'>    <span class="kn">import</span> <span class="nn">logging</span><br/></span><span class='line'>    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;A log message&quot;</span><span class="p">)</span><br/></span></code></pre></td></tr></table></div></figure></p><footer><strong>Simon Willison</strong> <cite><a href='http://bit.ly/jr3wE1'>bit.ly/jr3wE1/&hellip;</a></cite></footer></blockquote>
-
-
-<p>He then goes on to explain more advanced use cases using the Python Debugger, but this much was enough for what I was looking to do with it.</p>
 </div>
   
   

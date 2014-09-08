@@ -4,7 +4,7 @@
   <title><![CDATA[sqldump]]></title>
   <link href="http://blog.abhinav.ca/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-08-20T00:19:28-04:00</updated>
+  <updated>2014-09-08T17:18:05-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -12,6 +12,66 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Unit Testing Futures with ScalaTest]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/09/08/unit-testing-futures-with-scalatest/"/>
+    <updated>2014-09-08T17:08:08-04:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/09/08/unit-testing-futures-with-scalatest</id>
+    <content type="html"><![CDATA[<p>Unit testing methods that return futures in Scala is quite straightforward using ScalaTest 2.0+</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.FunSuite</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.concurrent.ScalaFutures</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.concurrent.Future</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">NiceClass$Test</span> <span class="k">extends</span> <span class="nc">FunSuite</span> <span class="k">with</span> <span class="nc">ScalaFutures</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">test</span><span class="o">(</span><span class="s">&quot;Test a method that returns a future&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">f</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Boolean</span><span class="o">]</span> <span class="k">=</span> <span class="n">somethingThatReturnsAFuture</span><span class="o">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">whenReady</span><span class="o">(</span><span class="n">f</span><span class="o">)</span> <span class="o">{</span> <span class="n">result</span> <span class="k">=&gt;</span>
+</span><span class='line'>      <span class="n">assert</span><span class="o">(</span><span class="n">result</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If your future is making a web service call or doing some sort of IO that takes a few seconds to complete, you might encounter an error like this one:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">A</span> <span class="n">timeout</span> <span class="n">occurred</span> <span class="n">waiting</span> <span class="k">for</span> <span class="n">a</span> <span class="n">future</span> <span class="n">to</span> <span class="n">complete</span><span class="o">.</span> <span class="nc">Queried</span> <span class="mi">11</span> <span class="n">times</span><span class="o">,</span> <span class="n">sleeping</span> <span class="mi">15</span> <span class="n">milliseconds</span> <span class="n">between</span> <span class="n">each</span> <span class="n">query</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can fix this by telling ScalaFutures how long its supposed to wait before declaring that the future has timed out.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.time.</span><span class="o">{</span><span class="nc">Millis</span><span class="o">,</span> <span class="nc">Secpmds</span><span class="o">,</span> <span class="nc">Span</span><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">implicit</span> <span class="k">val</span> <span class="n">defaultPatience</span> <span class="k">=</span>
+</span><span class='line'>  <span class="nc">PatienceConfig</span><span class="o">(</span><span class="n">timeout</span> <span class="k">=</span> <span class="nc">Span</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="nc">Seconds</span><span class="o">),</span> <span class="n">interval</span> <span class="k">=</span> <span class="nc">Span</span><span class="o">(</span><span class="mi">500</span><span class="o">,</span> <span class="nc">Millis</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Happy testing!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Hackathon: Bike Share Toronto]]></title>
@@ -1525,59 +1585,6 @@ This can be fixed by ensuring that <a href="http://mvnrepository.com/artifact/co
     <updated>2013-08-10T09:53:49-04:00</updated>
     <id>http://blog.abhinav.ca/blog/2013/08/10/pycon-canada-2013-is-getting-underway</id>
     <content type="html"><![CDATA[<p><img src="http://blog.abhinav.ca/images/tumblr/2013-08-13-1.jpg" width="640" height="640"></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Those @!#$ weird characters in Hadoop / Faunus output]]></title>
-    <link href="http://blog.abhinav.ca/blog/2013/08/07/those-weird-characters-in-hadoop-faunus-output/"/>
-    <updated>2013-08-07T14:40:00-04:00</updated>
-    <id>http://blog.abhinav.ca/blog/2013/08/07/those-weird-characters-in-hadoop-faunus-output</id>
-    <content type="html"><![CDATA[<p>Text-file output from Faunus often always contains garbage characters. To scrub them out, I use this little python script:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">re</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">printable</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;output.csv&quot;</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span class='line'><span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;[^{}]+&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">printable</span><span class="p">),</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
-</span><span class='line'><span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">while</span> <span class="n">line</span><span class="p">:</span>
-</span><span class='line'>  <span class="k">print</span> <span class="n">line</span>
-</span><span class='line'>  <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;[^{}]+&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">printable</span><span class="p">),</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then a simple</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>python process.py &gt; scrubbed.output.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-
 ]]></content>
   </entry>
   
