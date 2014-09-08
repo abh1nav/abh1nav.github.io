@@ -27,13 +27,14 @@ class NiceClass$Test extends FunSuite with ScalaFutures {
 If your future is making a web service call or doing some sort of IO that takes a few seconds to complete, you might encounter an error like this one:
   
 ```
-A timeout occurred waiting for a future to complete. Queried 11 times, sleeping 15 milliseconds between each query.
+A timeout occurred waiting for a future to complete. 
+Queried 11 times, sleeping 15 milliseconds between each query.
 ```
   
-You can fix this by telling ScalaFutures how long its supposed to wait before declaring that the future has timed out.
+You can fix this by telling ScalaFutures how long it should to wait before declaring that the future has timed out.
   
 ```scala
-import org.scalatest.time.{Millis, Secpmds, Span}
+import org.scalatest.time.{Millis, Seconds, Span}
 
 implicit val defaultPatience = 
   PatienceConfig(timeout = Span(5, Seconds), interval = Span(500, Millis))
