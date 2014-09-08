@@ -149,17 +149,19 @@ import org.scalatest. &hellip;">
 <p>If your future is making a web service call or doing some sort of IO that takes a few seconds to complete, you might encounter an error like this one:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">A</span> <span class="n">timeout</span> <span class="n">occurred</span> <span class="n">waiting</span> <span class="k">for</span> <span class="n">a</span> <span class="n">future</span> <span class="n">to</span> <span class="n">complete</span><span class="o">.</span> <span class="nc">Queried</span> <span class="mi">11</span> <span class="n">times</span><span class="o">,</span> <span class="n">sleeping</span> <span class="mi">15</span> <span class="n">milliseconds</span> <span class="n">between</span> <span class="n">each</span> <span class="n">query</span><span class="o">.</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">A</span> <span class="n">timeout</span> <span class="n">occurred</span> <span class="n">waiting</span> <span class="k">for</span> <span class="n">a</span> <span class="n">future</span> <span class="n">to</span> <span class="n">complete</span><span class="o">.</span>
+</span><span class='line'><span class="nc">Queried</span> <span class="mi">11</span> <span class="n">times</span><span class="o">,</span> <span class="n">sleeping</span> <span class="mi">15</span> <span class="n">milliseconds</span> <span class="n">between</span> <span class="n">each</span> <span class="n">query</span><span class="o">.</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>You can fix this by telling ScalaFutures how long its supposed to wait before declaring that the future has timed out.</p>
+<p>You can fix this by telling ScalaFutures how long it should to wait before declaring that the future has timed out.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.time.</span><span class="o">{</span><span class="nc">Millis</span><span class="o">,</span> <span class="nc">Secpmds</span><span class="o">,</span> <span class="nc">Span</span><span class="o">}</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.time.</span><span class="o">{</span><span class="nc">Millis</span><span class="o">,</span> <span class="nc">Seconds</span><span class="o">,</span> <span class="nc">Span</span><span class="o">}</span>
 </span><span class='line'>
 </span><span class='line'><span class="k">implicit</span> <span class="k">val</span> <span class="n">defaultPatience</span> <span class="k">=</span>
 </span><span class='line'>  <span class="nc">PatienceConfig</span><span class="o">(</span><span class="n">timeout</span> <span class="k">=</span> <span class="nc">Span</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="nc">Seconds</span><span class="o">),</span> <span class="n">interval</span> <span class="k">=</span> <span class="nc">Span</span><span class="o">(</span><span class="mi">500</span><span class="o">,</span> <span class="nc">Millis</span><span class="o">))</span>
