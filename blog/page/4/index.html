@@ -9,8 +9,9 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="When you paste in vim, if the indents look funny, then before you paste, run: 1
+:set paste make sure you&rsquo;re in insert mode, do paste, then 1
+: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +78,56 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/21/vim-paste-indent-fail/">Vim Won&#8217;t Let You Paste Properly?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-21T00:45:03-05:00" pubdate data-updated="true">Dec 21<span>st</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When you paste in vim, if the indents look funny, then before you paste, run:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='vim'><span class='line'><span class="p">:</span><span class="k">set</span> <span class="nb">paste</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>make sure you&rsquo;re in insert mode, do paste, then</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='vim'><span class='line'><span class="p">:</span><span class="k">set</span> <span class="nb">nopaste</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and continue editing.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -508,75 +559,6 @@ public class ISODateParsing {
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='sh'><span class='line'>git push remotename :mybranch
 </span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/10/17/list-all-folders-in-descending-order-of-content-size/">List All Folders in Descending Order of Size</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-17T23:11:00-04:00" pubdate data-updated="true">Oct 17<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Fancy <a href="http://linux.die.net/man/1/du"><code>du</code></a> trick to list all folders in the current folder in descending order of size of content with human readable folder-sizes.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>du -k -d 1 | sort -nr | awk <span class="s1">&#39;&#39;</span>
-</span><span class='line'>     BEGIN <span class="o">{</span>
-</span><span class='line'>        split<span class="o">(</span><span class="s2">&quot;KB,MB,GB,TB&quot;</span>, Units, <span class="s2">&quot;,&quot;</span><span class="o">)</span>;
-</span><span class='line'>     <span class="o">}</span>
-</span><span class='line'>     <span class="o">{</span>
-</span><span class='line'>        <span class="nv">u</span> <span class="o">=</span> 1;
-</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="nv">$1</span> &gt;<span class="o">=</span> 1024<span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>           <span class="nv">$1</span> <span class="o">=</span> <span class="nv">$1</span> / 1024;
-</span><span class='line'>           u +<span class="o">=</span> 1
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="nv">$1</span> <span class="o">=</span> sprintf<span class="o">(</span><span class="s2">&quot;%.1f %s&quot;</span>, <span class="nv">$1</span>, Units<span class="o">[</span>u<span class="o">])</span>;
-</span><span class='line'>        print <span class="nv">$0</span>;
-</span><span class='line'>     <span class="o">}</span>
-</span><span class='line'>    <span class="s1">&#39;&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
 
 </div>
   

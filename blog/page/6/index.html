@@ -9,7 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="I was looking to accomplish a simple task &ndash; print debug messages in a Django View that would tell me what’s going on. Came across the following &hellip;">
+  <meta name="description" content="Boto provides an amazing interface to AWS APIs. Here is a simple example to spin up a t1.micro sized EC2 instance of the default Amazon Linux 64 bit &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,77 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/06/19/spin-up-an-ec2-instance-using-boto/">Spin Up an EC2 Instance Using Boto</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-19T17:20:00-04:00" pubdate data-updated="true">Jun 19<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Boto provides an amazing interface to AWS APIs. Here is a simple example to spin up a <code>t1.micro</code> sized EC2 instance of the default Amazon Linux 64 bit AMI.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">boto.ec2.connection</span> <span class="kn">import</span> <span class="n">EC2Connection</span>
+</span><span class='line'><span class="n">key</span> <span class="o">=</span> <span class="s">&#39;aws access key&#39;</span>
+</span><span class='line'><span class="n">secret</span> <span class="o">=</span> <span class="s">&#39;aws secret access key&#39;</span>
+</span><span class='line'><span class="n">connection</span> <span class="o">=</span> <span class="n">EC2Connection</span><span class="p">(</span>
+</span><span class='line'>              <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span class='line'>              <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+</span><span class='line'><span class="n">ami</span> <span class="o">=</span> <span class="s">&#39;ami-8e1fece7&#39;</span> <span class="c"># AMI ID of the Amazon Linux x86_64 AMI </span>
+</span><span class='line'><span class="n">reservation</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">run_instances</span><span class="p">(</span><span class="n">ami</span><span class="p">,</span>
+</span><span class='line'>              <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>              <span class="n">max_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="err"> </span>
+</span><span class='line'>              <span class="n">key_name</span><span class="o">=</span><span class="s">&#39;MyKeyPairName&#39;</span><span class="p">,</span><span class="err"> </span>
+</span><span class='line'>              <span class="n">instance_type</span><span class="o">=</span><span class="s">&#39;t1.micro&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">instance</span> <span class="o">=</span> <span class="n">reservation</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'><span class="k">while</span> <span class="n">instance</span><span class="o">.</span><span class="n">update</span><span class="p">()</span> <span class="o">!=</span> <span class="s">&#39;running&#39;</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>min_count</code> and <code>max_count</code> determine how many instances are to be started. By default, Amazon limits you to starting a maximum of 20 instances. If you need to start more, they require you to contact them with your use case.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>

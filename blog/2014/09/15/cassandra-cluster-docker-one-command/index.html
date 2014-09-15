@@ -1,0 +1,355 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>5-Node Cassandra Cluster. 1 Command. - sqldump</title>
+  <meta name="author" content="Abhinav Ajgaonkar">
+
+  
+  <meta name="description" content="Run this command to bring up a 5-node Cassandra (2.1.0) cluster locally using Docker. 1
+bash &lt;(curl -sL http://bit.ly/docker-cassandra) This will &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.abhinav.ca/blog/2014/09/15/cassandra-cluster-docker-one-command/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="sqldump" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-23345729-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">sqldump</a></h1>
+  
+    <h2>(coffee) => code</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.abhinav.ca" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">5-Node Cassandra Cluster. 1 Command.</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-15T00:16:56-04:00" pubdate data-updated="true">Sep 15<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Run this command to bring up a 5-node Cassandra (2.1.0) cluster locally using Docker.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bash &lt;(curl -sL http://bit.ly/docker-cassandra)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will:<br/>
+1. Pull the <code>abh1nav/cassandra:latest</code> image.<br/>
+2. Start the first node with the name <code>cass1</code><br/>
+3. Start <code>cass2..5</code> with the environment variable <code>SEED=&lt;ip of cass1&gt;</code></p>
+
+<h2>Manual mode</h2>
+
+<p>If you don&rsquo;t like or trust the one liner, here&rsquo;s how to do it manually.</p>
+
+<h3>Single Node Setup</h3>
+
+<p>To start the first node, pull the latest version of image:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker pull abh1nav/cassandra:latest
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Start the first instance:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker run -d --name cass1 abh1nav/cassandra:latest
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Grab its IP using:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">SEED_IP</span><span class="o">=</span><span class="k">$(</span>docker inspect -f <span class="s1">&#39;{{ .NetworkSettings.IPAddress }}&#39;</span> cass1<span class="k">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Connect to it using cqlsh:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cqlsh <span class="nv">$SEED_IP</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The expected output is:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>✈ megatron /opt/cassandra
+</span><span class='line'> ↳ bin/cqlsh <span class="nv">$SEED_IP</span>
+</span><span class='line'>Connected to Test Cluster at 172.17.0.47:9160.
+</span><span class='line'><span class="o">[</span>cqlsh 4.1.1 | Cassandra 2.1.0 | CQL spec 3.1.1 | Thrift protocol 19.39.0<span class="o">]</span>
+</span><span class='line'>Use HELP <span class="k">for </span>help.
+</span><span class='line'>cqlsh&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Cluster Setup</h3>
+
+<p>Once your single node is setup, you can add more nodes using:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">for </span>name in cass<span class="o">{</span>2..5<span class="o">}</span>; <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="nb">echo</span> <span class="s2">&quot;Starting node $name&quot;</span>
+</span><span class='line'>  docker run -d --name <span class="nv">$name</span> -e <span class="nv">SEED</span><span class="o">=</span><span class="nv">$SEED_IP</span> abh1nav/cassandra:latest
+</span><span class='line'>  sleep 10
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can watch the cluster form by tailing the logs on <code>cass1</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker logs -f cass1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once the cluster is up, you can check its status using:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>nodetool --host <span class="nv">$SEED_IP</span> status
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The expected output is:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>✈ megatron /opt/cassandra
+</span><span class='line'> ↳ bin/nodetool --host <span class="nv">$SEED_IP</span> status
+</span><span class='line'>Datacenter: <span class="nv">datacenter1</span>
+</span><span class='line'><span class="o">=======================</span>
+</span><span class='line'><span class="nv">Status</span><span class="o">=</span>Up/Down
+</span><span class='line'>|/ <span class="nv">State</span><span class="o">=</span>Normal/Leaving/Joining/Moving
+</span><span class='line'>--  Address      Load       Tokens  Owns <span class="o">(</span>effective<span class="o">)</span>  Host ID                               Rack
+</span><span class='line'>UN  172.17.0.47  54.99 KB   256     37.3%             cb925207-ff79-4d1e-84ce-ac6c59353df4  rack1
+</span><span class='line'>UN  172.17.0.48  85.8 KB    256     39.4%             baa1b2c1-8f51-4e20-9c33-44cb5f45a4c0  rack1
+</span><span class='line'>UN  172.17.0.49  69.35 KB   256     40.1%             d1f96d59-c084-4ba3-a717-4269098cc854  rack1
+</span><span class='line'>UN  172.17.0.50  68.92 KB   256     40.2%             d514e844-e07a-4896-ace8-a0b43e25d6fc  rack1
+</span><span class='line'>UN  172.17.0.51  69.39 KB   256     43.0%             464cdf00-39e3-4efe-8a9f-83fc5ba839c9  rack1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Check out the <a href="https://registry.hub.docker.com/u/abh1nav/cassandra/">Docker registry page</a> for the image and the <a href="https://github.com/abh1nav/cassandra">GitHub repo</a> to grab the source.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Abhinav Ajgaonkar</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-15T00:16:56-04:00" pubdate data-updated="true">Sep 15<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cassandra/'>cassandra</a>, <a class='category' href='/blog/categories/cluster/'>cluster</a>, <a class='category' href='/blog/categories/docker/'>docker</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.abhinav.ca/blog/2014/09/15/cassandra-cluster-docker-one-command/" data-via="abh1nv" data-counturl="http://blog.abhinav.ca/blog/2014/09/15/cassandra-cluster-docker-one-command/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/08/unit-testing-futures-with-scalatest/" title="Previous Post: Unit Testing Futures with ScalaTest">&laquo; Unit Testing Futures with ScalaTest</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p>Data fanatic. Scala fanboy. TV connoisseur. Coffee drinker. CTO at <a href="http://crowdriff.com">CrowdRiff</a>. Creator of <a href="http://getriffle.com/">Riffle</a> and <a href="http://mytoptweet.com">MyTopTweet</a>. Find me on <a href="https://twitter.com/abh1nv">Twitter</a> and <a href="https://github.com/abh1nav">GitHub</a>.</p>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/abh1nav">@abh1nav</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'abh1nav',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Abhinav Ajgaonkar -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

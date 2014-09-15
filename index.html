@@ -9,20 +9,8 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Unit testing methods that return futures in Scala is quite straightforward using ScalaTest 2.0+ 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-import org.scalatest. &hellip;">
+  <meta name="description" content="Run this command to bring up a 5-node Cassandra (2.1.0) cluster locally using Docker. 1
+bash &lt;(curl -sL http://bit.ly/docker-cassandra) This will &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -89,6 +77,164 @@ import org.scalatest. &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/15/cassandra-cluster-docker-one-command/">5-Node Cassandra Cluster. 1 Command.</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-15T00:16:56-04:00" pubdate data-updated="true">Sep 15<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Run this command to bring up a 5-node Cassandra (2.1.0) cluster locally using Docker.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bash &lt;(curl -sL http://bit.ly/docker-cassandra)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will:<br/>
+1. Pull the <code>abh1nav/cassandra:latest</code> image.<br/>
+2. Start the first node with the name <code>cass1</code><br/>
+3. Start <code>cass2..5</code> with the environment variable <code>SEED=&lt;ip of cass1&gt;</code></p>
+
+<h2>Manual mode</h2>
+
+<p>If you don&rsquo;t like or trust the one liner, here&rsquo;s how to do it manually.</p>
+
+<h3>Single Node Setup</h3>
+
+<p>To start the first node, pull the latest version of image:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker pull abh1nav/cassandra:latest
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Start the first instance:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker run -d --name cass1 abh1nav/cassandra:latest
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Grab its IP using:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">SEED_IP</span><span class="o">=</span><span class="k">$(</span>docker inspect -f <span class="s1">&#39;{{ .NetworkSettings.IPAddress }}&#39;</span> cass1<span class="k">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Connect to it using cqlsh:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cqlsh <span class="nv">$SEED_IP</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The expected output is:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>✈ megatron /opt/cassandra
+</span><span class='line'> ↳ bin/cqlsh <span class="nv">$SEED_IP</span>
+</span><span class='line'>Connected to Test Cluster at 172.17.0.47:9160.
+</span><span class='line'><span class="o">[</span>cqlsh 4.1.1 | Cassandra 2.1.0 | CQL spec 3.1.1 | Thrift protocol 19.39.0<span class="o">]</span>
+</span><span class='line'>Use HELP <span class="k">for </span>help.
+</span><span class='line'>cqlsh&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Cluster Setup</h3>
+
+<p>Once your single node is setup, you can add more nodes using:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">for </span>name in cass<span class="o">{</span>2..5<span class="o">}</span>; <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="nb">echo</span> <span class="s2">&quot;Starting node $name&quot;</span>
+</span><span class='line'>  docker run -d --name <span class="nv">$name</span> -e <span class="nv">SEED</span><span class="o">=</span><span class="nv">$SEED_IP</span> abh1nav/cassandra:latest
+</span><span class='line'>  sleep 10
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can watch the cluster form by tailing the logs on <code>cass1</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker logs -f cass1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once the cluster is up, you can check its status using:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>nodetool --host <span class="nv">$SEED_IP</span> status
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The expected output is:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>✈ megatron /opt/cassandra
+</span><span class='line'> ↳ bin/nodetool --host <span class="nv">$SEED_IP</span> status
+</span><span class='line'>Datacenter: <span class="nv">datacenter1</span>
+</span><span class='line'><span class="o">=======================</span>
+</span><span class='line'><span class="nv">Status</span><span class="o">=</span>Up/Down
+</span><span class='line'>|/ <span class="nv">State</span><span class="o">=</span>Normal/Leaving/Joining/Moving
+</span><span class='line'>--  Address      Load       Tokens  Owns <span class="o">(</span>effective<span class="o">)</span>  Host ID                               Rack
+</span><span class='line'>UN  172.17.0.47  54.99 KB   256     37.3%             cb925207-ff79-4d1e-84ce-ac6c59353df4  rack1
+</span><span class='line'>UN  172.17.0.48  85.8 KB    256     39.4%             baa1b2c1-8f51-4e20-9c33-44cb5f45a4c0  rack1
+</span><span class='line'>UN  172.17.0.49  69.35 KB   256     40.1%             d1f96d59-c084-4ba3-a717-4269098cc854  rack1
+</span><span class='line'>UN  172.17.0.50  68.92 KB   256     40.2%             d514e844-e07a-4896-ace8-a0b43e25d6fc  rack1
+</span><span class='line'>UN  172.17.0.51  69.39 KB   256     43.0%             464cdf00-39e3-4efe-8a9f-83fc5ba839c9  rack1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Check out the <a href="https://registry.hub.docker.com/u/abh1nav/cassandra/">Docker registry page</a> for the image and the <a href="https://github.com/abh1nav/cassandra">GitHub repo</a> to grab the source.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1388,297 +1534,6 @@ The command for launching an instance of this image also needs to be modified sl
 </span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/01/13/akka-and-backpressure/">Akka and Back-pressure</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-13T12:46:04-05:00" pubdate data-updated="true">Jan 13<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Two steps are needed in order to correctly apply back-pressure in an Akka system:</p>
-
-<h4>Step 1: Bounded Mailboxes and Push Timeouts</h4>
-
-<p>The default mailbox for an actor is an <code>UnboundedMailbox</code> backed by Java&rsquo;s <code>ConcurrentLinkedQueue</code>. As the name indicates, this mailbox grows without bound and will end up crashing the JVM with an <code>OutOfMemoryError</code> if the consumer significantly slower than the producer. If we want to be able to signal the producer to slow down, the first step is to switch to a <code>BoundedMailbox</code> backed by Java&rsquo;s <code>LinkedBlockingQueue</code> that will block the producer if the mailbox is full. More info about different types of mailboxes can be found <a href="http://doc.akka.io/docs/akka/snapshot/scala/mailboxes.html">here</a>.</p>
-
-<p>Blocking the producer forever is not a good solution because: <code>Rule #1 of Akka =&gt; don't block inside actors</code>. The solution to this problem is provided to us by Akka in the form of a <code>push timeout</code> for an Actor&rsquo;s mailbox. A push timeout is exactly what it sounds like: when you try to push a message to an actor&rsquo;s mailbox, if the mailbox is full, the action will timeout and the message will get routed to the <code>DeadLetterActorRef</code>.</p>
-
-<p>Configuring an actor to use a bounded mailbox with a 1000 message capacity and a push timeout of 100ms requires the following addition to the <code>application.conf</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>bounded-mailbox {
-</span><span class='line'>  mailbox-type = "akka.dispatch.BoundedMailbox"
-</span><span class='line'>  mailbox-capacity = 1000
-</span><span class='line'>  mailbox-push-timeout-time = 100ms
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The actor can then be initialized as follows</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">actor</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">MyActorClass</span><span class="o">].</span><span class="n">withMailbox</span><span class="o">(</span><span class="s">&quot;bounded-mailbox&quot;</span><span class="o">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Step 2: DeadLetter Watcher</h4>
-
-<p>When an actor&rsquo;s mailbox is full and sent messages start timing out, they get routed to the <code>DeadLetterActorRef</code> via the <a href="http://doc.akka.io/docs/akka/2.2.3/scala/event-bus.html#event-stream-scala">Event Stream</a> of the actor system. Akka allows actors to subscribe to event streams and listen in on all, or a filtered subset of, the messages flying around in the actor system. Since the dead letters service also utilizes the event stream infrastructure, we can subscribe to all <code>DeadLetter</code> messages being published in the stream and signal the producer to slow down.</p>
-
-<p>The following snipped can be used to get an actor subscribed to all the <code>DeadLetter</code> messages in a system</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">system</span><span class="o">.</span><span class="n">eventStream</span><span class="o">.</span><span class="n">subscribe</span><span class="o">(</span><span class="n">listeningActor</span><span class="o">,</span> <span class="n">classOf</span><span class="o">[</span><span class="kt">DeadLetter</span><span class="o">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Tying it all together with an Example</h3>
-
-<p>In this example, a fast producer sends messages to a slow consumer. The slow consumer has a bounded mailbox of size 10 and a push timeout of 10ms.</p>
-
-<h5>SlowReceiver</h5>
-
-<p>The <code>SlowReceiver</code> blocks for 100ms after printing each message it receives. The blocking is only present to ensure that it&rsquo;s mailbox fills up.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">akka.actor._</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">SlowReceiver</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">ActorLogging</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">postStop</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="s">&quot;SlowReceiver#postStop&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span><span class="k">:</span> <span class="kt">Actor.Receive</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">case</span> <span class="n">msg</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span>
-</span><span class='line'>      <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Received: $msg&quot;</span><span class="o">)</span>
-</span><span class='line'>      <span class="nc">Thread</span><span class="o">.</span><span class="n">sleep</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>FastSender</h5>
-
-<p>The <code>FastSender</code> waits for a kickoff message and then sends 15 messages to the <code>SlowReceiver</code> and a <code>PoisonPill</code> to itself. After terminating itself, the actor&rsquo;s <code>postStop</code> hook schedules a <code>PoisonPill</code> to be sent to the <code>SlowReceiver</code> 3 seconds after the <code>FastSender</code> has been terminated.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">akka.actor._</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">FastSender</span><span class="o">(</span><span class="n">slow</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">ActorLogging</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">postStop</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="s">&quot;FastSender#postStop&quot;</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">context</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">scheduleOnce</span><span class="o">(</span><span class="mf">2.</span><span class="n">seconds</span><span class="o">,</span> <span class="n">slow</span><span class="o">,</span> <span class="nc">PoisonPill</span><span class="o">)(</span><span class="n">context</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span><span class="k">:</span> <span class="kt">Actor.Receive</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">15</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">slow</span> <span class="o">!</span> <span class="n">s</span><span class="s">&quot;[$i]&quot;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="s">&quot;Done sending all&quot;</span><span class="o">)</span>
-</span><span class='line'>      <span class="n">self</span> <span class="o">!</span> <span class="nc">PoisonPill</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>Watcher</h5>
-
-<p>The <code>Watcher</code> watches for and prints <code>DeadLetter</code>s being sent to the <code>SlowReceiver</code>. It also <code>context.watch</code>es the <code>SlowReceiver</code> and terminates the actor system when the <code>SlowReceiver</code> is killed.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">akka.actor._</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Watcher</span><span class="o">(</span><span class="n">target</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">ActorLogging</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">private</span> <span class="k">val</span> <span class="n">targetPath</span> <span class="k">=</span> <span class="n">target</span><span class="o">.</span><span class="n">path</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">preStart</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">context</span><span class="o">.</span><span class="n">watch</span><span class="o">(</span><span class="n">target</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span><span class="k">:</span> <span class="kt">Actor.Receive</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">case</span> <span class="n">d</span><span class="k">:</span> <span class="kt">DeadLetter</span> <span class="o">=&gt;</span>
-</span><span class='line'>      <span class="k">if</span><span class="o">(</span><span class="n">d</span><span class="o">.</span><span class="n">recipient</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">equals</span><span class="o">(</span><span class="n">targetPath</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Timed out message: ${d.message.toString}&quot;</span><span class="o">)</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">case</span> <span class="nc">Terminated</span><span class="o">(</span><span class="n">`target`</span><span class="o">)</span> <span class="k">=&gt;</span>
-</span><span class='line'>      <span class="n">context</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">shutdown</span><span class="o">()</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>BackPressureTest App</h5>
-
-<p>The App that ties it all together.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">BackPressureTest</span> <span class="k">extends</span> <span class="nc">App</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">case</span> <span class="k">object</span> <span class="nc">Ping</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">val</span> <span class="n">sys</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;testSys&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">slow</span> <span class="k">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">SlowReceiver</span><span class="o">].</span><span class="n">withMailbox</span><span class="o">(</span><span class="s">&quot;bounded-mailbox&quot;</span><span class="o">),</span> <span class="s">&quot;slow&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">fast</span> <span class="k">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">FastSender</span><span class="o">],</span> <span class="n">slow</span><span class="o">),</span> <span class="s">&quot;fast&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">watcher</span> <span class="k">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">Watcher</span><span class="o">],</span> <span class="n">slow</span><span class="o">),</span> <span class="s">&quot;watcher&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="n">sys</span><span class="o">.</span><span class="n">eventStream</span><span class="o">.</span><span class="n">subscribe</span><span class="o">(</span><span class="n">watcher</span><span class="o">,</span> <span class="n">classOf</span><span class="o">[</span><span class="kt">DeadLetter</span><span class="o">])</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">fast</span> <span class="o">!</span> <span class="nc">Ping</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>Output</h5>
-
-<p>Running the <code>BackPressureTest</code> app gives the following output:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[INFO] [01/13/2014 14:00:56.303] [akka://testSys/user/slow] Received: [1]
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.315] [akka://testSys/user/watcher] Timed out message: [12]
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.326] [akka://testSys/user/watcher] Timed out message: [13]
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.337] [akka://testSys/user/watcher] Timed out message: [14]
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.347] [akka://testSys/user/fast] Done sending all
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.347] [akka://testSys/user/watcher] Timed out message: [15]
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.350] [akka://testSys/user/fast] FastSender#postStop
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.403] [akka://testSys/user/slow] Received: [2]
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.504] [akka://testSys/user/slow] Received: [3]
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.605] [akka://testSys/user/slow] Received: [4]
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.705] [akka://testSys/user/slow] Received: [5]
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.807] [akka://testSys/user/slow] Received: [6]
-</span><span class='line'>[INFO] [01/13/2014 14:00:56.907] [akka://testSys/user/slow] Received: [7]
-</span><span class='line'>[INFO] [01/13/2014 14:00:57.008] [akka://testSys/user/slow] Received: [8]
-</span><span class='line'>[INFO] [01/13/2014 14:00:57.109] [akka://testSys/user/slow] Received: [9]
-</span><span class='line'>[INFO] [01/13/2014 14:00:57.209] [akka://testSys/user/slow] Received: [10]
-</span><span class='line'>[INFO] [01/13/2014 14:00:57.310] [akka://testSys/user/slow] Received: [11]
-</span><span class='line'>[INFO] [01/13/2014 14:00:58.367] [akka://testSys/user/slow] SlowReceiver#postStop
-</span><span class='line'>[DEBUG] [01/13/2014 14:00:58.373] [EventStream] shutting down: StandardOutLogger started
-</span><span class='line'>[DEBUG] [01/13/2014 14:00:58.373] [EventStream] shutting down: StandardOutLogger started
-</span><span class='line'>[DEBUG] [01/13/2014 14:00:58.375] [EventStream] all default loggers stopped
-</span><span class='line'>
-</span><span class='line'>Process finished with exit code 0</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>Back-pressure Strategy</h5>
-
-<p>While this example doesn&rsquo;t actually implement back-pressure, it provides the infrastructure for applying a back-pressure strategy. A possible strategy would be to send <code>FastSender</code> a <code>SlowDown</code> message from within the <code>Watcher</code> for each dead letter received. The <code>SlowDown</code> case class could be defined as</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">SlowDown</span><span class="o">(</span><span class="n">dl</span><span class="k">:</span> <span class="kt">DeadLetter</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>When <code>FastSender</code> receives a <code>SlowDown</code> message, it could either throttle itself or tell its upstream systems to slow down. The <code>SlowDown</code> message also encapsulates the relevant <code>DeadLetter</code> object to allow for retry logic.</p>
 </div>
   
   
