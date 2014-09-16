@@ -3,7 +3,7 @@ layout: post
 title: "Scaffolding an Akka project"
 date: 2014-04-17 01:34:01 -0400
 comments: true
-categories: [akka, sbt]
+categories: akka sbt
 ---
 
 Every time I've needed to start a new Akka project, I've had to go through the process of scaffolding a new project from scratch. So I finally got around to creating a skeleton project that includes the bare minimum dependencies along with a build file, plugins and configuration required to create a fat jar as well as the ability to run in place. You can find the akka-skeleton project [here](https://github.com/abh1nav/akka-skeleton).

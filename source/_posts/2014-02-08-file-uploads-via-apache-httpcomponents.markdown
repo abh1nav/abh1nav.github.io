@@ -3,7 +3,7 @@ layout: post
 title: "File uploads in Scala via Apache HttpComponents"
 date: 2014-02-08 20:10:05 -0500
 comments: true
-categories: 
+categories: http apache
 ---
   
 In order to upload photos to Facebook from the server-side, the Graph API requires you to make a POST request with the image attached as multipart/form-data. Since I couldn't find any native Scala libraries that make this task easy or intuitive, I went with the battle-tested Apache HttpComponents library.

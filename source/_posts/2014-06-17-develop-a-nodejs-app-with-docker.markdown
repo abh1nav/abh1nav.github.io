@@ -3,7 +3,7 @@ layout: post
 title: "Develop a NodeJS app with Docker"
 date: 2014-06-17 01:58:40 -0400
 comments: true
-categories: docker, nodejs
+categories: docker nodejs
 ---
 
 This is the first of two posts. This post covers a somewhat detailed tutorial on using Docker as a replacement for [Vagrant](http://www.vagrantup.com/) when developing a Node app using the [Express](http://expressjs.com/) framework. To make things a bit non-trivial, the app will persist session information in Redis using the [connect-redis](https://github.com/visionmedia/connect-redis) middleware. The second post will cover productionizing this development setup.

@@ -3,7 +3,7 @@ layout: post
 title: "Docker + NodeJS Dev Environment: Take 2 - Container Linking"
 date: 2014-07-25 10:31:08 -0400
 comments: true
-categories: docker, nodejs
+categories: docker nodejs
 ---
 
 I've had lots of feedback on my previous [post](/blog/2014/06/17/develop-a-nodejs-app-with-docker/) and I'd like to share some of it which I found especially helpful.

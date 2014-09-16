@@ -3,7 +3,7 @@ layout: post
 title: "Spray a layer of HTTP on your Akka App"
 date: 2014-04-20 23:36:33 -0400
 comments: true
-categories: [spray, akka, http]
+categories: spray akka http
 published: false
 ---
 Often times, my Akka projects have a need for a lightweight HTTP API layer. Instead of incurring the overhead of converting the app into a full blown [Play](http://www.playframework.com/) app, [Spray-Can](http://spray.io/introduction/what-is-spray/) seems to offer an interesting lightweight option. I've mocked up a [sample project](https://github.com/sqldump/akka-spray) with an ActorSystem and a simple Spray backed HTTP API.

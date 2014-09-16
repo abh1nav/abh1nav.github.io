@@ -3,7 +3,7 @@ layout: post
 title: "Kickstart a Couchbase cluster with Docker"
 date: 2014-07-31 11:01:15 -0400
 comments: true
-categories: docker, python, couchbase
+categories: docker python couchbase
 ---
 
 A few days ago, I was officially introduced to [Couchbase](http://www.couchbase.com/) at a [Toronto Hadoop User Group meetup](http://www.meetup.com/TorontoHUG/events/191410172/). I say "officially" because I've known about some Couchbase use-cases / pros and cons on a high level since v1.8, but never really had the time to look at it in detail. 

@@ -3,7 +3,7 @@ layout: post
 title: "Setup a Spark Cluster in 5 minutes"
 date: 2014-04-13 23:31:45 -0400
 comments: true
-categories: [spark]
+categories: spark
 ---
 
 #### Prerequisites

@@ -3,7 +3,7 @@ layout: post
 title: "Tracing Akka Projects with Atmos"
 date: 2014-04-19 16:37:28 -0400
 comments: true
-categories: [akka, sbt, atmos, tracing]
+categories: akka sbt atmos tracing
 ---
 
 [Atmos](https://github.com/sbt/sbt-atmos) is an SBT plugin that allows you to trace Akka and Play projects to help identify and fix bottlenecks. 

@@ -3,13 +3,7 @@ layout: post
 title: "Akka and Back-pressure"
 date: 2014-01-13 12:46:04 -0500
 comments: false
-tags:
-- akka
-- scala
-- programming
-- back-pressure
-- actors
-categories: [akka]
+categories: akka scala programming
 ---
 
 Two steps are needed in order to correctly apply back-pressure in an Akka system:  
