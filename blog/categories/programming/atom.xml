@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: akka | sqldump]]></title>
-  <link href="http://blog.abhinav.ca/blog/categories/akka/atom.xml" rel="self"/>
+  <title><![CDATA[Category: programming | sqldump]]></title>
+  <link href="http://blog.abhinav.ca/blog/categories/programming/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
   <updated>2014-09-16T02:53:21-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
@@ -12,132 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Tracing Akka Projects with Atmos]]></title>
-    <link href="http://blog.abhinav.ca/blog/2014/04/19/tracing-akka-projects-with-atmos/"/>
-    <updated>2014-04-19T16:37:28-04:00</updated>
-    <id>http://blog.abhinav.ca/blog/2014/04/19/tracing-akka-projects-with-atmos</id>
-    <content type="html"><![CDATA[<p><a href="https://github.com/sbt/sbt-atmos">Atmos</a> is an SBT plugin that allows you to trace Akka and Play projects to help identify and fix bottlenecks.</p>
-
-<h3>Installation</h3>
-
-<p>Add the following lines to your project:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>project/plugins.sbt </span></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">addSbtPlugin</span><span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">com</span><span class="o">.</span><span class="n">typesafe</span><span class="o">.</span><span class="n">sbt</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">%</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">sbt</span><span class="o">-</span><span class="n">atmos</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">%</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="mf">0.3</span><span class="o">.</span><span class="mi">2</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>build.sbt </span></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">atmosSettings</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">atmosTestSettings</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<h3>Usage</h3>
-
-<p><code>
-sbt atmos:run
-</code>
-The Atmos UI comes up on <code>localhost:9900</code>.</p>
-
-<h3>Screenshots</h3>
-
-<p>Atmos has a great overview screen that shows you vital system-wide statistics.</p>
-
-<p><a href="/images/2014-04-19-Atmos-Overview.png"><img src="/images/2014-04-19-Atmos-Overview.png" width="1436" height="697"></a></p>
-
-<p>It also allows you to drill down and dig into dispatcher-level as well as ActorSystem level stats.</p>
-
-<p><a href="/images/2014-04-19-Atmos-Dispatchers.png"><img src="/images/2014-04-19-Atmos-Dispatchers.png" width="1078"></a></p>
-
-<p><a href="/images/2014-04-19-Atmos-ActorSystems.png"><img src="/images/2014-04-19-Atmos-ActorSystems.png" width="1077"></a></p>
-
-<p>And, best of all, it shows you Actor-level stats like message throughput, mailbox size over time as well as mean time spent in mailbox- which are extremely helpful when tracing bottlenecks.</p>
-
-<p><a href="/images/2014-04-19-Atmos-Actor.png"><img src="/images/2014-04-19-Atmos-Actor.png" width="1437"></a></p>
-
-<p>I&rsquo;ve put up a working project with Atmos <a href="https://github.com/sqldump/akka-atmos">here</a>. It&rsquo;ll run for about 5 minutes so you can explore the Atmos UI and then terminate. If you want to give it a try:</p>
-
-<p><code>
-git clone https://github.com/sqldump/akka-atmos.git
-cd akka-atmos
-sbt atmos:run
-</code></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Scaffolding an Akka project]]></title>
-    <link href="http://blog.abhinav.ca/blog/2014/04/17/scaffolding-an-akka-project/"/>
-    <updated>2014-04-17T01:34:01-04:00</updated>
-    <id>http://blog.abhinav.ca/blog/2014/04/17/scaffolding-an-akka-project</id>
-    <content type="html"><![CDATA[<p>Every time I&rsquo;ve needed to start a new Akka project, I&rsquo;ve had to go through the process of scaffolding a new project from scratch. So I finally got around to creating a skeleton project that includes the bare minimum dependencies along with a build file, plugins and configuration required to create a fat jar as well as the ability to run in place. You can find the akka-skeleton project <a href="https://github.com/abh1nav/akka-skeleton">here</a>.</p>
-
-<p>To get going with akka-skeleton,</p>
-
-<ol>
-<li>Modify the <code>organization, name &amp; version</code> in <code>build.sbt</code></li>
-<li>Rename the package heirarchy under <code>src/main/scala</code></li>
-<li>Ensure you have atleast one class that <code>extends App</code></li>
-<li><code>sbt run</code></li>
-</ol>
-
-
-<h3>Included Dependencies</h3>
-
-<ol>
-<li>Akka Actor Module</li>
-<li>Akka Agent Module</li>
-<li>Google Guava</li>
-<li>Joda Time (and <code>joda-convert</code> to make it work correctly with Scala)</li>
-<li>JUnit, ScalaTest and Akka TestKit</li>
-<li>Akka SLF4J Adapter</li>
-</ol>
-
-
-<h3>File Structure</h3>
-
-<p>The project root looks like this:</p>
-
-<p><code>
-project/
-src/
-build.sbt
-</code></p>
-
-<h4><code>project</code></h4>
-
-<p>The <code>project</code> folder contains all the files that help SBT build the project.</p>
-
-<p><code>
-project
-|-Dependencies.scala
-|-build.properties
-|-plugins.sbt
-</code></p>
-
-<ul>
-<li><code>build.properties</code> describes the SBT version used to build the project</li>
-<li><code>plugins.sbt</code> describes all the SBT plugins used to build the project &ndash; for example, the <code>assembly</code> plugin is used to create a fat jar of the project including all the dependencies</li>
-<li><code>Dependencies.scala</code> describes all the project dependencies &ndash; objects from here are imported by the <code>build.sbt</code> file when building the project</li>
-</ul>
-
-
-<p>The <code>src</code> folder contains the project source, test and resource files.</p>
-
-<h3>Build, Run and Assembly</h3>
-
-<p><code>sbt clean</code> to clean.<br/>
-<code>sbt compile</code> to build.<br/>
-<code>sbt run</code> to run.<br/>
-<code>sbt assembly</code> to create a fat jar.</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Akka and Back-pressure]]></title>

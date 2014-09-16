@@ -208,37 +208,37 @@
     </url>
     <url>
         <loc>http://blog.abhinav.ca/blog/2014/01/13/akka-and-backpressure/</loc>
-        <lastmod>2014-06-19T10:36:10-04:00</lastmod>
+        <lastmod>2014-09-16T02:53:01-04:00</lastmod>
     </url>
     <url>
         <loc>http://blog.abhinav.ca/blog/2014/02/08/file-uploads-via-apache-httpcomponents/</loc>
-        <lastmod>2014-06-19T10:36:10-04:00</lastmod>
+        <lastmod>2014-09-16T02:53:03-04:00</lastmod>
     </url>
     <url>
         <loc>http://blog.abhinav.ca/blog/2014/04/13/setup-a-spark-cluster-in-5-minutes/</loc>
-        <lastmod>2014-06-19T10:36:10-04:00</lastmod>
+        <lastmod>2014-09-16T02:53:03-04:00</lastmod>
     </url>
     <url>
         <loc>http://blog.abhinav.ca/blog/2014/04/17/scaffolding-an-akka-project/</loc>
-        <lastmod>2014-06-19T10:36:10-04:00</lastmod>
+        <lastmod>2014-09-16T02:53:04-04:00</lastmod>
     </url>
     <url>
         <loc>http://blog.abhinav.ca/blog/2014/04/19/tracing-akka-projects-with-atmos/</loc>
-        <lastmod>2014-06-19T10:36:10-04:00</lastmod>
+        <lastmod>2014-09-16T02:53:04-04:00</lastmod>
     </url>
     <url>
         <loc>http://blog.abhinav.ca/blog/2014/06/17/develop-a-nodejs-app-with-docker/</loc>
-        <lastmod>2014-06-19T11:10:11-04:00</lastmod>
+        <lastmod>2014-09-16T02:53:05-04:00</lastmod>
     </url>
     <url>
         <loc>http://blog.abhinav.ca/blog/2014/07/25/docker-nodejs-dev-environment-take-2/</loc>
-        <lastmod>2014-07-31T10:59:06-04:00</lastmod>
+        <lastmod>2014-09-16T02:53:06-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.abhinav.ca/blog/2014/07/31/kickstart-a-couchbase-cluster-with-docker/
         </loc>
-        <lastmod>2014-07-31T15:41:40-04:00</lastmod>
+        <lastmod>2014-09-16T02:53:07-04:00</lastmod>
     </url>
     <url>
         <loc>http://blog.abhinav.ca/blog/2014/08/19/hackathon-bike-share-toronto/</loc>
@@ -254,11 +254,11 @@
     </url>
     <url>
         <loc>http://blog.abhinav.ca/blog/archives/</loc>
-        <lastmod>2014-09-16T02:46:30-04:00</lastmod>
+        <lastmod>2014-09-16T02:53:07-04:00</lastmod>
     </url>
     <url>
         <loc>http://blog.abhinav.ca/</loc>
-        <lastmod>2014-09-16T02:46:30-04:00</lastmod>
+        <lastmod>2014-09-16T02:53:07-04:00</lastmod>
     </url>
     <url>
         <loc>http://blog.abhinav.ca/robots.txt</loc>

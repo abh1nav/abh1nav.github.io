@@ -4,7 +4,7 @@
   <title><![CDATA[Category: docker | sqldump]]></title>
   <link href="http://blog.abhinav.ca/blog/categories/docker/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-09-16T02:46:35-04:00</updated>
+  <updated>2014-09-16T02:53:21-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -105,6 +105,626 @@ UN  172.17.0.51  69.39 KB   256     43.0%             464cdf00-39e3-4efe-8a9f-83
 ```</p>
 
 <p>Check out the <a href="https://registry.hub.docker.com/u/abh1nav/cassandra/">Docker registry page</a> for the image and the <a href="https://github.com/abh1nav/cassandra">GitHub repo</a> to grab the source.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Kickstart a Couchbase cluster with Docker]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/07/31/kickstart-a-couchbase-cluster-with-docker/"/>
+    <updated>2014-07-31T11:01:15-04:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/07/31/kickstart-a-couchbase-cluster-with-docker</id>
+    <content type="html"><![CDATA[<p>A few days ago, I was officially introduced to <a href="http://www.couchbase.com/">Couchbase</a> at a <a href="http://www.meetup.com/TorontoHUG/events/191410172/">Toronto Hadoop User Group meetup</a>. I say &ldquo;officially&rdquo; because I&rsquo;ve known about some Couchbase use-cases / pros and cons on a high level since v1.8, but never really had the time to look at it in detail.</p>
+
+<p>As the presentation progressed, it got me interested in actually tinkering around with a Couchbase cluster (kudos to <a href="https://twitter.com/NoSQLDon">Don Pinto</a>). My first instinct was to head over to the <a href="https://registry.hub.docker.com">Docker Registry</a> and do a quick search for <code>couchbase</code>. Using the <code>dustin/couchbase</code> image, I was able to get a 5-node cluster running in under 5 minutes.</p>
+
+<h3>Run 5 containers</h3>
+
+<p><code>bash
+docker run -d -p 11210:11210 -p 11211:11211 -p 8091:8091 -p 8092:8092 --name cb1 dustin/couchbase
+docker run -d --name cb2 dustin/couchbase
+docker run -d --name cb3 dustin/couchbase
+docker run -d --name cb4 dustin/couchbase
+docker run -d --name cb5 dustin/couchbase
+</code></p>
+
+<h3>Find Container IPs</h3>
+
+<p>Once the containers were up, I used <code>docker inspect</code> to find their internal IPs (usually in the <code>172.17.x.x</code> range). For example, <code>docker inspect cb1</code> returns</p>
+
+<p>```json
+[{</p>
+
+<pre><code>"Args": [
+    "run"
+],
+"Config": {
+    "AttachStderr": false,
+...
+"NetworkSettings": {
+    "Bridge": "docker0",
+    "Gateway": "172.17.42.1",
+    "IPAddress": "172.17.0.27",
+...
+</code></pre>
+
+<p>```</p>
+
+<p>Update: <a href="https://twitter.com/upthecyberpunks">Nathan LeClaire</a> from <a href="http://docker.io">Docker</a> was kind enough to write up a <a href="https://gist.github.com/nathanleclaire/c7c402f7a9889ca77b98">quick script</a> that combines these two steps:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker run -d -p 11210:11210 -p 11211:11211 -p 8091:8091 -p 8092:8092 &amp;mdash;name cb1 dustin/couchbase&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;for name in cb<span class="o">{</span>2..5<span class="o">}</span>; <span class="k">do</span>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;docker run -d --name <span class="nv">$name</span> dustin/couchbase
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;done&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;for name in cb<span class="o">{</span>1..5<span class="o">}</span>; <span class="k">do</span>
+</span><span class='line'><span class="k">    </span>docker inspect -f &amp;lsquo;<span class="o">{{</span> .NetworkSettings.IPAddress <span class="o">}}</span>&amp;rsquo; <span class="nv">$name</span>
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Setup Cluster using WebUI</h3>
+
+<p>If <code>cb1</code> is at <code>172.17.0.27</code>, then the Couchbase management interface comes up at <code>http://172.17.0.27:8091</code> and the default credentials are:</p>
+
+<p><code>
+Username: Administrator
+Password: password
+</code></p>
+
+<p>Once you&rsquo;re in, setting up a cluster is as easy as clicking &ldquo;Add Server&rdquo; and giving it the IPs of the other containers. As soon as you add a new server to the cluster, Couchbase will prompt you to run a &ldquo;Cluster Rebalance&rdquo; operation &ndash; hold off until you&rsquo;ve added all 5 nodes and then run the rebalance.</p>
+
+<p><img src="/images/2014-07-31-Couchbase-WebUI-Rebalance.png"></p>
+
+<h3>Push some data into the cluster</h3>
+
+<p>Once the cluster was up, I wanted to get a feel for how the WebUI works so I wrote this script to grab some data from our existing cluster of JSON-store-that-I-am-too-ashamed-to-mention and added it to Couchbase:</p>
+
+<p>```python</p>
+
+<h1>!/usr/bin/env python</h1>
+
+<h1>encoding: utf-8</h1>
+
+<p>from pymongo import MongoClient
+from couchbase import Couchbase</p>
+
+<p>src = MongoClient([&lsquo;m1&rsquo;, &lsquo;m2&rsquo;, &lsquo;m3&rsquo;])[&lsquo;twitter_raw&rsquo;][&lsquo;starbucks&rsquo;]
+tar = Couchbase.connect(bucket=&lsquo;twitter_starbucks&rsquo;,  host=&lsquo;localhost&rsquo;)</p>
+
+<p>for doc in src.find():</p>
+
+<pre><code>key = str(doc['_id'])
+del doc['_id']
+result = tar.set(key, doc)
+</code></pre>
+
+<p>```</p>
+
+<p>The Couchbase <a href="http://www.couchbase.com/communities/python">python client</a> depends on <a href="http://www.couchbase.com/communities/c-client-library">libcouchbase</a>. Once those two were installed, and the <code>twitter_starbucks</code> bucket had been created in Couchbase, I was able to load ~100k JSON documents in a matter of minutes.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Docker + NodeJS Dev Environment: Take 2 - Container Linking]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/07/25/docker-nodejs-dev-environment-take-2/"/>
+    <updated>2014-07-25T10:31:08-04:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/07/25/docker-nodejs-dev-environment-take-2</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve had lots of feedback on my previous <a href="/blog/2014/06/17/develop-a-nodejs-app-with-docker/">post</a> and I&rsquo;d like to share some of it which I found especially helpful.</p>
+
+<p><a href="https://github.com/larose">Mathieu Larose</a> sent over a much shorter one-liner that installs Node in the docker container. This means my original <code>Dockerfile</code> step</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Dockerfile </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>RUN \&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>cd /opt &amp;&amp; \
+</span><span class='line'>wget http://nodejs.org/dist/v0.10.28/node-v0.10.28-linux-x64.tar.gz &amp;&amp; \
+</span><span class='line'>tar -xzf node-v0.10.28-linux-x64.tar.gz &amp;&amp; \
+</span><span class='line'>mv node-v0.10.28-linux-x64 node &amp;&amp; \
+</span><span class='line'>cd /usr/local/bin &amp;&amp; \
+</span><span class='line'>ln -s /opt/node/bin/* . &amp;&amp; \
+</span><span class='line'>rm -f /opt/node-v0.10.28-linux-x64.tar.gz
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>turns into</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Dockerfile </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>RUN \&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>wget -O - http://nodejs.org/dist/v0.10.29/node-v0.10.29-linux-x64.tar.gz \
+</span><span class='line'>| tar xzf - --strip-components=1 --exclude="README.md" --exclude="LICENSE" \
+</span><span class='line'>--exclude="ChangeLog" -C "/usr/local"
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The second piece of feedback was via Twitter from <a href="http://twitter.com/DShankar">Darshan Shankar</a></p>
+
+<p><a href="/images/2014-07-25-Feedback-2.png"><img src="/images/2014-07-25-Feedback-2.png"></a></p>
+
+<p>As I explained on Twitter and at the end of the previous post, having Redis and Node in the same container was meant only to demonstrate how Docker works to first-timers. It isn&rsquo;t recommended as a production setup.</p>
+
+<h3>Unbundling Redis and Container Links</h3>
+
+<p>Since I&rsquo;ve already agreed that having Redis and Node together is probably not the greatest idea, I&rsquo;m going to take this opportunity to fix this mistake and demonstrate container linking at the same time.</p>
+
+<p>The fundamental idea is to strive for single-purpose Docker containers and then compose them together to build more complex systems. This implies we need to rip out the Redis related bits from our old Dockerfile and run Redis in a Docker container by itself.</p>
+
+<h3>Redis in a Docker container</h3>
+
+<p>Now that we&rsquo;ve decided to unbundle Redis, let&rsquo;s run it in its own container. Fortunately, as is often the case with Docker, someone else has already done the hard work for us. Running Redis locally is as simple as:</p>
+
+<p><code>
+docker run -d --name="myredis" -p 6379:6379 dockerfile/redis
+</code></p>
+
+<p>You&rsquo;ll notice the extra <code>--name="myredis"</code> parameter. We&rsquo;ll use that in the next step to tell our app&rsquo;s container about this Redis container.</p>
+
+<h3>Dockerfile update</h3>
+
+<p>The next step is to update our Dockerfile and exclude the Redis-related instructions.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Dockerfile </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>FROM dockerfile/ubuntu&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;MAINTAINER Abhinav Ajgaonkar &lt;a href=&quot;&amp;#x6d;&amp;#97;&amp;#x69;&amp;#108;&amp;#116;&amp;#111;&amp;#x3a;&amp;#x61;&amp;#98;&amp;#x68;&amp;#105;&amp;#110;&amp;#97;&amp;#x76;&amp;#x33;&amp;#x31;&amp;#54;&amp;#x40;&amp;#103;&amp;#109;&amp;#x61;&amp;#x69;&amp;#x6c;&amp;#46;&amp;#99;&amp;#111;&amp;#109;&quot;&gt;&amp;#97;&amp;#x62;&amp;#x68;&amp;#105;&amp;#x6e;&amp;#x61;&amp;#118;&amp;#x33;&amp;#x31;&amp;#54;&amp;#64;&amp;#103;&amp;#x6d;&amp;#x61;&amp;#x69;&amp;#x6c;&amp;#x2e;&amp;#99;&amp;#111;&amp;#109;&lt;/a&gt;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;Install pre-reqs&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;RUN \&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;apt-get -y -qq install python
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;Install Node&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;RUN \&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;wget -O - http://nodejs.org/dist/v0.10.29/node-v0.10.29-linux-x64.tar.gz \
+</span><span class='line'>| tar xzf - --strip-components=1 --exclude=&quot;README.md&quot; --exclude=&quot;LICENSE&quot; \
+</span><span class='line'>--exclude=&quot;ChangeLog&quot; -C &quot;/usr/local&quot;
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;Set the working directory&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;WORKDIR /src&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;CMD [&amp;ldquo;/bin/bash&amp;rdquo;]
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Build, Link and Run</h3>
+
+<p>Our app image can now be built with:</p>
+
+<p><code>
+docker build -t sqldump/docker-dev:0.2 .
+</code></p>
+
+<p>Once the build has completed, we can launch a container using the image.
+The command for launching an instance of this image also needs to be modified slightly:</p>
+
+<p>```
+docker run -i -t &mdash;rm                     \</p>
+
+<pre><code>    -p 3000:3000                        \
+    -v `pwd`:/src                       \
+    --name="myapp"                      \
+    --link myredis:myredis              \
+    -e REDIS_HOST="myredis"             \
+    sqldump/docker-dev:0.2
+</code></pre>
+
+<p>```</p>
+
+<p>Here, I&rsquo;ve used the <code>--link</code> option to tell the <code>myapp</code> container about the <code>redis</code> container. The <code>--link</code> option allows linked containers to communicate securely over the <code>docker0</code> interface. When we link the <code>myredis</code> container to the <code>myapp</code> container, <code>myapp</code> can then access services on <code>myredis</code> just by using the hostname and the hostname-to-IP resolution will be handled transparently by Docker.</p>
+
+<p>I&rsquo;ve also injected an environment variable called <code>REDIS_HOST</code> using the <code>-e</code> flag to tell our node app where to find the linked Redis.</p>
+
+<p>Once the container is running, you can utilize the methods described in the previous post to install dependencies and get your server running.</p>
+
+<p>I hope this provides a satisfactory demonstration of how linked containers can be used to compose single-purpose docker containers into a more complex working system.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Develop a NodeJS app with Docker]]></title>
+    <link href="http://blog.abhinav.ca/blog/2014/06/17/develop-a-nodejs-app-with-docker/"/>
+    <updated>2014-06-17T01:58:40-04:00</updated>
+    <id>http://blog.abhinav.ca/blog/2014/06/17/develop-a-nodejs-app-with-docker</id>
+    <content type="html"><![CDATA[<p>This is the first of two posts. This post covers a somewhat detailed tutorial on using Docker as a replacement for <a href="http://www.vagrantup.com/">Vagrant</a> when developing a Node app using the <a href="http://expressjs.com/">Express</a> framework. To make things a bit non-trivial, the app will persist session information in Redis using the <a href="https://github.com/visionmedia/connect-redis">connect-redis</a> middleware. The second post will cover productionizing this development setup.</p>
+
+<h3>The Node App</h3>
+
+<p>The app consists of a <code>package.json</code>, <code>server.js</code> and a <code>.gitignore</code> file, which is about as simple as it gets.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>.gitignore </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>node_modules/*</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>package.json </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;docker-dev&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="s2">&quot;version&quot;</span><span class="o">:</span> <span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;Docker Dev&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="s2">&quot;dependencies&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;connect-redis&quot;</span><span class="o">:</span> <span class="s2">&quot;~1.4.5&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;express&quot;</span><span class="o">:</span> <span class="s2">&quot;~3.3.3&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;hiredis&quot;</span><span class="o">:</span> <span class="s2">&quot;~0.1.15&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;redis&quot;</span><span class="o">:</span> <span class="s2">&quot;~0.8.4&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>server.js </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">express</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;),</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">(),</span>
+</span><span class='line'><span class="nx">redis</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;redis&#39;</span><span class="p">),</span>
+</span><span class='line'><span class="nx">RedisStore</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;connect-redis&#39;</span><span class="p">)(</span><span class="nx">express</span><span class="p">),</span>
+</span><span class='line'><span class="nx">server</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">).</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">app</span><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">app</span><span class="p">.</span><span class="nx">configure</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">cookieParser</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">keyboard</span><span class="o">-</span><span class="nx">cat</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;));</span>
+</span><span class='line'>  <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">session</span><span class="p">({</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span>    <span class="nx">store</span><span class="o">:</span> <span class="k">new</span> <span class="nx">RedisStore</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">host</span><span class="o">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">REDIS_HOST</span> <span class="o">||</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">port</span><span class="o">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">REDIS_PORT</span> <span class="o">||</span> <span class="mi">6379</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">db</span><span class="o">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">REDIS_DB</span> <span class="o">||</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="p">}),</span>
+</span><span class='line'>    <span class="nx">cookie</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">expires</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">maxAge</span><span class="o">:</span> <span class="mi">30</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}));</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">});</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="err">/&amp;rsquo;, function(req, res) {</span>
+</span><span class='line'>  <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">status</span><span class="o">:</span> <span class="s2">&quot;ok&quot;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">port</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">HTTP_PORT</span> <span class="o">||</span> <span class="mi">3000</span><span class="p">;</span>
+</span><span class='line'><span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">port</span><span class="p">);</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">Listening</span> <span class="nx">on</span> <span class="nx">port</span> <span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;</span> <span class="o">+</span> <span class="nx">port</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><code>server.js</code> pulls in all the dependencies and starts an express app. The express app is configured to store session information in Redis and exposes a single endpoint that returns a status message as JSON. Pretty standard stuff.</p>
+
+<p>One thing to note here is that the connection information for redis can be overridden using environment variables &ndash; this will be useful later on when moving from dev to prod.</p>
+
+<h3>The Dockerfile</h3>
+
+<p>For development, we&rsquo;ll have redis and node running in the same container. To make this happen, we&rsquo;ll use a Dockerfile to configure the container.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Dockerfile </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>FROM dockerfile/ubuntu&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>MAINTAINER Abhinav Ajgaonkar &lt;a href="&#109;&#97;&#x69;&#x6c;&#x74;&#111;&#58;&#x61;&#x62;&#104;&#x69;&#x6e;&#x61;&#x76;&#51;&#49;&#54;&#64;&#x67;&#109;&#97;&#x69;&#108;&#x2e;&#99;&#x6f;&#109;">&#97;&#98;&#x68;&#105;&#110;&#x61;&#x76;&#x33;&#49;&#54;&#x40;&#x67;&#x6d;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#x6d;&lt;/a>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Install Redis&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p>RUN \&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>apt-get -y -qq install python redis-server
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Install Node&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p>RUN \&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>cd /opt &amp;&amp; \
+</span><span class='line'>wget http://nodejs.org/dist/v0.10.28/node-v0.10.28-linux-x64.tar.gz &amp;&amp; \
+</span><span class='line'>tar -xzf node-v0.10.28-linux-x64.tar.gz &amp;&amp; \
+</span><span class='line'>mv node-v0.10.28-linux-x64 node &amp;&amp; \
+</span><span class='line'>cd /usr/local/bin &amp;&amp; \
+</span><span class='line'>ln -s /opt/node/bin/* . &amp;&amp; \
+</span><span class='line'>rm -f /opt/node-v0.10.28-linux-x64.tar.gz
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Set the working directory&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p>WORKDIR /src&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>CMD [&ldquo;/bin/bash&rdquo;]</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Taking it line by line,</p>
+
+<p><code>
+FROM dockerfile/ubuntu
+</code></p>
+
+<p>This tells docker to use the <code>dockerfile/ubuntu</code> image provided by Docker Inc. as the base image for the build.</p>
+
+<p>```
+RUN \</p>
+
+<pre><code>apt-get -y -qq install python redis-server
+</code></pre>
+
+<p>```</p>
+
+<p>The base image contains absolutely nothing- so we need to apt-get everything needed for our app to run. This statement installs python and redis-server. Redis server is required because we&rsquo;ll be storing session info in it and python is required by npm to be able to build the C-extension used by the redis node module.</p>
+
+<p>```
+RUN \</p>
+
+<pre><code>cd /opt &amp;&amp; \
+wget http://nodejs.org/dist/v0.10.28/node-v0.10.28-linux-x64.tar.gz &amp;&amp; \
+tar -xzf node-v0.10.28-linux-x64.tar.gz &amp;&amp; \
+mv node-v0.10.28-linux-x64 node &amp;&amp; \
+cd /usr/local/bin &amp;&amp; \
+ln -s /opt/node/bin/* . &amp;&amp; \
+rm -f /opt/node-v0.10.28-linux-x64.tar.gz
+</code></pre>
+
+<p>```</p>
+
+<p>This downloads and extracts the 64-bit NodeJS binaries.</p>
+
+<p><code>
+WORKDIR /src
+</code></p>
+
+<p>This tells docker to <code>cd /src</code> once the container has started, before executing what&rsquo;s specified in the <code>CMD</code> property.</p>
+
+<p><code>
+CMD ["/bin/bash"]
+</code></p>
+
+<p>Launch <code>/bin/bash</code> as a final step.</p>
+
+<h3>Build and run the container</h3>
+
+<p>Now that the docker file is written, let&rsquo;s build a Docker image.</p>
+
+<p><code>
+docker build -t sqldump/docker-dev:0.1 .
+</code></p>
+
+<p>Once the image done building, we can launch a container using:</p>
+
+<p>```
+docker run -i -t &mdash;rm \</p>
+
+<pre><code>       -p 3000:3000 \
+       -v `pwd`:/src \
+       sqldump/docker-dev:0.1
+</code></pre>
+
+<p>```</p>
+
+<p>Let&rsquo;s see what&rsquo;s going on in the docker run command.</p>
+
+<p><code>-i</code> starts the container in interactive mode (versus -d for detached mode). This means the container will exit once the interactive sessions is over.</p>
+
+<p><code>-t</code> allocates a pseudo-tty.</p>
+
+<p><code>--rm</code> removes the container and its filesystem on exit.</p>
+
+<p><code>-p 3000:3000</code> forwards port 3000 on to the host to port 3000 on the container.</p>
+
+<p><code>
+-v `pwd`:/src
+</code></p>
+
+<p>This mounts the current working directory in the host (i.e. our project files) to <code>/src</code> inside the container. We mount the current folder as a volume rather than using the <code>ADD</code> command in the Dockerfile so that any changes we make to the files in a text editor will be seen by the container right away.</p>
+
+<p><code>sqldump/docker-dev:0.1</code> the name and version of the docker image to run &ndash; this is the same one we used when building the docker image.</p>
+
+<p>Since the Dockerfile specifies <code>CMD ["/bin/bash"]</code>, we&rsquo;re dropped into a bash shell once the container has started. If the docker run command succeeds, it&rsquo;ll look something like this:</p>
+
+<p><a href="/images/2014-06-17-Docker-Run.png"><img src="/images/2014-06-17-Docker-Run.png" width="482" height="139"></a></p>
+
+<h3>Start Developing</h3>
+
+<p>Now that the container is running, we&rsquo;ll need to get a few standard, non-docker related things sorted out before we can start writing code. First, start redis server inside the container using:</p>
+
+<p><code>
+service redis-server start
+</code></p>
+
+<p>Then, install project dependencies and <code>nodemon</code>. <a href="https://github.com/remy/nodemon">Nodemon</a> watches for changes in project files and restarts the server as needed.</p>
+
+<p><code>
+npm install
+npm install -g nodemon
+</code></p>
+
+<p>Finally, start up the server using:</p>
+
+<p><code>
+nodemon server.js
+</code></p>
+
+<p>Now, if you go to <code>http://localhost:3000</code> in your browser, you should see something like this:</p>
+
+<p><a href="/images/2014-06-17-First-Run.png"><img src="/images/2014-06-17-First-Run.png" width="230" height="110"></a></p>
+
+<p>Let&rsquo;s add another endpoint to <code>server.js</code> to simulate development workflow:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>server.js </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="sr">/hello/</span><span class="o">:</span><span class="nx">name</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">hello</span><span class="o">:</span> <span class="nx">req</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">name</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>You should see that nodemon has detected your changes and restarted the server:</p>
+
+<p><a href="/images/2014-06-17-Reload.png"><img src="/images/2014-06-17-Reload.png" width="1072" height="390"></a></p>
+
+<p>And now, if you point your browser to <code>http://localhost:3000/hello/world</code>, you should see the response:</p>
+
+<p><a href="/images/2014-06-17-Second-Run.png"><img src="/images/2014-06-17-Second-Run.png" width="348" height="140"></a></p>
+
+<h3>Production</h3>
+
+<p>The container, in its current state, is nowehere near production-ready. The data in redis won&rsquo;t be persisted across container restarts, i.e. if you restart the container, you&rsquo;ll have effectively blown away all your session data. The same thing will happen if you destroy the container and start a new one. Presumably, this is not what you want. I&rsquo;ll cover production setup in part II.</p>
 ]]></content>
   </entry>
   
