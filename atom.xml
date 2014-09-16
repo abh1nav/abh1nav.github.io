@@ -4,7 +4,7 @@
   <title><![CDATA[sqldump]]></title>
   <link href="http://blog.abhinav.ca/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-09-16T02:44:16-04:00</updated>
+  <updated>2014-09-16T02:46:35-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -18,7 +18,7 @@
     <link href="http://blog.abhinav.ca/blog/2014/09/15/cassandra-cluster-docker-one-command/"/>
     <updated>2014-09-15T00:16:56-04:00</updated>
     <id>http://blog.abhinav.ca/blog/2014/09/15/cassandra-cluster-docker-one-command</id>
-    <content type="html"><![CDATA[<p>[2014-09-16] Update: The command now brings up a 5-node Cassandra cluster in addition to DataStax OpsCenter 5.0.0 and wires it all up together. See <a href="http://github.com/abh1nav/cassandra">the GitHub repo</a> for details. Each node is its own container that runs Cassandra and the DataStax Agent while OpsCenter is separted into its own container.</p>
+    <content type="html"><![CDATA[<p>[2014-09-16] Update: The command now brings up a 5-node Cassandra cluster in addition to DataStax OpsCenter 5.0.0 and wires it all up together. See <a href="http://github.com/abh1nav/cassandra">the GitHub repo</a> for details. Each node runs in its own container with the Cassandra process + DataStax Agent while OpsCenter runs in its own container separate from the cluster.</p>
 
 <p>[Original Post]</p>
 
