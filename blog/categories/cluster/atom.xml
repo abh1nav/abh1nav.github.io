@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cluster | sqldump]]></title>
   <link href="http://blog.abhinav.ca/blog/categories/cluster/atom.xml" rel="self"/>
   <link href="http://blog.abhinav.ca/"/>
-  <updated>2014-09-15T00:52:44-04:00</updated>
+  <updated>2014-09-16T02:44:16-04:00</updated>
   <id>http://blog.abhinav.ca/</id>
   <author>
     <name><![CDATA[Abhinav Ajgaonkar]]></name>
@@ -18,7 +18,11 @@
     <link href="http://blog.abhinav.ca/blog/2014/09/15/cassandra-cluster-docker-one-command/"/>
     <updated>2014-09-15T00:16:56-04:00</updated>
     <id>http://blog.abhinav.ca/blog/2014/09/15/cassandra-cluster-docker-one-command</id>
-    <content type="html"><![CDATA[<p>Run this command to bring up a 5-node Cassandra (2.1.0) cluster locally using Docker.
+    <content type="html"><![CDATA[<p>[2014-09-16] Update: The command now brings up a 5-node Cassandra cluster in addition to DataStax OpsCenter 5.0.0 and wires it all up together. See <a href="http://github.com/abh1nav/cassandra">the GitHub repo</a> for details. Each node is its own container that runs Cassandra and the DataStax Agent while OpsCenter is separted into its own container.</p>
+
+<p>[Original Post]</p>
+
+<p>Run this command to bring up a 5-node Cassandra (2.1.0) cluster locally using Docker.
 <code>
 bash &lt;(curl -sL http://bit.ly/docker-cassandra)
 </code></p>

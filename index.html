@@ -9,8 +9,7 @@
   <meta name="author" content="Abhinav Ajgaonkar">
 
   
-  <meta name="description" content="Run this command to bring up a 5-node Cassandra (2.1.0) cluster locally using Docker. 1
-bash &lt;(curl -sL http://bit.ly/docker-cassandra) This will &hellip;">
+  <meta name="description" content="[2014-09-16] Update: The command now brings up a 5-node Cassandra cluster in addition to DataStax OpsCenter 5.0.0 and wires it all up together. See &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -106,7 +105,11 @@ bash &lt;(curl -sL http://bit.ly/docker-cassandra) This will &hellip;">
   </header>
 
 
-  <div class="entry-content"><p>Run this command to bring up a 5-node Cassandra (2.1.0) cluster locally using Docker.</p>
+  <div class="entry-content"><p>[2014-09-16] Update: The command now brings up a 5-node Cassandra cluster in addition to DataStax OpsCenter 5.0.0 and wires it all up together. See <a href="http://github.com/abh1nav/cassandra">the GitHub repo</a> for details. Each node is its own container that runs Cassandra and the DataStax Agent while OpsCenter is separted into its own container.</p>
+
+<p>[Original Post]</p>
+
+<p>Run this command to bring up a 5-node Cassandra (2.1.0) cluster locally using Docker.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>bash &lt;(curl -sL http://bit.ly/docker-cassandra)</span></code></pre></td></tr></table></div></figure>
