@@ -6,7 +6,7 @@ comments: true
 categories: docker cassandra cluster
 ---
 
-[2014-09-16] Update: The command now brings up a 5-node Cassandra cluster in addition to DataStax OpsCenter 5.0.0 and wires it all up together. See [the GitHub repo](http://github.com/abh1nav/cassandra) for details. Each node is its own container that runs Cassandra and the DataStax Agent while OpsCenter is separted into its own container. 
+[2014-09-16] Update: The command now brings up a 5-node Cassandra cluster in addition to DataStax OpsCenter 5.0.0 and wires it all up together. See [the GitHub repo](http://github.com/abh1nav/cassandra) for details. Each node runs in its own container with the Cassandra process + DataStax Agent while OpsCenter runs in its own container separate from the cluster.
 
 [Original Post]
 
