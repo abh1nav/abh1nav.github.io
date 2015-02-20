@@ -1,0 +1,496 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Scaling with Akka Streams: Fetch 1M Twitter Profiles in less than 5min - sqldump</title>
+  <meta name="author" content="Abhinav Ajgaonkar">
+
+  
+  <meta name="description" content="During these past few weeks, I&rsquo;ve had a chance to play around quite a bit with the soon-to-be-1.0 Akka Streams module and I&rsquo;ve been &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.abhinav.ca/blog/2015/02/19/scaling-with-akka-streams/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="sqldump" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-23345729-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">sqldump</a></h1>
+  
+    <h2>(coffee) => code</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.abhinav.ca" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Scaling With Akka Streams: Fetch 1M Twitter Profiles in Less Than 5min</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-19T21:15:09-05:00" pubdate data-updated="true">Feb 19<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>During these past few weeks, I&rsquo;ve had a chance to play around quite a bit with the soon-to-be-1.0 <a href="http://doc.akka.io/docs/akka-stream-and-http-experimental/1.0-M3/scala.html">Akka Streams</a> module and I&rsquo;ve been looking for a concrete reason to write about why this is an important milestone for the stream processing ecosystem. It just so happens that this week, we were conducting an experiment related to Twitter follower analysis that required pulling a few million public user profiles of followers of large Twitter accounts and the ability to do so in a relatively short amount of time. I decided to use Akka Streams for this project to see how far I could push it in a real world scenario.</p>
+
+<h2>App Skeleton</h2>
+
+<p>I decided to start with a regular Scala command line app and hardcode the Twitter ID of the person whose followers&#8217; profiles we were attempting to retrieve (since this is going to be throwaway code just for the sake of the experiment). The only dependencies were <a href="http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11/2.3.9">akka-actor</a>, <a href="http://mvnrepository.com/artifact/com.typesafe.akka/akka-stream-experimental_2.11/1.0-M3">akka-stream-experimental</a> and <a href="http://mvnrepository.com/artifact/org.twitter4j/twitter4j-core/4.0.2">twitter4j-core</a>.</p>
+
+<h3>Twitter API Interaction</h3>
+
+<p>We need some way to call the Twitter API primarily for two reasons:</p>
+
+<p>1) Fetch all follower IDs of a given userID<br/>
+2) Fetch a user profile given a userID.</p>
+
+<p>Any call made to Twiter&rsquo;s API needs an authenticated <code>twitter4j.Twitter</code> object. Given a set of credentials, a <code>twitter4j.Twitter</code> object is constructed as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">twitter4j.</span><span class="o">{</span><span class="nc">Twitter</span><span class="o">,</span> <span class="nc">TwitterFactory</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">twitter4j.auth.AccessToken</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">twitter4j.conf.ConfigurationBuilder</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">TwitterClient</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// Fill these in with your own credentials</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">appKey</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">appSecret</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">accessToken</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">accessTokenSecret</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="n">apply</span><span class="o">()</span><span class="k">:</span> <span class="kt">Twitter</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">factory</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">TwitterFactory</span><span class="o">(</span><span class="k">new</span> <span class="nc">ConfigurationBuilder</span><span class="o">().</span><span class="n">build</span><span class="o">())</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">getInstance</span><span class="o">()</span>
+</span><span class='line'>        <span class="n">t</span><span class="o">.</span><span class="n">setOAuthConsumer</span><span class="o">(</span><span class="n">appKey</span><span class="o">,</span> <span class="n">appSecret</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">t</span><span class="o">.</span><span class="n">setOAuthAccessToken</span><span class="o">(</span><span class="k">new</span> <span class="nc">AccessToken</span><span class="o">(</span><span class="n">accessToken</span><span class="o">,</span> <span class="n">accessTokenSecret</span><span class="o">))</span>
+</span><span class='line'>        <span class="n">t</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Given a user, return all followers</h4>
+
+<p>Using the <code>TwitterClient</code>, we can fetch a user&rsquo;s profile and list of followers with the following <code>TwitterHelpers</code> object:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">TwitterHelpers</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// Lookup user profiles in batches of 100</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">lookupUsers</span><span class="o">(</span><span class="n">ids</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Long</span><span class="o">])</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">client</span> <span class="k">=</span> <span class="nc">TwitterClient</span><span class="o">()</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">res</span> <span class="k">=</span> <span class="n">client</span><span class="o">.</span><span class="n">lookupUsers</span><span class="o">(</span><span class="n">ids</span><span class="o">.</span><span class="n">toArray</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">res</span><span class="o">.</span><span class="n">toList</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Fetch the IDs of a user&#39;s followers in batches of 5000</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">getFollowers</span><span class="o">(</span><span class="n">userId</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span><span class="k">:</span> <span class="kt">Try</span><span class="o">[</span><span class="kt">Set</span><span class="o">[</span><span class="kt">Long</span><span class="o">]]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nc">Try</span><span class="o">({</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">followerIds</span> <span class="k">=</span> <span class="n">mutable</span><span class="o">.</span><span class="nc">Set</span><span class="o">[</span><span class="kt">Long</span><span class="o">]()</span>
+</span><span class='line'>        <span class="k">var</span> <span class="n">cursor</span> <span class="k">=</span> <span class="o">-</span><span class="mi">1L</span>
+</span><span class='line'>        <span class="k">do</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">val</span> <span class="n">client</span> <span class="k">=</span> <span class="nc">TwitterClient</span><span class="o">()</span>
+</span><span class='line'>          <span class="k">val</span> <span class="n">res</span> <span class="k">=</span> <span class="n">client</span><span class="o">.</span><span class="n">friendsFollowers</span><span class="o">().</span><span class="n">getFollowersIDs</span><span class="o">(</span><span class="n">userId</span><span class="o">,</span> <span class="n">cursor</span><span class="o">,</span> <span class="mi">5000</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">res</span><span class="o">.</span><span class="n">getIDs</span><span class="o">.</span><span class="n">toList</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">followerIds</span><span class="o">.</span><span class="n">add</span><span class="o">(</span><span class="n">x</span><span class="o">))</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">res</span><span class="o">.</span><span class="n">hasNext</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">cursor</span> <span class="k">=</span> <span class="n">res</span><span class="o">.</span><span class="n">getNextCursor</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">cursor</span> <span class="k">=</span> <span class="o">-</span><span class="mi">1</span> <span class="c1">// Exit the loop</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">while</span> <span class="o">(</span><span class="n">cursor</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">followerIds</span><span class="o">.</span><span class="n">toSet</span>
+</span><span class='line'>      <span class="o">})</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Akka Boilerplate</h3>
+
+<p>With the Twitter interactions out of the way, we can create a new command line app using:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">Main</span> <span class="k">extends</span> <span class="nc">App</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// ActorSystem &amp; thread pools</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">val</span> <span class="n">system</span><span class="k">:</span> <span class="kt">ActorSystem</span> <span class="o">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;centaur&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">executorService</span><span class="k">:</span> <span class="kt">ExecutorService</span> <span class="o">=</span> <span class="nc">Executors</span><span class="o">.</span><span class="n">newCachedThreadPool</span><span class="o">()</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">ec</span><span class="k">:</span> <span class="kt">ExecutionContext</span> <span class="o">=</span> <span class="nc">ExecutionContext</span><span class="o">.</span><span class="n">fromExecutorService</span><span class="o">(</span><span class="n">executorService</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">log</span><span class="k">:</span> <span class="kt">LoggingAdapter</span> <span class="o">=</span> <span class="nc">Logging</span><span class="o">.</span><span class="n">getLogger</span><span class="o">(</span><span class="n">system</span><span class="o">,</span> <span class="nc">Main</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">val</span> <span class="n">materializer</span> <span class="k">=</span> <span class="nc">ActorFlowMaterializer</span><span class="o">()(</span><span class="n">system</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// Put Stream code here</span>
+</span><span class='line'>  <span class="c1">//</span>
+</span><span class='line'>  <span class="c1">//</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this point, we have a working app that can be invoked using <code>sbt run</code>. Let&rsquo;s get started on the Akka Streams bit.</p>
+
+<h3>The Pipeline</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">startTime</span> <span class="k">=</span> <span class="nc">System</span><span class="o">.</span><span class="n">nanoTime</span><span class="o">()</span>
+</span><span class='line'><span class="k">val</span> <span class="n">userId</span> <span class="k">=</span> <span class="mi">410939902L</span> <span class="c1">// @headinthebox ~12K followers</span>
+</span><span class='line'><span class="k">val</span> <span class="n">output</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ConcurrentLinkedQueue</span><span class="o">[</span><span class="kt">String</span><span class="o">]()</span>
+</span><span class='line'><span class="nc">Console</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Fetching follower profiles for $userId&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="nc">Source</span><span class="o">(()</span> <span class="k">=&gt;</span> <span class="nc">TwitterHelpers</span><span class="o">.</span><span class="n">getFollowers</span><span class="o">(</span><span class="n">userId</span><span class="o">).</span><span class="n">get</span><span class="o">.</span><span class="n">toIterable</span><span class="o">.</span><span class="n">iterator</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">grouped</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="nc">TwitterHelpers</span><span class="o">.</span><span class="n">lookupUsers</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="n">toList</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">mapConcat</span><span class="o">(</span><span class="n">identity</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">runForeach</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">output</span><span class="o">.</span><span class="n">offer</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="n">getScreenName</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">onComplete</span><span class="o">({</span>
+</span><span class='line'>    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+</span><span class='line'>      <span class="nc">Console</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Fetched ${output.size()} profiles&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">endTime</span> <span class="k">=</span> <span class="nc">System</span><span class="o">.</span><span class="n">nanoTime</span><span class="o">()</span>
+</span><span class='line'>      <span class="nc">Console</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Time taken: ${(endTime - startTime)/1000000000.00}s&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">system</span><span class="o">.</span><span class="n">shutdown</span><span class="o">()</span>
+</span><span class='line'>      <span class="nc">Runtime</span><span class="o">.</span><span class="n">getRuntime</span><span class="o">.</span><span class="n">exit</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">})</span> <span class="o">(</span><span class="n">ec</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Breaking down the flow line by line</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">Source</span><span class="o">(()</span> <span class="k">=&gt;</span> <span class="nc">TwitterHelpers</span><span class="o">.</span><span class="n">getFollowers</span><span class="o">(</span><span class="n">userId</span><span class="o">).</span><span class="n">get</span><span class="o">.</span><span class="n">toIterable</span><span class="o">.</span><span class="n">iterator</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>turns the <code>Set[Long]</code> of follower IDs into an Akka Streams <code>Source</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="o">.</span><span class="n">grouped</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span> <span class="c1">// outputs a stream of Seq[Long]</span>
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="nc">TwitterHelpers</span><span class="o">.</span><span class="n">lookupUsers</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="n">toList</span><span class="o">))</span> <span class="c1">// outputs a stream of List[User]</span>
+</span><span class='line'><span class="o">.</span><span class="n">mapConcat</span><span class="o">(</span><span class="n">identity</span><span class="o">)</span> <span class="c1">// flattens the stream of List[User] into a stream of User</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>group</code>, <code>map</code> and <code>mapConcat</code> transform the stream of Longs into a stream of <code>twitter4j.User</code> objects.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="o">.</span><span class="n">runForeach</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">output</span><span class="o">.</span><span class="n">offer</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="n">getScreenName</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And finally, the user objects are piped into a <code>Sink</code> which adds them to our output queue.</p>
+
+<h3>Run 1 &ndash; 12,199 profiles in 108s</h3>
+
+<p>Running this flow takes 108 seconds to retrieve 12,199 user profiles from Twitter.</p>
+
+<p><a href="/images/2015-02-19-Attempt-1.png"><img src="/images/2015-02-19-Attempt-1.png"></a></p>
+
+<h3>Run 2 &ndash; 12,200 profiles in 11s</h3>
+
+<p>Modifying the flow slightly to allow for more concurrency helps bring down the total time taken by a large value. The obvious bottleneck in the flow implementation is the synchronous fetching of user profiles in the stage where User IDs are mapped to User profile objects. Replacing the</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="nc">TwitterHelpers</span><span class="o">.</span><span class="n">lookupUsers</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="n">toList</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>with</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="o">.</span><span class="n">mapAsyncUnordered</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">User</span><span class="o">]](</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="nc">Future</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">User</span><span class="o">]]({</span> <span class="nc">TwitterHelpers</span><span class="o">.</span><span class="n">lookupUsers</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="n">toList</span><span class="o">)</span> <span class="o">}</span> <span class="o">(</span><span class="n">ec</span><span class="o">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>reduces the time taken from <strong>108</strong>s to <strong>11</strong>s. <strong>That&rsquo;s almost 10x faster with a single line change!</strong></p>
+
+<p><a href="/images/2015-02-19-Attempt-2.png"><img src="/images/2015-02-19-Attempt-2.png"></a></p>
+
+<p>(It looks like Erik Meijer has gained a follower between our two runs).</p>
+
+<h3>Run 3 &ndash; 1.22M profiles in 256s</h3>
+
+<p><a href="https://twitter.com/netflix">Netflix USA</a> has approximately 1.22M followers. Fetching followers for this account took 256s.</p>
+
+<p><a href="/images/2015-02-19-Attempt-3.png"><img src="/images/2015-02-19-Attempt-3.png"></a></p>
+
+<h3>Run 4 &ndash; 2.88M profiles in 647s</h3>
+
+<p>Twitter co-founder <a href="https://twitter.com/jack">Jack Dorsey</a> has 2.88M followers and the pipeline processed them in 647 seconds.</p>
+
+<p><a href="/images/2015-02-19-Attempt-4.png"><img src="/images/2015-02-19-Attempt-4.png"></a></p>
+
+<p>Since Netflix (1.22M) was processed in 256s and Jack (2.88M) was processed in ~650s, it doesn&rsquo;t look like the pipeline is showing any signs of exhaustion as larger accounts are being processed.</p>
+
+<h3>Final Thoughts</h3>
+
+<p>Before Akka Streams, creating a flow like this would require hand coding each stage as an actor, manually wiring everything up and carefully managing backpressure using a hybrid push/pull system alongwith finely configured timeouts and inbox sizes. Having worked on many such systems at <a href="http://crowdriff.com">CrowdRiff</a>, my experience so far has been mostly positive. Akka delivers exactly what it promises &ndash; an easy way to think about concurrency, excellent performance and a great toolkit to build distributed systems. However, once built, these systems often tend to be very complex and common changes like adding stages to the pipeline or modifying existing stages have to be done very carefully (despite unit tests!). Akka Streams takes this to a whole new level by allowing the user to create arbitrary flows (check out <a href="http://doc.akka.io/docs/akka-stream-and-http-experimental/1.0-M3/scala/stream-graphs.html">stream graphs</a>) in simple and easy to read manner AND managing the backpressure for you! The large quantity of awesome in this module is certainly appreciated by me and my team &ndash; many thanks to the Akka folks and everyone who contributed to the Reactive Streams project. Happy hAkking!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Abhinav Ajgaonkar</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-19T21:15:09-05:00" pubdate data-updated="true">Feb 19<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/akka/'>akka</a>, <a class='category' href='/blog/categories/api/'>api</a>, <a class='category' href='/blog/categories/reactive/'>reactive</a>, <a class='category' href='/blog/categories/scala/'>scala</a>, <a class='category' href='/blog/categories/scaling/'>scaling</a>, <a class='category' href='/blog/categories/streams/'>streams</a>, <a class='category' href='/blog/categories/twitter/'>twitter</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.abhinav.ca/blog/2015/02/19/scaling-with-akka-streams/" data-via="abh1nv" data-counturl="http://blog.abhinav.ca/blog/2015/02/19/scaling-with-akka-streams/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/15/cassandra-cluster-docker-one-command/" title="Previous Post: 5-Node Cassandra Cluster. 1 Command.">&laquo; 5-Node Cassandra Cluster. 1 Command.</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p>Data fanatic. Scala and Python fanboy. TV connoisseur. Coffee drinker. CTO at <a href="http://crowdriff.com">CrowdRiff</a>. Creator of <a href="http://getriffle.com/">Riffle</a> and <a href="http://mytoptweet.com">MyTopTweet</a>. Find me on <a href="https://twitter.com/abh1nv">Twitter</a> and <a href="https://github.com/abh1nav">GitHub</a>.</p>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/abh1nav">@abh1nav</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'abh1nav',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Abhinav Ajgaonkar -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
